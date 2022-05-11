@@ -1,0 +1,66 @@
+version: "3.4"
+
+services:
+  nest:
+    build: 
+      dockerfile: Dockerfile
+      context: ./nest
+      # Ony build development stage from dockerfile
+      target: development
+
+    # Mount our host dir to the docker container
+    # Mount nest dir to (./nest) to (:) docker container (/src/app) 
+    # Reflect File changes from host to container
+    volumes:
+      - ./nest:/src/app
+      - /mnt/nfs/homes/mlecuyer/Documents/transcendance.v2.1/apps/nest/node_modules/
+    
+    # RUN in debug mode: npm start:debug --> Also start your vscode debugger
+    # RUN in dev mode: npm run start:dev
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    #environment:
+    #  DATABASE_URL: postgres://user:password@postgres:5432/db
+    #  NODE_ENV: development
+    #  PORT: 3000
+    ports:
+      - 3000:3000
+      - 9229:9229 # for debug
+
+  react:
+    build: 
+      dockerfile: Dockerfile
+      context: ./react
+      target: development
+    command: npm start
+    volumes:
+     - ./react:/react/src/app
+     - /mnt/nfs/homes/mlecuyer/Documents/transcendance.v2.1/apps/react/node_modules
+    ports:
+      - 4200:4200
+    links: 
+      - nest
+
+  postgres:
+    image: postgres
+    env_file:
+      - .env
+    #environment:
+    #  POSTGRES_USER: user
+    #  POSTGRES_PASSWORD: password
+    #  POSTGRES_DB: db
+    ports:
+      - 3500:5432
+
+  postgres_admin:
+    image: dpage/pgadmin4:6.8
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5050:80

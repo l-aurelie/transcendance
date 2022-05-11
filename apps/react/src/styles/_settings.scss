@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "font-1";
+  src: url(../assets/fonts/JosefinSans.ttf)
+}
+
+$font-1: "font-1", sans-serif;
+
+$color-1: #16d2f3;
+$color-2: rgb(255, 135, 23);
+$color-3: #282c34;
+$white: rgb(243, 243, 243);
+
+@mixin verticalCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: $white;
+  font-family: $font-1;
+  // @include verticalCenter;
+}
+li {
+  list-style-type: none;
+}
