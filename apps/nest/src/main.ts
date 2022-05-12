@@ -8,12 +8,13 @@ import * as passport from 'passport';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const sessionRepo = getRepository(TypeORMSession);
+  /*set up cookies so we remember users are logged in*/
   app.use(
     session({
       cookie: {
         maxAge: 86400000,
       },
-      //used to encrypt cookie
+      //used to encrypt cookie, can be anything but keep secret
       secret: 'askjhdkajshdkashd',
       resave: false,
       saveUninitialized: false,

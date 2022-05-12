@@ -37,6 +37,7 @@ __decorate([
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Get)('redirect'),
+    (0, common_2.UseGuards)(guards_1.DiscordAuthGuard),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

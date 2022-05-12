@@ -9,9 +9,10 @@ import { SessionSerializer } from './utils/Serializer';
 
 @Module({
   controllers: [AuthController],
-  providers: [IntraStrategy, 
+  providers: [IntraStrategy, /*we give our module access to our strategy*/
   SessionSerializer,
   {
+    /*we can now use authservice functions from auth.service.ts in our files by injecting AUTH_SERVICE*/
     provide: 'AUTH_SERVICE',
     useClass: AuthService,
   },

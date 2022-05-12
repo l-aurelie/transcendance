@@ -10,16 +10,19 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    /*session refers to cookie session*/
     PassportModule.register({ session: true }), 
     ConfigModule.forRoot({envFilePath: '.env'}),
     UsersModule, AuthModule,
     TypeOrmModule.forRoot({
+      /*configures TypeOrm to database*/
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number.parseInt(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
+      /*entities = typeorm database tables, all entities imported in typeorm/index.ts*/
       entities: entities,
       //url: process.env.DATABASE_URL,
       autoLoadEntities: true,
@@ -30,7 +33,7 @@ import { PassportModule } from '@nestjs/passport';
 })
 export class AppModule {}
 
-/*@Module({
+/*old code: @Module({
   imports: [
     ConfigModule.forRoot({envFilePath: '../.env'}),
     TypeOrmModule.forRoot({

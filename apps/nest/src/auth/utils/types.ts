@@ -1,5 +1,5 @@
 import { User } from 'src/typeorm';
-
+/*defines userDetails class used in auth.ts*/
 export type UserDetails = {
     username: string;
     discriminator: string;
