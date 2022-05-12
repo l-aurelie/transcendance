@@ -36,8 +36,8 @@ let IntraStrategy = class IntraStrategy extends (0, passport_1.PassportStrategy)
         }).toPromise();
         console.log(data.login);
         console.log(accessToken);
-        const details = { login: data.login, discriminator, intraId: data.id, avatar };
-        console.log(details.login, details.discriminator, details.intraId, details.avatar);
+        const details = { login: data.login, discriminator, intraId: data.id };
+        console.log(details.login, details.discriminator, details.intraId);
         return this.authService.validateUser(details);
     }
 };

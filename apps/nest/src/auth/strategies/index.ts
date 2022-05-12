@@ -25,27 +25,16 @@ constructor(private httpService: HttpService, @Inject('AUTH_SERVICE') private re
 }
 
 async validate(accessToken: string, refreshToken: string, profile: Profile) {
+    //????
     const { username, discriminator, id: intraId, avatar } = profile;
+    ///recover profile details from intra via get request with our access token
     const { data } = await this.httpService.get('https://api.intra.42.fr/v2/me', {
     headers: { Authorization: `Bearer ${accessToken}` },
-}).toPromise();
+}).toPromise(); //????
 console.log(data.login);
 console.log(accessToken);
-    const details = { login: data.login , discriminator, intraId: data.id, avatar };
-    console.log(details.login, details.discriminator, details.intraId, details.avatar);
+    const details = { login: data.login , discriminator, intraId: data.id };
+    console.log(details.login, details.discriminator, details.intraId );
     return this.authService.validateUser(details);
-
-/*function will be called internally
-async validate(accessToken: string) {
-const { data } = await this.httpService
-.get('https://api.intra.42.fr/v2/me', {
-    headers: { Authorization: `Bearer ${accessToken}` },
-}).toPromise();
-console.log(data.login);
-console.log(accessToken);
-
-const { details } = { data.login, data.id, data.uid };
-return this.authService.validateUser(details);
-}*/
 }
 }
