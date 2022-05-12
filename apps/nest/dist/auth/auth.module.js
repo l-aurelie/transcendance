@@ -14,6 +14,7 @@ const strategies_1 = require("./strategies");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("../typeorm");
 const Serializer_1 = require("./utils/Serializer");
+const axios_1 = require("@nestjs/axios");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -26,7 +27,7 @@ AuthModule = __decorate([
                 useClass: auth_service_1.AuthService,
             },
         ],
-        imports: [typeorm_1.TypeOrmModule.forFeature([typeorm_2.User])],
+        imports: [axios_1.HttpModule, typeorm_1.TypeOrmModule.forFeature([typeorm_2.User])],
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;

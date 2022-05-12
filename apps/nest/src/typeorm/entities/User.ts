@@ -5,13 +5,13 @@ export class User implements IUser {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'discord_id', unique: true})
-    discordId: string;
+    @Column({ name: 'discord_id', nullable: true })
+    intraId: string;
 
-    @Column()
-    username: string;
+    @Column({ nullable: true } )
+    login: string;
 
-    @Column()
+    @Column({ nullable: true })
     discriminator: string;
 
     @Column({ nullable: true })
@@ -19,8 +19,8 @@ export class User implements IUser {
 }
 
 export interface IUser {
-        username: string;
+        login: string;
         discriminator: string;
-        discordId: string;
+        intraId: string;
         avatar: string;
     }

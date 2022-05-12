@@ -1,13 +1,13 @@
 export declare class User implements IUser {
     id: number;
-    discordId: string;
-    username: string;
+    intraId: string;
+    login: string;
     discriminator: string;
     avatar: string;
 }
 export interface IUser {
-    username: string;
+    login: string;
     discriminator: string;
-    discordId: string;
+    intraId: string;
     avatar: string;
 }

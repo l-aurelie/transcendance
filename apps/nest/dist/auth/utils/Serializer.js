@@ -24,7 +24,7 @@ let SessionSerializer = class SessionSerializer extends passport_1.PassportSeria
         done(null, user);
     }
     async deserializeUser(user, done) {
-        const userDb = await this.authService.findUser(user.discordId);
+        const userDb = await this.authService.findUser(user.intraId);
         return userDb ? done(null, userDb) : done(null, null);
     }
 };

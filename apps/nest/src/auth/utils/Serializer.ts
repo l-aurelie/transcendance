@@ -20,7 +20,7 @@ export class SessionSerializer extends PassportSerializer {
     async deserializeUser(user: User, done: Done) {
         /*search for user in database,
         if found returns user, else returns NULL*/
-        const userDb = await this.authService.findUser(user.discordId);
+        const userDb = await this.authService.findUser(user.intraId);
         return userDb ? done(null, userDb) : done(null, null);
     }
 }

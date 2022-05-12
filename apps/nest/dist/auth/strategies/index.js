@@ -16,28 +16,35 @@ exports.IntraStrategy = void 0;
 const passport_oauth2_1 = require("passport-oauth2");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
+const axios_1 = require("@nestjs/axios");
 let IntraStrategy = class IntraStrategy extends (0, passport_1.PassportStrategy)(passport_oauth2_1.Strategy, 'intra-oauth') {
-    constructor(authService) {
+    constructor(httpService, authService) {
         super({
             authorizationURL: 'https://api.intra.42.fr/oauth/authorize',
             tokenURL: 'https://api.intra.42.fr/oauth/token',
             clientID: process.env.INTRA_CLIENT_ID,
             clientSecret: process.env.INTRA_CLIENT_SECRET,
-            callbackURL: process.env.INTRA_CALLBACK_URL + '/api/v1/auth/login/intra',
+            callbackURL: process.env.INTRA_CALLBACK_URL,
         });
+        this.httpService = httpService;
         this.authService = authService;
     }
     async validate(accessToken, refreshToken, profile) {
-        const { username, discriminator, id: discordId, avatar } = profile;
-        console.log(username, discriminator, discordId, avatar);
-        const details = { username, discriminator, discordId, avatar };
+        const { username, discriminator, id: intraId, avatar } = profile;
+        const { data } = await this.httpService.get('https://api.intra.42.fr/v2/me', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        }).toPromise();
+        console.log(data.login);
+        console.log(accessToken);
+        const details = { login: data.login, discriminator, intraId: data.id, avatar };
+        console.log(details.login, details.discriminator, details.intraId, details.avatar);
         return this.authService.validateUser(details);
     }
 };
 IntraStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('AUTH_SERVICE')),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, common_1.Inject)('AUTH_SERVICE')),
+    __metadata("design:paramtypes", [axios_1.HttpService, Object])
 ], IntraStrategy);
 exports.IntraStrategy = IntraStrategy;
 //# sourceMappingURL=index.js.map

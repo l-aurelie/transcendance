@@ -22,10 +22,10 @@ let AuthService = class AuthService {
         this.userRepo = userRepo;
     }
     async validateUser(details) {
-        const { discordId } = details;
-        const user = await this.userRepo.findOne({ where: { discordId } });
+        const { intraId } = details;
+        const user = await this.userRepo.findOne({ where: { intraId } });
         if (user) {
-            await this.userRepo.update({ discordId }, details);
+            await this.userRepo.update({ intraId }, details);
             console.log('updated');
             return user;
         }
@@ -37,8 +37,8 @@ let AuthService = class AuthService {
         return this.userRepo.save(user);
     }
     ;
-    findUser(discordId) {
-        return this.userRepo.findOne({ where: { discordId } });
+    findUser(intraId) {
+        return this.userRepo.findOne({ where: { intraId } });
     }
     ;
 };
