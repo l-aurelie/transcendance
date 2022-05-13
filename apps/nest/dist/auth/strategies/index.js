@@ -17,6 +17,7 @@ const passport_oauth2_1 = require("passport-oauth2");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
 const axios_1 = require("@nestjs/axios");
+const rxjs_1 = require("rxjs");
 let IntraStrategy = class IntraStrategy extends (0, passport_1.PassportStrategy)(passport_oauth2_1.Strategy, 'intra-oauth') {
     constructor(httpService, authService) {
         super({
@@ -29,15 +30,13 @@ let IntraStrategy = class IntraStrategy extends (0, passport_1.PassportStrategy)
         this.httpService = httpService;
         this.authService = authService;
     }
-    async validate(accessToken, refreshToken, profile) {
-        const { username, discriminator, id: intraId, avatar } = profile;
-        const { data } = await this.httpService.get('https://api.intra.42.fr/v2/me', {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        }).toPromise();
-        console.log(data.login);
+    async validate(accessToken) {
         console.log(accessToken);
-        const details = { login: data.login, discriminator, intraId: data.id };
-        console.log(details.login, details.discriminator, details.intraId);
+        const { data } = await (0, rxjs_1.lastValueFrom)(this.httpService.get('https://api.intra.42.fr/v2/me', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        }));
+        const details = { login: data.login, intraId: data.id, avatar: data.image_url };
+        console.log(details.login, details.intraId, details.avatar);
         return this.authService.validateUser(details);
     }
 };

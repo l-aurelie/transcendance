@@ -6,11 +6,11 @@ import { AuthGuard } from '@nestjs/passport';
 export class DiscordAuthGuard extends AuthGuard('intra-oauth') {
     async canActivate(context: ExecutionContext): Promise<any> {
         const activate = (await super.canActivate(context)) as boolean;
-        console.log(activate);
+        //console.log(activate);
         /*get request object*/
         const request = context.switchToHttp().getRequest();
         /*print out request in console*/
-        console.log(request);
+        //console.log(request);
         /*call logIn function with request*/
         await super.logIn(request);
         return activate;

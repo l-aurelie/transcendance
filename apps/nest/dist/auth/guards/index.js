@@ -12,9 +12,7 @@ const passport_1 = require("@nestjs/passport");
 let DiscordAuthGuard = class DiscordAuthGuard extends (0, passport_1.AuthGuard)('intra-oauth') {
     async canActivate(context) {
         const activate = (await super.canActivate(context));
-        console.log(activate);
         const request = context.switchToHttp().getRequest();
-        console.log(request);
         await super.logIn(request);
         return activate;
     }
