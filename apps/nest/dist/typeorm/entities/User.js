@@ -14,23 +14,19 @@ const typeorm_1 = require("typeorm");
 let User = class User {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ name: 'user_no' }),
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'discord_id', nullable: true }),
+    (0, typeorm_1.Column)({ name: 'Intra_id' }),
     __metadata("design:type", String)
 ], User.prototype, "intraId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ name: 'Intra_login', nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "login", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "discriminator", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ name: 'Avatar_url', nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "avatar", void 0);
 User = __decorate([

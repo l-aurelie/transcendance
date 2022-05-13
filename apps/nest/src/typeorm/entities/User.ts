@@ -2,25 +2,21 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User implements IUser {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'user_no'})
     id: number;
 
-    @Column({ name: 'discord_id', nullable: true })
+    @Column({ name: 'Intra_id'})
     intraId: string;
 
-    @Column({ nullable: true } )
+    @Column({ name: 'Intra_login', nullable: true } )
     login: string;
 
-    @Column({ nullable: true })
-    discriminator: string;
-
-    @Column({ nullable: true })
+    @Column({ name: 'Avatar_url', nullable: true })
     avatar: string;
 }
 
 export interface IUser {
         login: string;
-        discriminator: string;
         intraId: string;
         avatar: string;
     }
