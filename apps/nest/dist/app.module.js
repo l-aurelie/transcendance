@@ -16,6 +16,10 @@ const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const typeorm_2 = require("./typeorm");
 const passport_1 = require("@nestjs/passport");
+const jwt_1 = require("@nestjs/jwt");
+const mailer_1 = require("@nestjs-modules/mailer");
+const path_1 = require("path");
+const handlebars_adapter_1 = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -34,7 +38,32 @@ AppModule = __decorate([
                 entities: typeorm_2.entities,
                 autoLoadEntities: true,
                 synchronize: true
-            }), users_module_1.UsersModule
+            }),
+            users_module_1.UsersModule,
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET,
+                signOptions: { expiresIn: '60s' },
+            }),
+            mailer_1.MailerModule.forRoot({
+                transport: {
+                    service: "gmail",
+                    secure: false,
+                    auth: {
+                        user: 'transcendance42@gmail.com',
+                        pass: '42transcendance!',
+                    },
+                },
+                defaults: {
+                    from: '"No Reply" transcendance42@gmail.com',
+                },
+                template: {
+                    dir: (0, path_1.join)(__dirname, "../views/email-templates"),
+                    adapter: new handlebars_adapter_1.HandlebarsAdapter(),
+                    options: {
+                        strict: true,
+                    },
+                },
+            })
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

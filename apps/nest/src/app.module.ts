@@ -7,6 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { entities } from './typeorm'
 import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -27,7 +31,33 @@ import { PassportModule } from '@nestjs/passport';
       //url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize:true //suppress for production
-    }), UsersModule],
+    }),
+    UsersModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '60s' },
+    }),
+    MailerModule.forRoot({
+        transport: {
+        service: "gmail",
+        secure: false,
+        auth: {
+          user: 'transcendance42@gmail.com',
+          pass: '42transcendance!',
+        },
+      },
+      defaults: {
+        from: '"No Reply" transcendance42@gmail.com',
+      },
+      template: {
+        dir: join(__dirname, "../views/email-templates"),
+        adapter: new HandlebarsAdapter(), 
+        options: {
+          strict: true,
+        },
+      },
+    })
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

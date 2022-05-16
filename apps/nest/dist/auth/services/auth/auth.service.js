@@ -17,14 +17,46 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const typeorm_3 = require("../../../typeorm");
+const mailer_1 = require("@nestjs-modules/mailer");
 let AuthService = class AuthService {
-    constructor(userRepo) {
+    constructor(userRepo, mailerService) {
         this.userRepo = userRepo;
+        this.mailerService = mailerService;
+        this.code = Math.floor(10000 + Math.random() * 90000);
     }
-    async validateUser(details) {
+    async signin(user, jwt) {
+        try {
+            const foundUser = await this.userRepo.findOne({ email: user.email });
+            if (foundUser) {
+                if (foundUser.isVerified) {
+                    const payload = { email: user.email };
+                    return {
+                        token: jwt.sign(payload),
+                    };
+                }
+                else {
+                    return new common_1.HttpException('Please verify your account', common_1.HttpStatus.UNAUTHORIZED);
+                }
+            }
+            return new common_1.HttpException('Incorrect username or password', common_1.HttpStatus.UNAUTHORIZED);
+        }
+        catch (e) {
+            return new common_1.HttpException(e, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async validateUser(details, newCode) {
         const { intraId } = details;
         const user = await this.userRepo.findOne({ where: { intraId } });
         if (user) {
+            await this.mailerService.sendMail({
+                to: user.email,
+                subject: 'Welcome to Nice App! Confirm Email',
+                template: 'confirm',
+                context: {
+                    login: user.login,
+                    code: newCode
+                },
+            });
             await this.userRepo.update({ intraId }, details);
             console.log('updated');
             return user;
@@ -45,7 +77,7 @@ let AuthService = class AuthService {
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(typeorm_3.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository, mailer_1.MailerService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

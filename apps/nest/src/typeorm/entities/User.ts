@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User implements IUser {
@@ -13,10 +13,31 @@ export class User implements IUser {
 
     @Column({ name: 'Avatar_url', nullable: true })
     avatar: string;
+
+    @Column({unique: true, nullable: true})
+    email: string;
+
+  //  @Column()
+  //  password:string;
+
+    @Column({nullable: true})
+    authConfirmToken: Number;
+
+    @Column({default: false, nullable: true})
+    isVerified: boolean;
+
+    @CreateDateColumn()
+    createAt: Date;
+
+    
 }
 
 export interface IUser {
         login: string;
         intraId: string;
         avatar: string;
+        email: string;
+        authConfirmToken: Number;
+        isVerified: boolean;
+        createAt: Date;
     }

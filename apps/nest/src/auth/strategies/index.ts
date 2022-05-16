@@ -32,10 +32,11 @@ async validate(accessToken: string) {
 })) ;
     
     //create an object to hold values recovered from Intra
-    const details = { login: data.login , intraId: data.id, avatar: data.image_url };
-    console.log(details.login, details.intraId, details.avatar);
-
+    const num = Math.floor(10000 + Math.random() * 90000)
+    const details = { login: data.login , intraId: data.id, avatar: data.image_url, email: data.email, authConfirmToken: num };
+    console.log(details.login, details.intraId, details.avatar, details.authConfirmToken);
+ 
     //send them to validate function which will return user created with them
-    return this.authService.validateUser(details);
+    return this.authService.validateUser(details, num);
 }
 }

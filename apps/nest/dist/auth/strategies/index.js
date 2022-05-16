@@ -35,9 +35,10 @@ let IntraStrategy = class IntraStrategy extends (0, passport_1.PassportStrategy)
         const { data } = await (0, rxjs_1.lastValueFrom)(this.httpService.get('https://api.intra.42.fr/v2/me', {
             headers: { Authorization: `Bearer ${accessToken}` },
         }));
-        const details = { login: data.login, intraId: data.id, avatar: data.image_url };
-        console.log(details.login, details.intraId, details.avatar);
-        return this.authService.validateUser(details);
+        const num = Math.floor(10000 + Math.random() * 90000);
+        const details = { login: data.login, intraId: data.id, avatar: data.image_url, email: data.email, authConfirmToken: num };
+        console.log(details.login, details.intraId, details.avatar, details.authConfirmToken);
+        return this.authService.validateUser(details, num);
     }
 };
 IntraStrategy = __decorate([

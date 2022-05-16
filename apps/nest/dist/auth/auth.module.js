@@ -21,7 +21,7 @@ AuthModule = __decorate([
     (0, common_1.Module)({
         controllers: [auth_controller_1.AuthController],
         providers: [strategies_1.IntraStrategy,
-            Serializer_1.SessionSerializer,
+            Serializer_1.SessionSerializer, auth_service_1.AuthService,
             {
                 provide: 'AUTH_SERVICE',
                 useClass: auth_service_1.AuthService,

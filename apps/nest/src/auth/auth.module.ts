@@ -8,10 +8,11 @@ import { User } from 'src/typeorm';
 import { SessionSerializer } from './utils/Serializer';
 import { HttpModule } from '@nestjs/axios';
 
+
 @Module({
   controllers: [AuthController],
   providers: [IntraStrategy, /*we give our module access to our strategy*/
-  SessionSerializer,
+  SessionSerializer, AuthService,
   {
     /*we can now use authservice functions from auth.service.ts in our files by injecting AUTH_SERVICE*/
     provide: 'AUTH_SERVICE',

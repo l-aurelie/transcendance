@@ -3,11 +3,11 @@ IMAGES=${shell docker images -q}
 CONTAINERS=${shell docker ps -aq}
 NETWORKS=${shell docker network ls -q}
 all:
-	sudo docker-compose -f apps/docker-compose.yml up --build
+	docker-compose -f apps/docker-compose.yml up --build
 clean:
-	sudo docker-compose -f apps/docker-compose.yml down
+	docker-compose -f apps/docker-compose.yml down
 fclean:
-	sudo docker-compose -f apps/docker-compose.yml down
+	docker-compose -f apps/docker-compose.yml down
 	docker rm -f $(CONTAINERS)
 	docker rmi $(IMAGES)
 	docker volume rm $(VOLUMES)
