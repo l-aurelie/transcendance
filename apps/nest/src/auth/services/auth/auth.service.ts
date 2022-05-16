@@ -73,22 +73,13 @@ export class AuthService implements AuthenticationProvider {
 
         if (user)
         {
-   
-          await this.mailerService.sendMail({
-            to: user.email,
-            subject: 'Welcome to Nice App! Confirm Email',
-            template: 'confirm',
-            context: {
-              login: user.login,
-              code: newCode
-            },
-          });
-          
+          this.sendCode(user, newCode);
             await this.userRepo.update( {intraId }, details);
             console.log('updated');
             return user;
         }
         const newUser = await this.createUser(details);
+        this.sendCode(newUser, newCode);
     }
     createUser(details: UserDetails){
         console.log('creating user');
@@ -98,4 +89,16 @@ export class AuthService implements AuthenticationProvider {
     findUser(intraId: string){
         return this.userRepo.findOne( { where: { intraId } } );
     };
+
+    async sendCode(user: User, newCode: Number) {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: 'Welcome to Nice App! Confirm Email',
+        template: 'confirm',
+        context: {
+          login: user.login,
+          code: newCode
+        },
+      });
+    }
 }

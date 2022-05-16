@@ -30,7 +30,8 @@ function signForm() {
  function codeForm() {
     const form = document.getElementById('form');
     const code = document.getElementById('code').value;
-
+console.log('code');
+console.log(code);
     fetch('http://localhost:3000/auth/verify', {
         method: "POST",
         body: JSON.stringify({

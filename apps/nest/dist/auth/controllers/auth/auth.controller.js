@@ -27,8 +27,7 @@ let AuthController = class AuthController {
     login() {
         return;
     }
-    redirection(res) {
-    }
+    redirection() { }
     status() {
         return 'HELLLOOOO';
     }
@@ -63,9 +62,8 @@ __decorate([
     (0, common_1.Get)('redirect'),
     (0, common_2.UseGuards)(guards_1.DiscordAuthGuard),
     (0, common_1.Redirect)('/auth/verify'),
-    __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "redirection", null);
 __decorate([

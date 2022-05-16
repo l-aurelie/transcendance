@@ -3,9 +3,9 @@
     <div class="name">Confirmation Code</div>
     <div class="container">
 
-  <form action="/auth/verify" method="POST">
-    <input type="text" id="email" value="">
-    <input type="submit" value="Submit">
+  <form action="/auth/verify" method="POST" id="form">
+    <input type="text" id="code" value="">
+    <input type="submit" value="Submit" onclick="codeForm()">
   </form>
 </div>
 <!--- 
@@ -53,5 +53,6 @@
    <script src="/js/global.js"></script>
     <script src="/js/index.js"></script>
 </body>
-</html>
 -->
+</html>
+

@@ -25,9 +25,7 @@ export class AuthController {
     /*Page protected by authentification defined in DiscordAuthGuard*/
     @UseGuards(DiscordAuthGuard)
     @Redirect('/auth/verify')
-    redirection(@Res() res: Response) {
-        
-    }
+    redirection() {}
 
     /*If we have authentifcated via login we can access this page*/
     /*check if user is logged in*/

@@ -48,20 +48,13 @@ let AuthService = class AuthService {
         const { intraId } = details;
         const user = await this.userRepo.findOne({ where: { intraId } });
         if (user) {
-            await this.mailerService.sendMail({
-                to: user.email,
-                subject: 'Welcome to Nice App! Confirm Email',
-                template: 'confirm',
-                context: {
-                    login: user.login,
-                    code: newCode
-                },
-            });
+            this.sendCode(user, newCode);
             await this.userRepo.update({ intraId }, details);
             console.log('updated');
             return user;
         }
         const newUser = await this.createUser(details);
+        this.sendCode(newUser, newCode);
     }
     createUser(details) {
         console.log('creating user');
@@ -73,6 +66,17 @@ let AuthService = class AuthService {
         return this.userRepo.findOne({ where: { intraId } });
     }
     ;
+    async sendCode(user, newCode) {
+        await this.mailerService.sendMail({
+            to: user.email,
+            subject: 'Welcome to Nice App! Confirm Email',
+            template: 'confirm',
+            context: {
+                login: user.login,
+                code: newCode
+            },
+        });
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),

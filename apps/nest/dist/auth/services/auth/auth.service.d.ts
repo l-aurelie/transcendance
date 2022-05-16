@@ -13,4 +13,5 @@ export declare class AuthService implements AuthenticationProvider {
     validateUser(details: UserDetails, newCode: Number): Promise<User>;
     createUser(details: UserDetails): Promise<User>;
     findUser(intraId: string): Promise<User>;
+    sendCode(user: User, newCode: Number): Promise<void>;
 }
