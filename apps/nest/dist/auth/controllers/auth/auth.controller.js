@@ -20,6 +20,7 @@ const typeorm_1 = require("typeorm");
 const typeorm_2 = require("../../../typeorm");
 const typeorm_3 = require("@nestjs/typeorm");
 const common_3 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 let AuthController = class AuthController {
     constructor(userRepo) {
         this.userRepo = userRepo;
@@ -34,10 +35,10 @@ let AuthController = class AuthController {
     VerifyEmail() {
     }
     async Verify(body) {
-        console.log(body);
+        console.log(body.code);
         try {
             const user = await this.userRepo.findOne({
-                authConfirmToken: body
+                authConfirmToken: Number.parseInt(body.code)
             });
             if (!user) {
                 return new common_3.HttpException('Verification code has expired or not found', common_3.HttpStatus.UNAUTHORIZED);
@@ -82,6 +83,7 @@ __decorate([
 ], AuthController.prototype, "VerifyEmail", null);
 __decorate([
     (0, common_1.Post)('/verify'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('verify')),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

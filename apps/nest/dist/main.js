@@ -8,7 +8,9 @@ const session = require("express-session");
 const passport = require("passport");
 const path_1 = require("path");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, {
+        bodyParser: true
+    });
     const sessionRepo = (0, typeorm_1.getRepository)(Session_1.TypeORMSession);
     app.use(session({
         cookie: {
@@ -20,6 +22,7 @@ async function bootstrap() {
     }));
     app.use(passport.initialize());
     app.use(passport.session());
+    app.enableCors();
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
     app.setBaseViewsDir((0, path_1.join)(__dirname, '..', 'views'));
     app.setViewEngine('hbs');

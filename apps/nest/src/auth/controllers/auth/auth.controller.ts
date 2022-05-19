@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Redirect, Render, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {Multer} from 'multer';
+import {Express } from 'express';
 import { DiscordAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
 import { UseGuards } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -7,6 +8,8 @@ import { User } from '../../../typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AppService } from 'src/app.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 
 @Controller('auth')
 export class AuthController {
@@ -42,11 +45,17 @@ export class AuthController {
     }
 
     @Post('/verify')
-    async Verify(@Body() body) {
-        console.log(body);
+    @UseInterceptors(FileInterceptor('verify'))
+    async Verify(
+     //   @UploadedFile() file: Express.Multer.File,
+        @Body() body) {
+       // console.log('----he---');
+       // console.log(file);
+        console.log(body.code);
+       // console.log('---');
         try{
             const user = await this.userRepo.findOne({
-              authConfirmToken: body
+              authConfirmToken: Number.parseInt(body.code);
             });
             if (!user) {
               return new HttpException('Verification code has expired or not found', HttpStatus.UNAUTHORIZED)
