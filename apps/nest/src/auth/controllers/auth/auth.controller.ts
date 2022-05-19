@@ -20,15 +20,9 @@ export class AuthController {
     /*Page protected by authentification defined in DiscordAuthGuard*/
     @UseGuards(DiscordAuthGuard)
     login() {
+        //on retourne quoi ?
         return;
     }
-
-    /*Page we tell API to redirect to: localhost:3000/auth/redirect (although doesn't work with Intra)*/
-    @Get('redirect')
-    /*Page protected by authentification defined in DiscordAuthGuard*/
-    @UseGuards(DiscordAuthGuard)
-    @Redirect('/auth/verify')
-    redirection() {}
 
     /*If we have authentifcated via login we can access this page*/
     /*check if user is logged in*/
@@ -40,6 +34,7 @@ export class AuthController {
     }
 
     @Get('/verify')
+    @UseGuards(DiscordAuthGuard)
     @Render('verify')
     VerifyEmail() {
     }
@@ -55,7 +50,7 @@ export class AuthController {
        // console.log('---');
         try{
             const user = await this.userRepo.findOne({
-              authConfirmToken: Number.parseInt(body.code);
+              authConfirmToken: Number.parseInt(body.code),
             });
             if (!user) {
               return new HttpException('Verification code has expired or not found', HttpStatus.UNAUTHORIZED)
@@ -69,5 +64,5 @@ export class AuthController {
 
 
     @Get('logout')
-    logout() {}
+    logout(){}
 }

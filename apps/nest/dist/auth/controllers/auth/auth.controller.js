@@ -28,7 +28,6 @@ let AuthController = class AuthController {
     login() {
         return;
     }
-    redirection() { }
     status() {
         return 'HELLLOOOO';
     }
@@ -38,7 +37,7 @@ let AuthController = class AuthController {
         console.log(body.code);
         try {
             const user = await this.userRepo.findOne({
-                authConfirmToken: Number.parseInt(body.code)
+                authConfirmToken: Number.parseInt(body.code),
             });
             if (!user) {
                 return new common_3.HttpException('Verification code has expired or not found', common_3.HttpStatus.UNAUTHORIZED);
@@ -60,14 +59,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Get)('redirect'),
-    (0, common_2.UseGuards)(guards_1.DiscordAuthGuard),
-    (0, common_1.Redirect)('/auth/verify'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], AuthController.prototype, "redirection", null);
-__decorate([
     (0, common_2.UseGuards)(guards_1.AuthenticatedGuard),
     (0, common_1.Get)('status'),
     __metadata("design:type", Function),
@@ -76,6 +67,7 @@ __decorate([
 ], AuthController.prototype, "status", null);
 __decorate([
     (0, common_1.Get)('/verify'),
+    (0, common_2.UseGuards)(guards_1.DiscordAuthGuard),
     (0, common_1.Render)('verify'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

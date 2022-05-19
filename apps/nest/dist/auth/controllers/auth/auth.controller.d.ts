@@ -5,7 +5,6 @@ export declare class AuthController {
     private userRepo;
     constructor(userRepo: Repository<User>);
     login(): void;
-    redirection(): void;
     status(): string;
     VerifyEmail(): void;
     Verify(body: any): Promise<true | HttpException>;

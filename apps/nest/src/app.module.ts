@@ -32,7 +32,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       autoLoadEntities: true,
       synchronize:true //suppress for production
     }),
-    UsersModule,
+    /*UsersModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60s' },
@@ -56,7 +56,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           strict: true,
         },
       },
-    })
+    })*/
   ],
   controllers: [AppController],
   providers: [AppService],
