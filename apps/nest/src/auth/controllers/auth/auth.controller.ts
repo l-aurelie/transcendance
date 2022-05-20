@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
 import {Multer} from 'multer';
 import {Express } from 'express';
 import { DiscordAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
@@ -41,28 +41,38 @@ export class AuthController {
 
     @Post('/verify')
     @UseInterceptors(FileInterceptor('verify'))
-    async Verify(
-     //   @UploadedFile() file: Express.Multer.File,
-        @Body() body) {
-       // console.log('----he---');
-       // console.log(file);
-        console.log(body.code);
-       // console.log('---');
-        try{
-            const user = await this.userRepo.findOne({
-              authConfirmToken: Number.parseInt(body.code),
-            });
-            if (!user) {
-              return new HttpException('Verification code has expired or not found', HttpStatus.UNAUTHORIZED)
-            }
-            await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });
-            return true;
-         }catch(e){
-            return new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    async Verify(@Body() body, @Res() res) {
+      try{
+        const user = await this.userRepo.findOne({
+          authConfirmToken: Number.parseInt(body.code),
+        });
+        if (!user) {
+             res.redirect('/auth/verify');
+             return ;
+        }
+        await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });
+        const welc = '/home/' + user.login;
+       // res.sendStatus(200);
+        res.redirect(welc);
+      }catch(e){
+         console.log('error catched...');
+        return new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
          }
-         }
+}
 
 
-    @Get('logout')
-    logout(){}
+@Get('logout')
+logout(){}
+}
+
+@UseGuards(AuthenticatedGuard)
+@Controller('home')
+export class HomePage {
+constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+
+@UseGuards(AuthenticatedGuard)
+@Get('/:id')
+welcome(@Param('id') id: string) {
+    return (`Welcome ${id} !`);
+}
 }

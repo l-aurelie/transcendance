@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthController = void 0;
+exports.HomePage = exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const guards_1 = require("../../guards");
 const common_2 = require("@nestjs/common");
@@ -33,19 +33,21 @@ let AuthController = class AuthController {
     }
     VerifyEmail() {
     }
-    async Verify(body) {
-        console.log(body.code);
+    async Verify(body, res) {
         try {
             const user = await this.userRepo.findOne({
                 authConfirmToken: Number.parseInt(body.code),
             });
             if (!user) {
-                return new common_3.HttpException('Verification code has expired or not found', common_3.HttpStatus.UNAUTHORIZED);
+                res.redirect('/auth/verify');
+                return;
             }
             await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });
-            return true;
+            const welc = '/home/' + user.login;
+            res.redirect(welc);
         }
         catch (e) {
+            console.log('error catched...');
             return new common_3.HttpException(e, common_3.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -77,8 +79,9 @@ __decorate([
     (0, common_1.Post)('/verify'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('verify')),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "Verify", null);
 __decorate([
@@ -93,4 +96,27 @@ AuthController = __decorate([
     __metadata("design:paramtypes", [typeorm_1.Repository])
 ], AuthController);
 exports.AuthController = AuthController;
+let HomePage = class HomePage {
+    constructor(userRepo) {
+        this.userRepo = userRepo;
+    }
+    welcome(id) {
+        return (`Welcome ${id} !`);
+    }
+};
+__decorate([
+    (0, common_2.UseGuards)(guards_1.AuthenticatedGuard),
+    (0, common_1.Get)('/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], HomePage.prototype, "welcome", null);
+HomePage = __decorate([
+    (0, common_2.UseGuards)(guards_1.AuthenticatedGuard),
+    (0, common_1.Controller)('home'),
+    __param(0, (0, typeorm_3.InjectRepository)(typeorm_2.User)),
+    __metadata("design:paramtypes", [typeorm_1.Repository])
+], HomePage);
+exports.HomePage = HomePage;
 //# sourceMappingURL=auth.controller.js.map

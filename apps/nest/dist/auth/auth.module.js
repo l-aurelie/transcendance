@@ -24,7 +24,7 @@ let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
-        controllers: [auth_controller_1.AuthController],
+        controllers: [auth_controller_1.AuthController, auth_controller_1.HomePage],
         providers: [strategies_1.IntraStrategy,
             Serializer_1.SessionSerializer, auth_service_1.AuthService,
             {

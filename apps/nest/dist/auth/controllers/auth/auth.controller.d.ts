@@ -7,6 +7,11 @@ export declare class AuthController {
     login(): void;
     status(): string;
     VerifyEmail(): void;
-    Verify(body: any): Promise<true | HttpException>;
+    Verify(body: any, res: any): Promise<HttpException>;
     logout(): void;
+}
+export declare class HomePage {
+    private userRepo;
+    constructor(userRepo: Repository<User>);
+    welcome(id: string): string;
 }

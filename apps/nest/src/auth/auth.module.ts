@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './controllers/auth/auth.controller';
+import { AuthController, HomePage } from './controllers/auth/auth.controller';
 import { AuthService } from './services/auth/auth.service';
 import { IntraStrategy } from './strategies';
 import { UsersModule } from '../users/users.module';
@@ -15,7 +15,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 
 
 @Module({
-  controllers: [AuthController],
+  controllers: [AuthController, HomePage],
   providers: [IntraStrategy, /*we give our module access to our strategy*/
   SessionSerializer, AuthService,
   {
