@@ -1,4 +1,13 @@
-import { Module } from '@nestjs/common';
+/* aurel */
+import { Module } from "@nestjs/common";
+import { UsersController } from "./users.controller";
 
-@Module({})
-export class UsersModule {}
+@Module({
+    imports: [],
+    exports: [],
+    controllers: [UsersController],
+    providers: [],
+})
+export class UsersModule{
+
+}
