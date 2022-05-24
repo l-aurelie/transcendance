@@ -13,7 +13,7 @@ services:
     # Reflect File changes from host to container
     volumes:
       - ./nest:/src/app
-      - /mnt/nfs/homes/mlecuyer/Documents/transcendance.v2.1/apps/nest/node_modules/
+      - /home/manon/Documents/42/publicTranscendance/apps/nest/node_modules/
     
     # RUN in debug mode: npm start:debug --> Also start your vscode debugger
     # RUN in dev mode: npm run start:dev
@@ -38,7 +38,7 @@ services:
     command: npm start
     volumes:
      - ./react:/react/src/app
-     - /mnt/nfs/homes/mlecuyer/Documents/transcendance.v2.1/apps/react/node_modules
+     - /home/manon/Documents/42/publicTranscendance/apps/react/node_modules
     ports:
       - 4200:4200
     links: 

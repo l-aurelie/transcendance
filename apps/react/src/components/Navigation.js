@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-// import About from '../pages/About';
 
 const Navigation = () => {
     return (
@@ -15,9 +14,9 @@ const Navigation = () => {
                 <NavLink to="About" className={(nav) => (nav.isActive ? "nav-active" : "")}>
                     <li>A propos</li>                    
                 </NavLink>
-                <NavLink to="*" className={(nav) => (nav.isActive ? "nav-active" : "")}>
+                {/* <NavLink to="*" className={(nav) => (nav.isActive ? "nav-active" : "")}>
                     <li>Error</li>
-                </NavLink>
+                </NavLink> */}
             </ul>
         </div>
     );

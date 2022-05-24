@@ -1,11 +1,11 @@
 import React from 'react';
-import Logo from '../components/Logo';
+// import Logo from '../components/Logo';
 import Navigation from '../components/Navigation';
 
 const About = () => {
     return (
         <div>
-            <Logo></Logo>
+            {/* <Logo></Logo> */}
             <Navigation></Navigation>
             <h1>A propos</h1>
             <br />
