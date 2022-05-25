@@ -7,13 +7,14 @@ services:
       context: ./nest
       # Ony build development stage from dockerfile
       target: development
-
+    env_file:
+      - .env
     # Mount our host dir to the docker container
     # Mount nest dir to (./nest) to (:) docker container (/src/app) 
     # Reflect File changes from host to container
     volumes:
       - ./nest:/src/app
-      - /home/manon/Documents/42/publicTranscendance/apps/nest/node_modules/
+      - ${NEST_PATH}
     
     # RUN in debug mode: npm start:debug --> Also start your vscode debugger
     # RUN in dev mode: npm run start:dev
@@ -36,9 +37,11 @@ services:
       context: ./react
       target: development
     command: npm start
+    env_file:
+      - .env
     volumes:
      - ./react:/react/src/app
-     - /home/manon/Documents/42/publicTranscendance/apps/react/node_modules
+     - ${REACT_PATH}
     ports:
       - 4200:4200
     links: 
