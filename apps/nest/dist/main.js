@@ -6,7 +6,6 @@ const app_module_1 = require("./app.module");
 const Session_1 = require("./typeorm/entities/Session");
 const session = require("express-session");
 const passport = require("passport");
-
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         bodyParser: true
