@@ -16,6 +16,7 @@ const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const typeorm_2 = require("./typeorm");
 const passport_1 = require("@nestjs/passport");
+const users_controller_1 = require("./users/users.controller");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -36,7 +37,7 @@ AppModule = __decorate([
                 synchronize: true
             }),
         ],
-        controllers: [app_controller_1.AppController],
+        controllers: [app_controller_1.AppController, users_controller_1.UsersController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

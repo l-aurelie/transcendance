@@ -14,7 +14,8 @@ const App = () => {
 	  <Routes>
 			<Route path="/" element={<Home></Home>} />
 			{/* path="*" fonctionne si l'url ne correpond a rien declare au dessus*/}
-			<Route path="*" element={<Error404></Error404>} />		
+			<Route path="*" element={<Error404></Error404>} />
+			<Route path="Verify" element={<Verify></Verify>}/>	
 	  </Routes>
 	  </BrowserRouter>
   )

@@ -35,9 +35,9 @@ async function bootstrap() {
  // app.use(bodyParser.urlencoded({extended:true}))
  // app.use(bodyParser.text({type: 'text/html'}))
  // app.use(bodyParser.json());
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
+ // app.useStaticAssets(join(__dirname, '..', 'public'));
+ // app.setBaseViewsDir(join(__dirname, '..', 'views'));
+//  app.setViewEngine('hbs');
   await app.listen(3000);
 }
 bootstrap();

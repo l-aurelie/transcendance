@@ -7,7 +7,7 @@ export declare class AuthController {
     login(): void;
     status(): string;
     VerifyEmail(): void;
-    Verify(body: any, res: any): Promise<HttpException>;
+    Verify(body: any, res: any): Promise<boolean | HttpException>;
     logout(): void;
 }
 export declare class HomePage {

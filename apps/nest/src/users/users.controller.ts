@@ -1,7 +1,7 @@
-import { Controller, Delete, Get, Post } from "@nestjs/common";
+import { Controller, Get, Post, Delete } from '@nestjs/common';
 
-@Controller('user')
-export class UsersController{
+@Controller('users')
+export class UsersController {
     @Get()
     getUser() {
        console.log('log : user successfully get');

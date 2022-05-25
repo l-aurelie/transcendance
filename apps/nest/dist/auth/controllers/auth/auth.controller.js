@@ -20,7 +20,6 @@ const typeorm_1 = require("typeorm");
 const typeorm_2 = require("../../../typeorm");
 const typeorm_3 = require("@nestjs/typeorm");
 const common_3 = require("@nestjs/common");
-const platform_express_1 = require("@nestjs/platform-express");
 let AuthController = class AuthController {
     constructor(userRepo) {
         this.userRepo = userRepo;
@@ -36,15 +35,13 @@ let AuthController = class AuthController {
     async Verify(body, res) {
         try {
             const user = await this.userRepo.findOne({
-                authConfirmToken: Number.parseInt(body.code),
+                authConfirmToken: Number.parseInt(body.value),
             });
             if (!user) {
-                res.redirect('/auth/verify');
-                return;
+                return false;
             }
             await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });
-            const welc = '/home/' + user.login;
-            res.redirect(welc);
+            return true;
         }
         catch (e) {
             console.log('error catched...');
@@ -70,14 +67,13 @@ __decorate([
 __decorate([
     (0, common_1.Get)('/verify'),
     (0, common_2.UseGuards)(guards_1.DiscordAuthGuard),
-    (0, common_1.Render)('verify'),
+    (0, common_1.Redirect)('http://localhost:4200/Verify'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "VerifyEmail", null);
 __decorate([
     (0, common_1.Post)('/verify'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('verify')),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),

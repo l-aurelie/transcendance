@@ -35,25 +35,27 @@ export class AuthController {
 
     @Get('/verify')
     @UseGuards(DiscordAuthGuard)
-    @Render('verify')
+   // @Render('verify')
+   @Redirect('http://localhost:4200/Verify')
     VerifyEmail() {
     }
 
     @Post('/verify')
-    @UseInterceptors(FileInterceptor('verify'))
+    //@UseInterceptors(FileInterceptor('verify'))
     async Verify(@Body() body, @Res() res) {
       try{
         const user = await this.userRepo.findOne({
-          authConfirmToken: Number.parseInt(body.code),
+          authConfirmToken: Number.parseInt(body.value),
         });
         if (!user) {
-             res.redirect('/auth/verify');
-             return ;
+           //  res.redirect('/auth/verify');
+             return false;
         }
         await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });
-        const welc = '/home/' + user.login;
+       // const welc = '/home/' + user.login;
        // res.sendStatus(200);
-        res.redirect(welc);
+       // res.redirect(welc);
+       return true;
       }catch(e){
          console.log('error catched...');
         return new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
