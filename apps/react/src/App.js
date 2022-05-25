@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Error404 from "./pages/Error404";
 import Home from "./pages/Home";
+import Verify from "./pages/Verify";
 
 /*	BrowserRouter englobe toute l'app
  	Routes englobe les != routes

@@ -1,3 +1,4 @@
+/*laura samantha*/
 import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
 import {Multer} from 'multer';
 import {Express } from 'express';
@@ -49,13 +50,15 @@ export class AuthController {
         });
         if (!user) {
            //  res.redirect('/auth/verify');
-             return false;
+           console.log("falseeeee");
+             return "false";
         }
         await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });
        // const welc = '/home/' + user.login;
        // res.sendStatus(200);
        // res.redirect(welc);
-       return true;
+       console.log("trueeeee");
+       return "true";
       }catch(e){
          console.log('error catched...');
         return new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);

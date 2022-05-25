@@ -7,7 +7,7 @@ cd ./nest
 [ ! -d "./node_modules/" ] && echo -e "\e[1;32m downloading nest dependencies \e[0m" && npm install
 cd ..
 cd ./react
-[ ! -d "./node_modules/" ] && -e "\e[1;32m downloading react dependencies \e[0m" && npm install
+[ ! -d "./node_modules/" ] && echo -e "\e[1;32m downloading react dependencies \e[0m" && npm install
 cd ..
 
 

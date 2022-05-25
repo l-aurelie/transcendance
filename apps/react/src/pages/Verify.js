@@ -1,5 +1,6 @@
 /*samantha*/
-
+import axios from 'axios';
+import React from 'react';
 class Verify extends React.Component {
     constructor(props) {
       super(props);
@@ -12,9 +13,8 @@ class Verify extends React.Component {
     handleSubmit(event) {
     //    const axios = require('axios');
         axios.post("http://localhost:3000/auth/verify", this.state).then((res) =>{
-            setProfil(res.data);
+            console.log(res.data);
           })
-      alert('Le nom a été soumis : ' + this.state.value);
       event.preventDefault();
     }
   
