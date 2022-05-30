@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthController, HomePage } from './controllers/auth/auth.controller';
+import { AuthController } from './controllers/auth/auth.controller';
 import { AuthService } from './services/auth/auth.service';
 import { IntraStrategy } from './strategies';
 import { UsersModule } from '../users/users.module';
@@ -12,12 +12,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { UsersService } from 'src/users/users.service';
 
 
 @Module({
-  controllers: [AuthController, HomePage],
+  controllers: [AuthController],
   providers: [IntraStrategy, /*we give our module access to our strategy*/
-  SessionSerializer, AuthService,
+  SessionSerializer, AuthService, UsersService,
   {
     /*we can now use authservice functions from auth.service.ts in our files by injecting AUTH_SERVICE*/
     provide: 'AUTH_SERVICE',
@@ -25,13 +26,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
   },
   
 ],
-imports: [HttpModule, TypeOrmModule.forFeature([User]),
-UsersModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
-    }),
-    MailerModule.forRoot({
+imports: [HttpModule, TypeOrmModule.forFeature([User]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+    MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {
         service: "gmail",
         secure: false,
@@ -44,7 +40,7 @@ UsersModule,
         from: '"No Reply" transcendance42@gmail.com',
       },
       template: {
-        dir: join(__dirname, "../../views/email-templates"),
+        dir: join(__dirname, "../../views"),
         adapter: new HandlebarsAdapter(), 
         options: {
           strict: true,

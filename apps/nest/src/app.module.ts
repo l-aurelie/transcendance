@@ -59,7 +59,7 @@ import { UsersController } from './users/users.controller';
       },
     })*/
   ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

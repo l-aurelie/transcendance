@@ -1,7 +1,9 @@
+/*samantha laura*/
+
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
-export class User implements IUser {
+export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
     @PrimaryGeneratedColumn({ name: 'user_no'})
     id: number;
 
@@ -20,11 +22,14 @@ export class User implements IUser {
   //  @Column()
   //  password:string;
 
-    @Column({nullable: true})
+    @Column({default: undefined, nullable: true})
     authConfirmToken: Number;
 
-    @Column({default: false, nullable: true})
+    @Column({default: true, nullable: true})
     isVerified: boolean;
+
+    @Column({nullable: true})
+    jwt: string;
 
     @CreateDateColumn()
     createAt: Date;
