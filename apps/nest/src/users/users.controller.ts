@@ -7,22 +7,22 @@ import { UsersService } from './users.service';
 export class UsersController { //controller pour localhist:3000/users
    constructor(private userServ : UsersService) {}
     @Get()
-    getUser(@Headers() header) { //fonction test
+    getUser(@Headers() header) { //fonction test TODO: pk header?
       // console.log(header);
-      const user = this.userServ.findUserById(1); // trouve dans la db l'utilisateur ayant pour identifiant '1'
-      const log = user.then(function(result){ //fonction qui permet de parser le resultat et de le lire
-       //  console.log(result);
-         return result.login; // retourne le login de l'utilisateur avec id '1'
+      const user = this.userServ.findUserById(1).then((result) => { // trouve dans la db l'utilisateur ayant pour identifiant '1'
+         return result; // retourne le login de l'utilisateur avec id '1'
       })
-    return log; //return login de l'utilisateur ayant l' id '1'
+    return user; //return login de l'utilisateur ayant l' id '1'
     }
 
+    /* constroller pour post sur path user */
     @Post()
     addUser() {
        console.log('log : user successfully add');
        return 'user successfully add';
     }
 
+    /* constroller pour delete sur path user */
     @Delete()
     deleteUser() {
        console.log('log : user successfully delete');
