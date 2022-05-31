@@ -1,9 +1,9 @@
-// import Countries from '../components/Countries';
+/* Manon */
+
 import Logo from '../components/Logo';
 // import Navigation from '../components/Navigation';
 import Game from '../components/Game';
 import UserProfil from '../components/UserProfil';
-
 
 
 const Home = () => {

@@ -1,3 +1,4 @@
+/* Manon */
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Error404 from "./pages/Error404";
@@ -13,6 +14,7 @@ const App = () => {
   return (
 	  <BrowserRouter>
 	  <Routes>
+		 
 			<Route path="/" element={<Home></Home>} />
 			{/* path="*" fonctionne si l'url ne correpond a rien declare au dessus*/}
 			<Route path="*" element={<Error404></Error404>} />
