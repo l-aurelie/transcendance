@@ -7,6 +7,7 @@ export type UserDetails = {
     email: any;
     authConfirmToken: number;
     jwt: string;
+    isConnected: boolean;
 }
 
 export type Done = (err: Error, user: User) => void;

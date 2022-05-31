@@ -3,7 +3,7 @@ IMAGES=${shell docker images -q}
 CONTAINERS=${shell docker ps -aq}
 NETWORKS=${shell docker network ls -q}
 all:
-	docker-compose -f apps/docker-compose.yml up --build
+	cd apps && ./helper.sh && docker-compose up --build
 clean:
 	docker-compose -f apps/docker-compose.yml down
 fclean:

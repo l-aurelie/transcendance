@@ -28,6 +28,9 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({default: true, nullable: true})
     isVerified: boolean;
 
+    @Column({default: false, nullable: true})
+    idConnected: boolean;
+
     @Column({nullable: true})
     jwt: string;
 
