@@ -21,7 +21,16 @@ export class createRandomUser {
     createRandomNew() { // fonction qui sera supprime par la suite, elle permet pour l' instant de creer des utilisateur random en tapant localhost:3000/create dans la bar url
       const num = Math.floor(10000 + Math.random() * 90000);
       const str = 'randomUser_' + num.toString();
-      const details = { login: str, intraId: num.toString(), avatar: 'https://cdn.intra.42.fr/users/ssar.jpg', email: str + '@student.42.fr', authConfirmToken: undefined, isVerified:true, jwt: "falseJwtToken" + str };
+      const details = {
+        login: str,
+        intraId: num.toString(),
+        avatar: 'https://cdn.intra.42.fr/users/ssar.jpg',
+        email: str + '@student.42.fr',
+        authConfirmToken: undefined,
+        isVerified:true,
+        jwt: "falseJwtToken" + str,
+        isConnected: false
+       };
       this.authService.createUser(details);
     }
 }
