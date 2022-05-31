@@ -14,7 +14,7 @@ services:
     # Reflect File changes from host to container
     volumes:
       - ./nest:/src/app
-      - /home/user42/ecole42/MY_PROJECTS/cercle6/new/apps/nest/node_modules
+      - ${NEST_PATH}
     
     # RUN in debug mode: npm start:debug --> Also start your vscode debugger
     # RUN in dev mode: npm run start:dev
@@ -41,7 +41,7 @@ services:
       - .env
     volumes:
      - ./react:/react/src/app
-     - /home/user42/ecole42/MY_PROJECTS/cercle6/new/apps/react/node_modules
+     - ${REACT_PATH}
     ports:
       - 4200:4200
     links: 
