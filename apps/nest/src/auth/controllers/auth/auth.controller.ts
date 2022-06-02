@@ -1,7 +1,7 @@
 /*laura samantha*/
 import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param, Req } from '@nestjs/common';
 import {Multer} from 'multer';
-import {Express } from 'express';
+import { Request } from 'express';
 import { DiscordAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
 import { UseGuards } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -45,7 +45,7 @@ export class AuthController {
     @Get('login') /*takes us to Intra login*/
     /*Page protected by authentification defined in DiscordAuthGuard -> redirect vers localhost:3000/verify*/ 
     @UseGuards(DiscordAuthGuard)
-    @Redirect('http://localhost:4200')
+    //@Redirect('http://localhost:4200')
     async login(@Req() request: RequestWithUser) {
      console.log(request.user);
         //on retourne quoi ?
@@ -94,7 +94,12 @@ export class AuthController {
          }
 }
 
-
+//@Post('logout') CHANGE TO POST FOR FRONT END USE LATER ON
+@UseGuards(AuthenticatedGuard)
 @Get('logout')
-logout(){}
+async logOut(@Req() request) {
+request.logOut();
+request.session.cookie.maxAge = 0;
+return("Nice one. You logged out!")
+}
 }
