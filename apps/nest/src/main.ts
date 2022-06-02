@@ -9,12 +9,14 @@ import * as express from "express";
 import { join } from 'path';
 import * as multer from 'multer';
 import * as bodyParser from 'body-parser';
+import { ConfigService } from '@nestjs/config';
 
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
      bodyParser: true});
   const sessionRepo = getRepository(TypeORMSession);
+  const configService = app.get(ConfigService);
   /*set up cookies so we remember users are logged in*/
   app.use(
     session({
@@ -22,7 +24,7 @@ async function bootstrap() {
         maxAge: 86400000,
       },
       //used to encrypt cookie, can be anything but keep secret
-      secret: 'askjhdkajshdkashd',
+      secret: configService.get('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
     }),

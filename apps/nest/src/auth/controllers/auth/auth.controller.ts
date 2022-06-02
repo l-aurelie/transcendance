@@ -1,5 +1,5 @@
 /*laura samantha*/
-import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param, Req } from '@nestjs/common';
 import {Multer} from 'multer';
 import {Express } from 'express';
 import { DiscordAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
@@ -12,6 +12,7 @@ import { AppService } from 'src/app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from 'src/auth/services/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
+import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 
 @Controller('create')
 export class createRandomUser {
@@ -44,10 +45,10 @@ export class AuthController {
     @Get('login') /*takes us to Intra login*/
     /*Page protected by authentification defined in DiscordAuthGuard -> redirect vers localhost:3000/verify*/ 
     @UseGuards(DiscordAuthGuard)
-    login() {
-     
+    async login(@Req() request: RequestWithUser) {
+     console.log(request.user);
         //on retourne quoi ?
-        return;
+        return {login:"yoooooooo"};
     }
 
     /*If we have authentifcated via login we can access this page*/
@@ -62,7 +63,7 @@ export class AuthController {
     @Get('/verify')
     @UseGuards(DiscordAuthGuard)
    // @Render('verify')
-   @Redirect('http://localhost:4200/') //apres avoir fait localhost:3000/auth/login la class DiscordAuthGard appele dans le decorateur nous amene ici, pour l' instant il redirige simplement vers la page home de react situe a localhost:4200, le but plus tard est de renvoyer l'accessToken a react ?
+   //@Redirect('http://localhost:4200/') //apres avoir fait localhost:3000/auth/login la class DiscordAuthGard appele dans le decorateur nous amene ici, pour l' instant il redirige simplement vers la page home de react situe a localhost:4200, le but plus tard est de renvoyer l'accessToken a react ?
     VerifyEmail() {
       /*  const user = this.userServ.findUserByJwt();
         const log = user.then(function(result){
@@ -71,6 +72,7 @@ export class AuthController {
         })
       return log;
       */
+     console.log ('coucou');
      }
     
 

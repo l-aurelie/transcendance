@@ -29,7 +29,7 @@ export class User implements IUser { // donne la composition de User, permet de 
     isVerified: boolean;
 
     @Column({default: false, nullable: true})
-    idConnected: boolean;
+    isConnected: boolean;
 
     @Column({nullable: true})
     jwt: string;
@@ -40,7 +40,7 @@ export class User implements IUser { // donne la composition de User, permet de 
     
 }
 
-export interface IUser {
+interface IUser {
         login: string;
         intraId: string;
         avatar: string;
@@ -49,3 +49,4 @@ export interface IUser {
         isVerified: boolean;
         createAt: Date;
     }
+    export default IUser;
