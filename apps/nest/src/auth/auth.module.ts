@@ -13,6 +13,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UsersService } from 'src/users/users.service';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
@@ -26,14 +27,16 @@ import { UsersService } from 'src/users/users.service';
   },
   
 ],
-imports: [HttpModule, TypeOrmModule.forFeature([User]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+imports: [
+  ConfigModule.forRoot({envFilePath: '.env'}),
+  HttpModule, TypeOrmModule.forFeature([User]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {
         service: "gmail",
         secure: false,
         auth: {
           user: 'transcendance42@gmail.com',
-          pass: '42transcendance!',
+          pass: process.env.GGL_SECRET,
         },
       },
       defaults: {
