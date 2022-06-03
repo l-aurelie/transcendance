@@ -8,10 +8,12 @@ import { UserDetails } from '../../utils/types';
 import { AuthenticationProvider } from './auth';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ChatGateway } from 'src/chat/chat.gateway';
+
 
 @Injectable()
 export class AuthService implements AuthenticationProvider {
-    constructor(@InjectRepository(User) private userRepo: Repository<User>, private mailerService: MailerService) { }
+    constructor(@InjectRepository(User) private userRepo: Repository<User>, private mailerService: MailerService, private ChatGateway: ChatGateway ) { }
 
     async validateUser(details: UserDetails) { //en parametre se trouve les information de l' utilisateur donnees par IntraAtrategy
         const { intraId } = details;
@@ -19,6 +21,7 @@ export class AuthService implements AuthenticationProvider {
         console.log('validate user');
         if (user)
         {
+          this.ChatGateway.handleConnection()
           console.log('yes there is a user');
           if (user.isVerified === false && user.isConnected === false) //s' il y en a un et que son statut n' est pas verifier, on envoie le code par mail pour verification et on update le code dans la db aussi
           {

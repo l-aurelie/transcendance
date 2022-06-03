@@ -14,11 +14,12 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UsersService } from 'src/users/users.service';
 import { ConfigModule } from '@nestjs/config';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 
 @Module({
   controllers: [AuthController],
-  providers: [IntraStrategy, /*we give our module access to our strategy*/
+  providers: [IntraStrategy, ChatGateway, /*we give our module access to our strategy*/
   SessionSerializer, AuthService, UsersService,
   {
     /*we can now use authservice functions from auth.service.ts in our files by injecting AUTH_SERVICE*/

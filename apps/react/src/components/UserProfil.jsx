@@ -9,11 +9,11 @@ const UserProfil = () => {
     const [profil, setProfil] = useState([]);
     
     useEffect(() => {
-      axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-     console.log(res.data);
-      setProfil(res.data);
+     axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
+    console.log(res.data);
+     setProfil(res.data);
     //  setLoading(false)
-    })
+   })
   }, [])
   
   //if(isLoading) {
