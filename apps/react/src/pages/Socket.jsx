@@ -1,18 +1,17 @@
-import React from "react";
-import { Component } from "react";
-import UserProfil from "../components/UserProfil";
+import React, { useEffect } from "react";
 
-class Socket extends Component {
+const Socket= () => {
 
 
     // instance of websocket connection as a class property
-    ws = new WebSocket('ws://localhost:3000/ws')
+    const ws = new WebSocket('ws://localhost:3000/ws')
 
-    componentDidMount() {
+   useEffect(() => {
         this.ws.onopen = () => {
         // on connecting, do nothing but log it to the console
         console.log('connected')
         }
+        
 
         this.ws.onmessage = evt => {
         // listen to data sent from the websocket server
@@ -25,15 +24,13 @@ class Socket extends Component {
         console.log('disconnected')
         // automatically try to reconnect on connection loss
 
-        }
+        }}, []);
+    
+
+  
+    return <p>{ws}</p>
 
     }
-
-   render(){
-        return <div>{UserProfil}</div>
-    }
-}
-
 
 
 
