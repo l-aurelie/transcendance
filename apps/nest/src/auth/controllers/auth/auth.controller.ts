@@ -45,7 +45,7 @@ export class AuthController {
     @Get('login') /*takes us to Intra login*/
     /*Page protected by authentification defined in DiscordAuthGuard -> redirect vers localhost:3000/verify*/ 
     @UseGuards(DiscordAuthGuard)
-    //@Redirect('http://localhost:4200')
+    @Redirect('http://localhost:4200/Home')
     async login(@Req() request: RequestWithUser) {
      console.log(request.user);
         //on retourne quoi ?

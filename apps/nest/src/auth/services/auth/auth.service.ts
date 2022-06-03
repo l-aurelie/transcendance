@@ -20,7 +20,7 @@ export class AuthService implements AuthenticationProvider {
         if (user)
         {
           console.log('yes there is a user');
-          if (user.isVerified === false) //s' il y en a un et que son statut n' est pas verifier, on envoie le code par mail pour verification et on update le code dans la db aussi
+          if (user.isVerified === false && user.isConnected === false) //s' il y en a un et que son statut n' est pas verifier, on envoie le code par mail pour verification et on update le code dans la db aussi
           {
             const myNewCode = Math.floor(10000 + Math.random() * 90000);
             this.sendCode(user, myNewCode);

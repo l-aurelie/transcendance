@@ -1,11 +1,21 @@
 /*aurelie, samantha*/
 
-import { Controller, Get, Post, Delete, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Headers, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { AuthenticatedGuard } from 'src/auth/guards';
+import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 
 @Controller('users')
 export class UsersController { //controller pour localhist:3000/users
    constructor(private userServ : UsersService) {}
+   @UseGuards(AuthenticatedGuard)
+   @Get()
+   getUser(@Headers() header, @Req() request: RequestWithUser) {
+     const user = request.user;
+     console.log(user);
+     return (user);
+     }
+/*
     @Get()
     getUser(@Headers() header) { //fonction test TODO: pk header?
       // console.log(header);
@@ -14,7 +24,7 @@ export class UsersController { //controller pour localhist:3000/users
       })
     return user; //return login de l'utilisateur ayant l' id '1'
     }
-
+*/
     /* constroller pour post sur path user */
     @Post()
     addUser() {

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Error404 from "./pages/Error404";
 import Home from "./pages/Home";
 import Verify from "./pages/Verify";
+import Login from "./pages/Login";
 
 /*	BrowserRouter englobe toute l'app
  	Routes englobe les != routes
@@ -15,7 +16,8 @@ const App = () => {
 	  <BrowserRouter>
 	  <Routes>
 		 
-			<Route path="/" element={<Home></Home>} />
+			<Route path="/" element={<Login></Login>} />
+			<Route path="Home" element={<Home></Home>} />
 			{/* path="*" fonctionne si l'url ne correpond a rien declare au dessus*/}
 			<Route path="*" element={<Error404></Error404>} />
 			<Route path="Verify" element={<Verify></Verify>}/>	
