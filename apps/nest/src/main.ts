@@ -31,7 +31,11 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   //app.use('/mnt/nfs/homes/ssar/PROJECT/my_transcendance/apps/nest/src/views', express.static('/mnt/nfs/homes/ssar/PROJECT/my_transcendance/apps/nest/src/views/verify.hbs'));
   //app.use(multer);
  // app.use(bodyParser.urlencoded({extended:true}))
