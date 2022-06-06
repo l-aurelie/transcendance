@@ -12,7 +12,6 @@ const UserProfil = () => {
 
     useEffect(() => {
       axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-     console.log('wtch');
      console.log(res.data);
       setProfil(res.data);
       setConnected(true);
@@ -36,7 +35,6 @@ const UserProfil = () => {
   //  return <div>wait for charging...</div>;
   // }
   if (connected) {
-    console.log('cmt');
     return(
       <div>
         <h1>Profile Page</h1>
