@@ -2,7 +2,6 @@
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import Login from "../pages/Login";
 
 const UserProfil = () => {
 
@@ -19,6 +18,7 @@ const UserProfil = () => {
     })
   }, [])
   
+  // fonction trigger lorsque l'on clique sur le bouton, qui va lgout l'utilisateur s'il est connecte ou le login s'il ne l'est pas
   const handleClick = event => {
     if (connected) {
       axios.get("http://localhost:3000/auth/logout", { withCredentials:true })
@@ -34,6 +34,8 @@ const UserProfil = () => {
   //if(isLoading) {
   //  return <div>wait for charging...</div>;
   // }
+
+  // return conditionnel selon l'etat de connection de l'utilisateur
   if (connected) {
     return(
       <div>
