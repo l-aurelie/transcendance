@@ -44,7 +44,8 @@ const outer = {
 	flexDirection: "column",
 	justifyContent: "justify",
 	marginTop: "9em",
-	marginLeft: "25em",
+	marginRight: "25em",//Add par aurel
+	//marginLeft: "25em", //Del par aurel
 	Text:"100px",
 	padding:"10px"
 }

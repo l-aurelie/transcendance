@@ -9,7 +9,7 @@ const UserProfil = () => {
     const [profil, setProfil] = useState([]);
     
     useEffect(() => {
-     axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
+     axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{//TODO: withCredential veut dire quoi ?
     console.log(res.data);
      setProfil(res.data);
     //  setLoading(false)
@@ -21,10 +21,8 @@ const UserProfil = () => {
   // }
   return(
     <div>
-      <h1>Profile Page</h1>
-      
-  <div>{profil.login}</div>
-    
+      <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} />
+      <div>{profil.login}</div>
     </div>
   );
   }

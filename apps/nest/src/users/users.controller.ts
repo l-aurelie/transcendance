@@ -8,7 +8,7 @@ import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 @Controller('users')
 export class UsersController { //controller pour localhist:3000/users
    constructor(private userServ : UsersService) {}
-   @UseGuards(AuthenticatedGuard)
+  // @UseGuards(AuthenticatedGuard)
    @Get()
    getUser(@Headers() header, @Req() request: RequestWithUser) {
      const user = request.user;

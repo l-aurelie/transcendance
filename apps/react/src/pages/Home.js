@@ -4,17 +4,38 @@ import Logo from '../components/Logo';
 // import Navigation from '../components/Navigation';
 import Game from '../components/Game';
 import UserProfil from '../components/UserProfil';
+import Chat from '../components/Chat';
 // import Socket from './Socket';
 
+const headStyle = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: 'dark',
+}
+
+const bodyStyle = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: 'dark',
+}
 
 const Home = () => {
   
     return (
         <div>
-            <Logo></Logo>
+            <div style={headStyle}>
+                <Logo></Logo>
+                <UserProfil></UserProfil>
+            </div>
             {/* <Socket></Socket> */}
-            <UserProfil></UserProfil>
-            <Game></Game>
+            <div style={bodyStyle}>
+                <Game></Game>
+                <Chat></Chat>
+            </div>
         </div>
        
             // {/* <Navigation></Navigation> */}
