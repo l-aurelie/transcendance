@@ -34,6 +34,21 @@ export class createRandomUser {
        };
       this.authService.createUser(details);
     }
+    /* localhost:3000/create/<nomSouhaite>, ajoute a la table un user appele <nomSouhaite> */
+    @Get(':login')
+    createNe(@Param() params) {
+      const details = {
+        login: params.login,
+        intraId: params.login,
+        avatar: 'https://cdn.intra.42.fr/users/ssar.jpg',
+        email: params.login + '@student.42.fr',
+        authConfirmToken: undefined,
+        isVerified:true,
+        jwt: "falseJwtToken" + params.login,
+        isConnected: false
+       };
+      this.authService.createUser(details);
+    }
 }
 
 //ici sont place tout les controller lie a l'authentification

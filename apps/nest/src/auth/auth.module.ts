@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './controllers/auth/auth.controller';
+import { AuthController, createRandomUser} from './controllers/auth/auth.controller';
 import { AuthService } from './services/auth/auth.service';
 import { IntraStrategy } from './strategies';
 import { UsersModule } from '../users/users.module';
@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm';
 import { SessionSerializer } from './utils/Serializer';
 import { HttpModule } from '@nestjs/axios';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';//TODO: a supp ? 
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -18,7 +18,7 @@ import { ChatGateway } from 'src/chat/chat.gateway';
 
 
 @Module({
-  controllers: [AuthController],
+  controllers: [AuthController, createRandomUser ],
   providers: [IntraStrategy, ChatGateway, /*we give our module access to our strategy*/
   SessionSerializer, AuthService, UsersService,
   {

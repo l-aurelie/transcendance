@@ -7,6 +7,7 @@ import UserProfil from '../components/UserProfil';
 import Chat from '../components/Chat';
 // import Socket from './Socket';
 
+/* Style (insere dans la div jsx) */
 const headStyle = {
     display: 'flex',
     justifyContent: 'flex-end',

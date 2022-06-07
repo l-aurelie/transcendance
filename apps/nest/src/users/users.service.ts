@@ -1,4 +1,4 @@
-/*samanth*/
+/*samanth aurelie*/
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -14,5 +14,10 @@ export class UsersService {
 
     findUserByJwt(myjwt: string){ //getter pour trouver user par access_token(jwt)
         return this.userRepo.findOne( { jwt:  myjwt  } );
+    };
+        
+    /* Retourne tous les utilisateurs present dans la table users */
+    findAll(){
+        return this.userRepo.find( { } );
     };
 }

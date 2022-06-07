@@ -39,6 +39,7 @@ const UserProfil = () => {
   if (connected) {
     return(
       <div>
+    {/* Affiche l'avatar et le login */}
     <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} />
     <div>{profil.login}</div>
     <button onClick={handleClick}>
@@ -55,7 +56,4 @@ const UserProfil = () => {
       </div>
     ); }
   }
-  // <div>{profil.login}</div>
-  // <div>{profil.email}</div>
-  // <img src={profil.avatar} />
   export default UserProfil
