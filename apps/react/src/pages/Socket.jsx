@@ -3,19 +3,31 @@ import socketIOClient from "socket.io-client";
 
 const Socket= () => {
 
+    const [socket2, setSocket2] = useState(null);
     const [response, setResponse] = useState("");
+    const [message, setMessage] = useState("");
     // instance of websocket connection as a class property
 
    useEffect(() => {
         const socket = socketIOClient('http://localhost:3000');
+        setSocket2(socket);
         console.log('in');
         socket.on("users", data => {
            setResponse(data);
            console.log(socket.id);
           });
-
+        socket.on('chat', message => {
+            console.log(message);
+        })
+        socket.emit('chat', 'okok');
         }, []);
-    
+
+    //useEffect(() => {
+     //   socket.on('chat', message_in => {
+      //      setMessage(message);
+       // })
+        //socket.emit('chat', 'okok');
+        //}, []);
   
     return (
         <p>
