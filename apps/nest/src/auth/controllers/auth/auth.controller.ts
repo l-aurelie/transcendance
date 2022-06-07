@@ -1,5 +1,5 @@
 /*laura samantha*/
-import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Response ,Header, Res, Param, Req } from '@nestjs/common';
 import {Multer} from 'multer';
 import { Request } from 'express';
 import { IntraAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
@@ -50,7 +50,40 @@ export class createRandomUser {
       this.authService.createUser(details);
     }
 }
+@Controller('verify')
+export class verifyCode {
+    constructor(@InjectRepository(User) private userRepo:Repository<User>) {} //le constructeur previent que la classe utilise AuthService (nest/src/auth/services/auth.service.ts)
 
+    @UseGuards(AuthenticatedGuard)
+    @Header('Access-Control-Allow-Origin', 'http://localhost:4200')
+    @Post()
+    
+    async Verify(@Body() body, @Res() res) { // cette fonction servira quand on activera l'authentification avec le 2FA qui envoit des un code par mail pour verifier l'utilisateur, actuellement il est desactive pour eviter les spam demail et c'est mieux si c'est l' utilisateur qui choisi de l' activer ou non.
+    try{
+      console.log('enter verify');
+        const user = await this.userRepo.findOne({ // le formulaire renvoie dans le body le code donne par l'utilisateur, grace a cela on cherche si le code inscrit correspond au code stocker dans la base de donne et associe a un utilisateur
+          authConfirmToken: Number.parseInt(body.value),
+        });
+        if (!user) { // si il n' y a pas de correspondance, le code entre n' est pas bon
+          console.log('fail verify');
+          res.status(304);
+          res.send('Unauthorized');
+          //return res.HttpStatus.UNAUTHORIZED;
+          //throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
+        await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });// sinon on passe la mention isVerified de la db a true et le code a undefines puis en renvoie true
+        console.log('sucess verify');
+        res.status(200);
+        res.send('Ok');
+        //return res.HttpStatus.OK;
+        //throw new HttpException('Ok', HttpStatus.OK);
+      } catch(e){
+         console.log('error catched...');
+         console.log(e);
+        return new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}
 //ici sont place tout les controller lie a l'authentification
 @Controller('auth')
 export class AuthController {
@@ -60,11 +93,15 @@ export class AuthController {
     @Get('login') /*takes us to Intra login*/
     /*Page protected by authentification defined in IntradAuthGuard -> redirect vers localhost:3000/verify*/ 
     @UseGuards(IntraAuthGuard)
-    @Redirect('http://localhost:4200/Home')
-    async login(@Req() request: RequestWithUser) {
-     console.log(request.user);
+ //   @Redirect('http://localhost:4200/Home')
+    async login(@Req() request: RequestWithUser, @Response() res) {
+   //  console.log(request.user);
         //on retourne quoi ?
-        return {login:"yoooooooo"};
+     //   return {login:"yoooooooo"};
+     if (request.user.isVerified === false)
+        res.redirect('http://localhost:4200/Verify');
+      else
+        res.redirect('http://localhost:4200/Home');
     }
 
     /*If we have authentifcated via login we can access this page*/

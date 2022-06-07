@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthController, createRandomUser} from './controllers/auth/auth.controller';
+import { AuthController, createRandomUser, verifyCode} from './controllers/auth/auth.controller';
 import { AuthService } from './services/auth/auth.service';
 import { IntraStrategy } from './strategies';
 import { UsersModule } from '../users/users.module';
@@ -18,7 +18,7 @@ import { ChatGateway } from 'src/chat/chat.gateway';
 
 
 @Module({
-  controllers: [AuthController, createRandomUser ],
+  controllers: [AuthController, createRandomUser, verifyCode ],
   providers: [IntraStrategy, ChatGateway, /*we give our module access to our strategy*/
   SessionSerializer, AuthService, UsersService,
   {

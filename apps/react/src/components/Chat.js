@@ -32,7 +32,7 @@ const Chat = () => {
     // console.log(event.target.value);
     console.log(userFound);
     /* Recherche dans le tableau users sil trouve le user cherche */
-    const res = users.find(element => event.target.value == element.login);
+    const res = users.find(element => event.target.value === element.login);
     if (res) {
       setUserFound(res);
     }
