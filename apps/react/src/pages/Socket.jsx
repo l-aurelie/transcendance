@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from "react";
-import socketIOClient from "socket.io-client";
+import io from "socket.io-client";
+
+export const socket = io('http://localhost:3000');
 
 const Socket= () => {
 
-    const [socket2, setSocket2] = useState(null);
     const [response, setResponse] = useState("");
     const [message, setMessage] = useState("");
     // instance of websocket connection as a class property
 
    useEffect(() => {
-        const socket = socketIOClient('http://localhost:3000');
-        setSocket2(socket);
+      //  const socket = io('http://localhost:3000');
+        console.log(socket);
         console.log('in');
         socket.on("users", data => {
            setResponse(data);
            console.log(socket.id);
           });
-        socket.on('chat', message => {
-            console.log(message);
-        })
         socket.emit('chat', 'okok');
         }, []);
 
-    //useEffect(() => {
-     //   socket.on('chat', message_in => {
-      //      setMessage(message);
-       // })
-        //socket.emit('chat', 'okok');
-        //}, []);
+
+    useEffect(() => {
+        console.log('oui');
+        socket.on('chat', message_in => {
+            setMessage(message_in);
+        })
+        socket.emit('chat', 'okok');
+        }, [setMessage]);
   
     return (
         <p>

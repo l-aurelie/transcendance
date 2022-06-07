@@ -41,7 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // param 'client' will be a reference to the socket instance, param 'message' will be te data sent by the client
     async onChat(client, message) {
         //any clients listenning  for the cht event would receivethis data instantly
-        console.log('sad');
-        client.broadcast.emit('chat', message);
+        //client.broadcast.emit('chat', message);
+        this.server.emit('chat', message);
     }
 }
