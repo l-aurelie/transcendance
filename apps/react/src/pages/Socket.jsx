@@ -21,14 +21,6 @@ const Socket= () => {
         }, []);
 
 
-    useEffect(() => {
-        console.log('oui');
-        socket.on('chat', message_in => {
-            setMessage(message_in);
-        })
-        socket.emit('chat', 'okok');
-        }, [setMessage]);
-  
     return (
         <p>
             It's <time dateTime={response}>{response}</time>
