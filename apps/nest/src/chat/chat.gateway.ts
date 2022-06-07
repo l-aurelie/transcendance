@@ -9,7 +9,7 @@ import {
 } from '@nestjs/websockets';
 
 // this decorator will allow us to make use of the socket.io functionnalitu
-@WebSocketGateway()
+@WebSocketGateway({ cors: '*:*' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // We set up a variable 'server' with the decorator which will give us access to the server instance
     // we then can use this to trigger events and send data to connected clients
@@ -23,6 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // A client has connected
         this.users++;
         console.log(this.users);
+        console.log(this.server.sockets);
         // Notify connected clients of current users
         this.server.emit('users', this.users);
     }
@@ -40,6 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // param 'client' will be a reference to the socket instance, param 'message' will be te data sent by the client
     async onChat(client, message) {
         //any clients listenning  for the cht event would receivethis data instantly
+        console.log('sad');
         client.broadcast.emit('chat', message);
     }
 }
