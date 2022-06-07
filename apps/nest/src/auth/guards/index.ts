@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 /*laura*/
 @Injectable()
 /*calls Intra strategy class*/
-export class DiscordAuthGuard extends AuthGuard('intra-oauth') {
+export class IntraAuthGuard extends AuthGuard('intra-oauth') {
     async canActivate(context: ExecutionContext): Promise<any> {
         console.log('AuthGuard');
         

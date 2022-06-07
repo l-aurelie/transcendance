@@ -2,7 +2,7 @@
 import { Body, Controller, Get, Post, Redirect, Render, Res, UseInterceptors, UploadedFile, Param, Req } from '@nestjs/common';
 import {Multer} from 'multer';
 import { Request } from 'express';
-import { DiscordAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
+import { IntraAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
 import { UseGuards } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../../../typeorm';
@@ -58,8 +58,8 @@ export class AuthController {
 /*Define what happens at: localhost:3000/auth/login*/    
 /*routes*/
     @Get('login') /*takes us to Intra login*/
-    /*Page protected by authentification defined in DiscordAuthGuard -> redirect vers localhost:3000/verify*/ 
-    @UseGuards(DiscordAuthGuard)
+    /*Page protected by authentification defined in IntradAuthGuard -> redirect vers localhost:3000/verify*/ 
+    @UseGuards(IntraAuthGuard)
     @Redirect('http://localhost:4200/Home')
     async login(@Req() request: RequestWithUser) {
      console.log(request.user);
@@ -77,9 +77,9 @@ export class AuthController {
     }
 
     @Get('/verify')
-    @UseGuards(DiscordAuthGuard)
+    @UseGuards(IntraAuthGuard)
    // @Render('verify')
-   //@Redirect('http://localhost:4200/') //apres avoir fait localhost:3000/auth/login la class DiscordAuthGard appele dans le decorateur nous amene ici, pour l' instant il redirige simplement vers la page home de react situe a localhost:4200, le but plus tard est de renvoyer l'accessToken a react ?
+   //@Redirect('http://localhost:4200/') //apres avoir fait localhost:3000/auth/login la class IntraAuthGard appele dans le decorateur nous amene ici, pour l' instant il redirige simplement vers la page home de react situe a localhost:4200, le but plus tard est de renvoyer l'accessToken a react ?
     VerifyEmail() {
       /*  const user = this.userServ.findUserByJwt();
         const log = user.then(function(result){
