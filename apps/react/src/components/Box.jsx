@@ -14,37 +14,33 @@ export {
 
 /* style tableau */ 
 const backgroundStyle = {
-    height: "35px",
-    width: "35px",
+    display: "flex",
+   // height: "1fr",
+   // width: "1fr",
     borderStyle: "solid",
     justifyContent: "center",
     backgroundColor: "black",
-    // borderRadius: "2px"
 }
 
 const playerStyle = {
+    display: "flex",
     height: "35px",
     width: "35px",
     borderStyle: "solid",
     justifyContent: "center",
-    backgroundColor: "blue",
+    backgroundColor: "rgba(457, 55, 102, 0.8)",
     color: "white"
 }
 
 const ballStyle = {
+    display: "flex",
     height: "35px",
     width: "35px",
-    display: "block",
     backgroundColor: "yellow",
     justifyContent: "center",
     borderRadius: "100%",
     color:"white",
-    zIndex: "8",
-    position: "relative"
 }
-
-
-
 
 /* fonction pour savoir quel style on veut */
 const getStyle = (val) => {
@@ -58,7 +54,6 @@ const getStyle = (val) => {
         return ballStyle;
     }
 }
-
 
 /* La box sera utilisee pour representer le background, les joueurs et la ball
     en fonction de la position donne par le tableau 
