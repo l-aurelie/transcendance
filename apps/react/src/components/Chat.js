@@ -2,6 +2,7 @@
 import axios from "axios";
 
 import { useEffect, useState } from "react";
+import { socket } from "../pages/Socket";
 
 /* Style (insere dans la div jsx) */
 const chatStyle = {
@@ -17,6 +18,8 @@ const chatStyle = {
 
 const Chat = () => {
 
+  const [message, setMessage] = useState([]);// Tous les users de la db
+  const [newData, setNewData] = useState([]);// Tous les users de la db
   const [users, setUsers] = useState([]);// Tous les users de la db
   const [userFound, setUserFound] = useState([]); //Contient l'utilisateur si trouve
 
@@ -25,7 +28,26 @@ const Chat = () => {
     axios.get("http://localhost:3000/users/all", { withCredentials: true }).then((res) => {
       setUsers(res.data);
     });
+
   }, [])
+
+  useEffect(() => {
+    socket.on("chat", data => {
+      setMessage((message) => {
+        //data = {'\n'} + data;
+        return ([...message, data]); });
+      console.log(socket.id);
+     });
+    }, [])
+
+
+  const sendMessage = (event) => {
+    if(event.key === 'Enter') {
+      socket.emit('chat', event.target.value);
+      event.target.value = "";
+    }
+  }
+
 
   /* A chaque changement dans linput, verifie si trouve le user */
   const handleChangeText = (event) => {
@@ -49,7 +71,11 @@ const Chat = () => {
       </div>
       <p>{userFound.login}</p>
       <p>{JSON.stringify(userFound)}</p>
-    </div>
+      <input type='text' onKeyPress={sendMessage} />
+      {message.map((msg) => (
+        <div>{msg}</div>
+      ))}
+   </div>
   );
 }
 

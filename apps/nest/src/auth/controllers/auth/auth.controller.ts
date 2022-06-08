@@ -147,6 +147,7 @@ export class AuthController {
 }
 
 //@Post('logout') CHANGE TO POST FOR FRONT END USE LATER ON
+//TODO: handle disconnect
 @UseGuards(AuthenticatedGuard)
 @Get('logout')
 async logOut(@Req() request) {

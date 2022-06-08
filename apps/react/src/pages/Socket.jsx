@@ -1,34 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
+
+export const socket = io('http://localhost:3000');
 
 const Socket= () => {
 
-
+    const [response, setResponse] = useState("");
     // instance of websocket connection as a class property
-    const ws = new WebSocket('ws://localhost:3000/ws')
 
    useEffect(() => {
-        this.ws.onopen = () => {
-        // on connecting, do nothing but log it to the console
-        console.log('connected')
-        }
-        
+      //  const socket = io('http://localhost:3000');
+        console.log(socket);
+        console.log('in');
+        socket.on("users", data => {
+           setResponse(data);
+           console.log(socket.id);
+          });
+        socket.emit('chat', 'okok');
+        }, []);
 
-        this.ws.onmessage = evt => {
-        // listen to data sent from the websocket server
-        const message = JSON.parse(evt.data)
-        this.setState({dataFromServer: message})
-        console.log(message)
-        }
 
-        this.ws.onclose = () => {
-        console.log('disconnected')
-        // automatically try to reconnect on connection loss
-
-        }}, []);
-    
-
-  
-    return <p>{ws}</p>
+    return (
+        <p>
+            It's <time dateTime={response}>{response}</time>
+        </p>
+        );
 
     }
 
