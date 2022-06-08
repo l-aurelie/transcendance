@@ -1,6 +1,7 @@
 /*samantha laura*/
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany } from 'typeorm';
+import { RoomEntity } from 'src/chat/model/room.entity';
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -33,7 +34,10 @@ export class User implements IUser { // donne la composition de User, permet de 
 
     @Column({nullable: true})
     jwt: string;
-
+ 
+    @ManyToMany(() => RoomEntity, room => room.users)
+    rooms : RoomEntity;
+ 
     @CreateDateColumn()
     createAt: Date;
 

@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import {UsersService} from "./users.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "src/typeorm";
+import { RoomEntity } from "src/chat/model/room.entity";
 
 @Module({
     imports: [TypeOrmModule.forFeature([User])],
