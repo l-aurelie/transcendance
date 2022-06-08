@@ -40,7 +40,6 @@ async validate(accessToken: string) {
         avatar: data.image_url,
         email: data.email,
         authConfirmToken: undefined,
-        jwt: accessToken,
         isConnected: true };
  
     //send them to validate function which will return user created with them

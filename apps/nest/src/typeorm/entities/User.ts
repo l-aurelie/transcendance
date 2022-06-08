@@ -31,9 +31,6 @@ export class User implements IUser { // donne la composition de User, permet de 
 
     @Column({default: false, nullable: true})
     isConnected: boolean;
-
-    @Column({nullable: true})
-    jwt: string;
  
     @ManyToMany(() => RoomEntity, room => room.users)
     rooms : RoomEntity;
