@@ -2,12 +2,15 @@
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import LogiqueModale from './ModaleWindow/logiqueModale';
+import Modale from './ModaleWindow/modale';
 
 const UserProfil = () => {
 
   //const[isLoading, setLoading] = useState(true);
     const [profil, setProfil] = useState([]);
     const [connected, setConnected] = useState([false]);
+    const {revele, toggle} = LogiqueModale();
 
     useEffect(() => {
       axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
@@ -40,8 +43,14 @@ const UserProfil = () => {
     return(
       <div>
     {/* Affiche l'avatar et le login */}
-    <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} />
+    <button onClick={toggle}>
+      <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} />
+    </button>
+    <Modale revele={revele} cache={toggle}><p>{'coucou'}</p>
+    </Modale>
+    
     <div>{profil.login}</div>
+
     <button onClick={handleClick}>
           Logout
         </button>
