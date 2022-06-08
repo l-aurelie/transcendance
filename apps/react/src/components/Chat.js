@@ -19,6 +19,7 @@ const chatStyle = {
 const Chat = () => {
 
   const [message, setMessage] = useState([]);// Tous les users de la db
+  const [newData, setNewData] = useState([]);// Tous les users de la db
   const [users, setUsers] = useState([]);// Tous les users de la db
   const [userFound, setUserFound] = useState([]); //Contient l'utilisateur si trouve
 
@@ -32,7 +33,9 @@ const Chat = () => {
 
   useEffect(() => {
     socket.on("chat", data => {
-      setMessage(data);
+      setMessage((message) => {
+        //data = {'\n'} + data;
+        return ([...message, data]); });
       console.log(socket.id);
      });
     }, [])
@@ -60,11 +63,6 @@ const Chat = () => {
     }
   }
 
-  const coucou = () => {
-    return ("coucou"
-    );
-  }
-
   return (
     <div style={chatStyle}>
       {/* Barre de recherche d'un user + affichage de userFound */}
@@ -74,8 +72,10 @@ const Chat = () => {
       <p>{userFound.login}</p>
       <p>{JSON.stringify(userFound)}</p>
       <input type='text' onKeyPress={sendMessage} />
-      <div>{message}</div>
-    </div>
+      {message.map((msg) => (
+        <div>{msg}</div>
+      ))}
+   </div>
   );
 }
 

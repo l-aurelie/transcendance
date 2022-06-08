@@ -6,7 +6,6 @@ export const socket = io('http://localhost:3000');
 const Socket= () => {
 
     const [response, setResponse] = useState("");
-    const [message, setMessage] = useState("");
     // instance of websocket connection as a class property
 
    useEffect(() => {
