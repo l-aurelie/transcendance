@@ -4,7 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/modale';
-import {socker, socket} from '../pages/Socket';
+import {socket} from '../pages/Socket';
 const UserProfil = () => {
 
    
@@ -17,7 +17,7 @@ const UserProfil = () => {
      console.log(res.data);
       setProfil(res.data);
       setConnected(true);
-socket.emit('whoAmI', res.data); 
+      socket.emit('whoAmI', res.data); 
     })
   }, [])
   
@@ -42,7 +42,7 @@ socket.emit('whoAmI', res.data);
       <div>
     {/* Affiche l'avatar et le login */}
     <button onClick={toggle}>
-      <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} />
+      <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} alt="description yes"/>
     </button>
     <Modale revele={revele} cache={toggle}><p>{'coucou'}</p>
     </Modale>

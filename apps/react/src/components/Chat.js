@@ -21,7 +21,7 @@ const Chat = () => {
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [users, setUsers] = useState([]);// Tous les users de la db
   const [userFound, setUserFound] = useState([]); //Contient l'utilisateur si trouve
-  const [currentSalon, setCurrentSalon] = useState(['chat']);// Salon courant
+  const [currentSalon, setCurrentSalon] = useState('chat');// Salon courant
   const [salons, setSalons] = useState(['chat']); //Array de tous les salons a afficher, que l'on peut selectionner
   /* Recupere tout les utilisateur, 1x slmt (componentDidMount) */
   useEffect(() => {
@@ -34,13 +34,12 @@ const Chat = () => {
   //Definit le salon que l'on ecoute, hooked sur currentSalon, pour reactualiser le salon d'ecoute a chqaue changement de salon
   //Ecoute le salon courant pour afficher tout nouveaux messages
   useEffect(() => {
-    console.log(currentSalon);
+    console.log(socket.id);
     socket.on(currentSalon, data => {
       console.log(currentSalon);
       setMessage((message) => {
         //data = {'\n'} + data;
         return ([...message, data]); });
-      console.log(socket.id);
      });
     }, [currentSalon])
 
@@ -75,7 +74,8 @@ const Chat = () => {
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
   const handleClick = (salon) => {
-    socket.off(currentSalon);
+    if (salon !== currentSalon)
+      socket.off(currentSalon);
     setCurrentSalon(salon);
   };
 
