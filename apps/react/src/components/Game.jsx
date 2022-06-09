@@ -26,12 +26,14 @@ const PAUSE       = 32;  // space
 /* affichage de tableau 2d
 	fr est une unite, chaque case fera 1 fr */
 const style = {
-	width: "250px",
-	heigth: "250px",
 	display: "grid",
-	gridTemplate: `repeat(${ROW_SIZE}, 1fr) / repeat(${COL_SIZE}, 1fr)`
+	position: "relative",
+	justifyContent: "center",
+	flexDirection: "align",
+	gridTemplate: `repeat(${ROW_SIZE}, 1fr) / repeat(${COL_SIZE}, 1fr)`,
 }
 
+// ca c'est le gadrillage de la board de jeu
 const inner = {
 	display: "flex",
 	flexDirection: "row",
@@ -43,30 +45,17 @@ const outer = {
 	display: "flex",
 	flexDirection: "column",
 	justifyContent: "justify",
-	marginTop: "9em",
-	marginRight: "25em",//Add par aurel
-	//marginLeft: "25em", //Del par aurel
-	Text:"100px",
-	padding:"10px"
+	marginTop: "20%",
+	backgroundColor: "yellow",
 }
 
+/* Zone au dessus du jeu pour afficher le score */
 const score = {
-	marginLeft: "100px",
+	display: "flex",
 	fontSize: "30px",
-	color: "white"
-}
-const scoreop = {
-	marginLeft: "50px",
-	fontSize: "30px",
-	color: "white"
+	justifyContent: "center",
 }
 
-
-const dividerStyle = {
-    marginLeft: "50px",
-    fontSize: "50px",
-    color: "white"
-}
 
 const InitialState = () => {
 		
@@ -310,19 +299,23 @@ class Game extends Component {
 			return <Box key={pos} k={pos} name={val} />;
 
 		})
-		const divider = [...Array(ROW_SIZE / 2)].map(_=> <div>{"|"}</div>);
+		window.addEventListener("keydown", function(e) {
+			if(["ArrowUp","ArrowDown"].indexOf(e.code) > -1) {
+				e.preventDefault();
+			}
+		}, false);
+		//const divider = [...Array(ROW_SIZE)].map(_=> <div>{"|"}</div>);
 		return (
 			<div style={outer}>
-				<h1>{"Space to pause the game"} {this.state.pause ? "PLAY/pause" : "play/PAUSE"} </h1>
+				
+				<div style={score}>{this.state.playerScore} | {this.state.opponentScore}</div>
 				<div style={inner}>
 					{/* on retourne le retour de board a chaque position */}
-						<div style={style}>{board}</div>
-						<div style={score}>{this.state.playerScore}</div> 
-						<div style={dividerStyle}>{divider}</div>
-						<div style={scoreop}>{this.state.opponentScore}</div> 
+					<div style={style}>{board}</div>
 				</div>
+				<h1>{this.state.pause ? "Pause" : "Playing..."} </h1>
 			</div>
-		);
+		)
 	}
 }
 

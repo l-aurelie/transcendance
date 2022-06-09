@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm';
 import { SessionSerializer } from './utils/Serializer';
 import { HttpModule } from '@nestjs/axios';
-import { JwtModule } from '@nestjs/jwt';//TODO: a supp ? 
+
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';

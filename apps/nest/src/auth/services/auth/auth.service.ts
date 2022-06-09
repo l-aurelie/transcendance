@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { User } from '../../../typeorm';
 import { UserDetails } from '../../utils/types';
 import { AuthenticationProvider } from './auth';
-import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ChatGateway } from 'src/chat/chat.gateway';
 

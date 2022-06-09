@@ -1,4 +1,4 @@
-/* Manon (tests) */
+/* Manon */
 
 
 import React from "react";
@@ -6,15 +6,13 @@ import React from "react";
 const logo= {
     display: "flex",
     justifyContent: "center",
-    fontSize: "23px",
-    
-    // outline: "ridge", "1px": "black"
-  /* Center child horizontally*/
- 
+    margin: "auto", 
 }
+
 const border = {
     display: "flex",
     justifyContent: "center",
+    margin: "auto", 
     outline: "ridge", "1px": "red",
     width: "250px",
     height: "80px",
@@ -25,7 +23,7 @@ const border = {
 const img= {
     display: "flex",
     justifyContent: "center",
-    padding: "10px",
+    margin: "auto", 
     width: "50px",
     height: "50px",
 }
@@ -33,7 +31,7 @@ const img= {
 const h3= {
     display: "flex",
     justifyContent: "center",
-    marginLeft : "10px",
+    margin: "auto", 
     color: "rgba(237, 55, 102, 0.8)"
 }
 

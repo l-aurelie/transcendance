@@ -2,6 +2,7 @@
 
 import { User } from './entities/User';
 import { TypeORMSession } from './entities/Session';
-export const entities = [User, TypeORMSession ];
+import { RoomEntity } from 'src/chat/model/room.entity';
+export const entities = [User, TypeORMSession, RoomEntity ];
 
-export { User, TypeORMSession };
+export { User, TypeORMSession, RoomEntity };

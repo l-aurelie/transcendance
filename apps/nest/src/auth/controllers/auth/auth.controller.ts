@@ -1,15 +1,13 @@
 /*laura samantha*/
 import { Body, Controller, Get, Post, Response ,Header, Res, Param, Req } from '@nestjs/common';
-import {Multer} from 'multer';
-import { Request } from 'express';
+
 import { IntraAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
 import { UseGuards } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../../../typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { AppService } from 'src/app.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+
 import { AuthService } from 'src/auth/services/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
@@ -29,7 +27,6 @@ export class createRandomUser {
         email: str + '@student.42.fr',
         authConfirmToken: undefined,
         isVerified:true,
-        jwt: "falseJwtToken" + str,
         isConnected: false
        };
       this.authService.createUser(details);
@@ -44,7 +41,6 @@ export class createRandomUser {
         email: params.login + '@student.42.fr',
         authConfirmToken: undefined,
         isVerified:true,
-        jwt: "falseJwtToken" + params.login,
         isConnected: false
        };
       this.authService.createUser(details);
@@ -62,7 +58,7 @@ export class verifyCode {
     try{
       console.log('enter verify');
         const user = await this.userRepo.findOne({ // le formulaire renvoie dans le body le code donne par l'utilisateur, grace a cela on cherche si le code inscrit correspond au code stocker dans la base de donne et associe a un utilisateur
-          authConfirmToken: Number.parseInt(body.value),
+        where : { authConfirmToken: Number.parseInt(body.value), },
         });
         if (!user) { // si il n' y a pas de correspondance, le code entre n' est pas bon
           console.log('fail verify');
@@ -118,13 +114,6 @@ export class AuthController {
    // @Render('verify')
    //@Redirect('http://localhost:4200/') //apres avoir fait localhost:3000/auth/login la class IntraAuthGard appele dans le decorateur nous amene ici, pour l' instant il redirige simplement vers la page home de react situe a localhost:4200, le but plus tard est de renvoyer l'accessToken a react ?
     VerifyEmail() {
-      /*  const user = this.userServ.findUserByJwt();
-        const log = user.then(function(result){
-           console.log(result);
-           return result.login;
-        })
-      return log;
-      */
      console.log ('coucou');
      }
     
@@ -133,7 +122,7 @@ export class AuthController {
     async Verify(@Body() body, @Res() res) { // cette fonction servira quand on activera l'authentification avec le 2FA qui envoit des un code par mail pour verifier l'utilisateur, actuellement il est desactive pour eviter les spam demail et c'est mieux si c'est l' utilisateur qui choisi de l' activer ou non.
       try{
         const user = await this.userRepo.findOne({ // le formulaire renvoie dans le body le code donne par l'utilisateur, grace a cela on cherche si le code inscrit correspond au code stocker dans la base de donne et associe a un utilisateur
-          authConfirmToken: Number.parseInt(body.value),
+        where : { authConfirmToken: Number.parseInt(body.value), },
         });
         if (!user) { // si il n' y a pas de correspondance, le code entre n' est pas bon
              return false;

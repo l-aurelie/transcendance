@@ -1,20 +1,8 @@
 /*samantha*/
 import axios from 'axios';
 import React from 'react';
-import {Redirect, Navigate} from "react-router-dom";
-import VerifyCode from '../components/VerifyCode';
-/*const Verify = () => {
-  
-  return (
-              <VerifyCode></VerifyCode>
-     
-           // <UserProfil></UserProfil>
-          // <Game></Game> 
-  );
-};
+import {Navigate} from "react-router-dom";
 
-export default Verify;
-*/
 
 class Verify extends React.Component {
     constructor(props) {
@@ -39,21 +27,13 @@ class Verify extends React.Component {
             {
               console.log('response is 200');
               this.setState({ok:true});
-              //<Navigate to='/Home'/>;
-              //this.render();
             }
           })
-          .catch(e => {this.setState({ message: false}); console.log('error: ' + e)}) 
-          ;//  .finally(() => { 
-       // axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-       //     return res.data;
-       //  })
-       // });
+          .catch(e => {this.setState({ message: false})});
        
       }
   
     render() {
-      const {condition} = this.state.ok;
       if (this.state.ok === true)
       {
         console.log('entre ici');
