@@ -20,7 +20,7 @@ export class AuthService implements AuthenticationProvider {
         console.log('validate user');
         if (user)
         {
-          this.ChatGateway.handleConnection()
+         // this.ChatGateway.handleConnection()
           console.log('yes there is a user');
           if (user.isVerified === false)// && user.isConnected === false) //s' il y en a un et que son statut n' est pas verifier, on envoie le code par mail pour verification et on update le code dans la db aussi
           {

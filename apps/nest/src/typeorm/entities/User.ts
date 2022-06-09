@@ -24,7 +24,7 @@ export class User implements IUser { // donne la composition de User, permet de 
   //  password:string;
 
     @Column({default: undefined, nullable: true})
-    authConfirmToken: Number;
+    authConfirmToken: number;
 
     @Column({default: true, nullable: true})
     isVerified: boolean;
@@ -35,6 +35,9 @@ export class User implements IUser { // donne la composition de User, permet de 
     @ManyToMany(() => RoomEntity, room => room.users)
     rooms : RoomEntity;
  
+    @Column({nullable: true})
+    socket: string;
+
     @CreateDateColumn()
     createAt: Date;
 
@@ -46,7 +49,7 @@ interface IUser {
         intraId: string;
         avatar: string;
         email: string;
-        authConfirmToken: Number;
+        authConfirmToken: number;
         isVerified: boolean;
         createAt: Date;
     }

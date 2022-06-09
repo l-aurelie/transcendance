@@ -4,20 +4,20 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/modale';
-
+import {socker, socket} from '../pages/Socket';
 const UserProfil = () => {
 
-  //const[isLoading, setLoading] = useState(true);
-    const [profil, setProfil] = useState([]);
+   
     const [connected, setConnected] = useState([false]);
     const {revele, toggle} = LogiqueModale();
+    const [profil, setProfil] = useState([]);
 
     useEffect(() => {
       axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
      console.log(res.data);
       setProfil(res.data);
       setConnected(true);
-    //  setLoading(false)
+socket.emit('whoAmI', res.data); 
     })
   }, [])
   
@@ -34,9 +34,7 @@ const UserProfil = () => {
     }
   };
 
-  //if(isLoading) {
-  //  return <div>wait for charging...</div>;
-  // }
+  
 
   // return conditionnel selon l'etat de connection de l'utilisateur
   if (connected) {
