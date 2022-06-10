@@ -1,6 +1,9 @@
 /* aurel */
-import React, {useState} from 'react'
+import React from 'react';
+import Logo from '../Logo';
+import UserProfilExtended from '../UserProfilExtended'
 
+/* Assombri l'arriere plan */
 const background = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
@@ -26,12 +29,18 @@ const button = {
     right: '15px',
     top: '15px'
 }
-                                                                                                                                                                                                                                                                                              
-const Modale = ({revele, cache}) => revele ? (
+
+/* Ternaire, affiche modale si revele recu en parametre est true  */
+const Modale = ({revele, toggle, name}) => revele ? (
     <React.Fragment>
         <div style={background} />
         <div style={modale}>
-            <button style={button} type='button' onClick={cache}>x</button>
+            {/* Composants contenus dans la fenetre */}
+            <Logo />
+            <UserProfilExtended name={name}/>
+            
+            {/* Bouton pour fermer la fenetre */}
+            <button style={button} type='button' onClick={toggle}>x</button>
         </div>
     </React.Fragment>
  ) : null;

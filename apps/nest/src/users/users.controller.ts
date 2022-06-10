@@ -1,6 +1,6 @@
 /*aurelie, samantha*/
 
-import { Controller, Get, Post, Delete, Headers, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
@@ -12,19 +12,28 @@ export class UsersController {
    /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
-   getUser(@Headers() header, @Req() request: RequestWithUser) {
+   getUser(@Headers() header, @Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
-     console.log(user);
+     console.log('===getUser', user);
      return (user);
      }
-   
+     
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')
    async getUsers() {
       const users = await this.userServ.findAll();
-      console.log('SELECT * FROM users;', users);
+      console.log('GetUsers()');
       return (users);
    }
+   
+   /* Retourne le user [login] */
+   @Get(':login')
+   async getUserByLogin(@Param() params) {
+      const user = await this.userServ.findUserByLogin(params);
+      console.log('=====getUserByLogin()', user);
+      return (user);
+   }
+
 /*
     @Get()
     getUser(@Headers() header) {

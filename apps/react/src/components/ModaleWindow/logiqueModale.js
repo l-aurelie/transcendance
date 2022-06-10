@@ -1,8 +1,10 @@
 /* aurel */
-import React, {useState} from 'react'
+
+import { useState } from "react";
 
 const LogiqueModale = () => {
-    const [revele, setRevele] = useState(false);
+    const [revele, setRevele] = useState(false); //- etat d'affichage fenetre
+    /* Appel a toggle change l'etat d'affichage */
     function toggle() {
         console.log('ft toggle');
         setRevele(!revele);
@@ -10,8 +12,7 @@ const LogiqueModale = () => {
     return {
         revele,
         toggle                                                                                                                                                                                                                                                                                                          
-    }
-    
+    }  
 };
 
 export default LogiqueModale;

@@ -1,4 +1,5 @@
 /*aurelie john*/
+//TODO: Mettre le bouton login dans son propre composant ?
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -7,16 +8,16 @@ import Modale from './ModaleWindow/modale';
 import {socket} from './Socket';
 const UserProfil = () => {
 
-   
-    const [connected, setConnected] = useState([false]);
-    const {revele, toggle} = LogiqueModale();
     const [profil, setProfil] = useState([]);
+    const {revele, toggle} = LogiqueModale();
+    
+    const [connected, setConnected] = useState([false]);
 
     useEffect(() => {
       axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-     console.log(res.data);
+     console.log('in user profil: ', res.data);
       setProfil(res.data);
-      setConnected(true);
+      setConnected(true);//TODO: pk true ici ? 
       socket.emit('whoAmI', res.data); 
     })
   }, [])
@@ -40,12 +41,11 @@ const UserProfil = () => {
   if (connected) {
     return(
       <div>
-    {/* Affiche l'avatar et le login */}
+    {/* Bonton pour display profilExtended + avatar et login */}
     <button onClick={toggle}>
       <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={profil.avatar} alt="description yes"/>
     </button>
-    <Modale revele={revele} cache={toggle}><p>{'coucou'}</p>
-    </Modale>
+    <Modale revele={revele} toggle={toggle} name={profil.login} />
     
     <div>{profil.login}</div>
 

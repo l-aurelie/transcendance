@@ -3,6 +3,8 @@ import axios from "axios";
 
 import { useEffect, useState } from "react";
 import { socket } from "./Socket";
+import LogiqueModale from "./ModaleWindow/logiqueModale";
+import Modale from "./ModaleWindow/modale";
 
 /* Style (insere dans la div jsx) */
 const chatStyle = {
@@ -18,19 +20,38 @@ const chatStyle = {
 
 const Chat = () => {
 
-  const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [users, setUsers] = useState([]);// Tous les users de la db
-  const [userFound, setUserFound] = useState([]); //Contient l'utilisateur si trouve
-  const [currentSalon, setCurrentSalon] = useState('chat');// Salon courant
+  const [userFound, setUserFound] = useState([]); // Contient l'utilisateur si trouve
+  const {revele, toggle} = LogiqueModale();// Outils affichage users apres recherche
+  
+  const [message, setMessage] = useState([]);// Message a envoyer au salon
+  const [currentSalon, setCurrentSalon] = useState(['chat']);// Salon courant
   const [salons, setSalons] = useState(['chat']); //Array de tous les salons a afficher, que l'on peut selectionner
-  /* Recupere tout les utilisateur, 1x slmt (componentDidMount) */
+
+  /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
   useEffect(() => {
     axios.get("http://localhost:3000/users/all", { withCredentials: true }).then((res) => {
       setUsers(res.data);
+      console.log('find all pour la barre de recherche:', users);
     });
 
   }, [])
-
+ 
+  /* Apres enter dans la barre de recherche users */
+  const displayUser = (event) => {
+    /* Recherche dans le tableau users sil trouve le user cherche */
+   if(event.key === 'Enter'){
+      console.log('===displayUSer()');
+     const res = users.find(element => event.target.value === element.login);
+     if (res)
+       setUserFound(res);
+     else
+        setUserFound('User not found');
+      /* Affiche le profil user */
+      toggle();
+    }
+  }
+ 
   //Definit le salon que l'on ecoute, hooked sur currentSalon, pour reactualiser le salon d'ecoute a chqaue changement de salon
   //Ecoute le salon courant pour afficher tout nouveaux messages
   useEffect(() => {
@@ -80,28 +101,17 @@ const Chat = () => {
   };
 
 
-  /* A chaque changement dans linput, verifie si trouve le user */
-  const handleChangeText = (event) => {
-    // console.log(event.target.value);
-    console.log(userFound);
-    /* Recherche dans le tableau users sil trouve le user cherche */
-    const res = users.find(element => event.target.value === element.login);
-    if (res) {
-      setUserFound(res);
-    }
-    else {
-      setUserFound('User not found');
-    }
-  }
+ 
 
   return (
     <div style={chatStyle}>
       {/* Barre de recherche d'un user + affichage de userFound */}
       <div>
-        <input type='text' onChange={handleChangeText} />
+        <p>Search a user</p>
+        <input type='text' onKeyPress={displayUser} />
+        <Modale revele={revele} toggle={toggle} name={userFound.login} />
       </div>
-      <p>{userFound.login}</p>
-      <p>{JSON.stringify(userFound)}</p>
+
       {/* Affichage de l'array Salons par iteration */}
       {salons.map((salon) => ( 
       <button onClick={() => handleClick(salon)}>
