@@ -2,7 +2,7 @@
 import axios from "axios";
 
 import { useEffect, useState } from "react";
-import { socket } from "../pages/Socket";
+import { socket } from "./Socket";
 
 /* Style (insere dans la div jsx) */
 const chatStyle = {

@@ -32,7 +32,6 @@ const Home = () => {
                 <Logo></Logo>
                 <UserProfil></UserProfil>
             </div>
-            {/* <Socket></Socket> */}
             <div style={bodyStyle}>
                 <Game></Game>
                 <Chat></Chat>

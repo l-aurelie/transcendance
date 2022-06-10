@@ -46,7 +46,8 @@ const outer = {
 	flexDirection: "column",
 	justifyContent: "justify",
 	marginTop: "20%",
-	backgroundColor: "yellow",
+	marginRight: "20%",
+	//backgroundColor: "yellow",
 }
 
 /* Zone au dessus du jeu pour afficher le score */

@@ -4,7 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/modale';
-import {socket} from '../pages/Socket';
+import {socket} from './Socket';
 const UserProfil = () => {
 
    
