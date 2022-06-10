@@ -10,8 +10,8 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { IntraAuthGuard } from 'src/auth/guards';
-import { User } from 'src/typeorm';
-import { UsersService } from 'src/users/users.service';
+import { Socket, User } from 'src/typeorm';
+import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
 
@@ -23,7 +23,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server;
     users: number = 0;
 
-    constructor(private userService: UsersService, @InjectRepository(User) private userRepo : Repository<User>) {}
+    constructor(private userService: UsersService, @InjectRepository(User) private userRepo : Repository<User>, private socketService: SocketService, @InjectRepository(Socket) private socketRepo : Repository<Socket>) {}
+
 
     // The handle connection hooks will keep track of clients connections and disconnection
     async handleConnection(client) {
@@ -36,10 +37,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.emit()
     }
 
-    async handleDisconnect() {
+    async handleDisconnect(client) {
         // A client has disconnected
         this.users--;
-
+        //const user = await this.userService.findUserBySocket(client.id);
+        //this.userRepo.remove({socket : client.id});
         // Notify connected clients of current users
         this.server.emit('users', this.users);
     }
@@ -50,14 +52,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async onChat(client, data) {
         //any clients listenning  for the chat event on the data.p1 channel would receivethis data instantly
         console.log('sendMessage');
-        this.server.emit(data.p1, data.p2);
+        const socket = await this.socketRepo.find({ relations: ["user"],
+        where: {
+            name : client.id
+        } });
+        //const socket = await socks.find(client.id);
+        console.log('here===', socket);
+        const ok = new Date(Date.now()).toLocaleString();
+       // this.server.emit(data.p1, '[' + socket.user.login + '] ' +  '[' + ok + '] ' + data.p2);
     }
  
     @SubscribeMessage('whoAmI')
     async linkUserSocket(client, user) {
       //const leUser =  this.userService.findUserById(user.id);
       console.log('setToDb');
-        this.userRepo.update({id : user.id},{socket : client.id});
+      console.log(client.id);
+      //console.log(user);
+      const sock = this.socketRepo.create();
+      sock.name = client.id;
+      sock.user = user;
+     
+      await this.socketRepo.save(sock);
+      console.log('here', sock.user);
+      //console.log(user.socket); 
+     //this.userRepo.update({id : user.id},{socket : client.id});
     }
 
     @SubscribeMessage('addsalon')

@@ -1,7 +1,8 @@
 /*samantha laura*/
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany } from 'typeorm';
 import { RoomEntity } from 'src/chat/model/room.entity';
+import { Socket } from './Socket';
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -35,8 +36,8 @@ export class User implements IUser { // donne la composition de User, permet de 
     @ManyToMany(() => RoomEntity, room => room.users)
     rooms : RoomEntity;
  
-    @Column({nullable: true})
-    socket: string;
+    @OneToMany(() => Socket, socket => socket.user)
+    socket: Socket[];
 
     @CreateDateColumn()
     createAt: Date;
