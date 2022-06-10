@@ -15,6 +15,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { UsersService } from 'src/users/users.service';
 import { ConfigModule } from '@nestjs/config';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { FriendRequest } from 'src/typeorm/entities/friend-request';
 
 
 @Module({
@@ -30,7 +31,7 @@ import { ChatGateway } from 'src/chat/chat.gateway';
 ],
 imports: [
   ConfigModule.forRoot({envFilePath: '.env'}),
-  HttpModule, TypeOrmModule.forFeature([User]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+  HttpModule, TypeOrmModule.forFeature([User, FriendRequest]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {
         service: "gmail",

@@ -20,8 +20,7 @@ export class UsersService {
     findUserByLogin(login: string): Promise<User> {
         return this.userRepo.findOne(login);//TODO: findOne or fail
         //return this.userRepo.findOne( { login: string } );
-    };
-   
+    };   
     /* Retourne tous les utilisateurs present dans la table users */
     findAll(): Promise<User[]> {
         return this.userRepo.find( { } );
