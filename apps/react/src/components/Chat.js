@@ -16,6 +16,29 @@ const chatStyle = {
   width: '250px',
 }
 
+const chatBox = {
+  marginTop: 'auto',
+  border: '2px",'
+}
+
+const chatTitle = {
+  display: "flex",
+  justifyContent: "center",
+  marginTop: "auto", 
+  outline: "ridge", "1px": "red",
+  //width: "250px",
+ // height: "80px",
+  borderRadius: "2rem",
+}
+
+const messageSent = {
+  textAlign: 'right',
+}
+
+const salonName = {
+  marginTop: "auto", 
+
+}
 
 
 const Chat = () => {
@@ -111,21 +134,26 @@ const Chat = () => {
         <input type='text' onKeyPress={displayUser} />
         <Modale revele={revele} toggle={toggle} name={userFound.login} />
       </div>
-
+      {/* Barre d'input pour ajouter un salon */}
+      <div>
+        <p style={chatTitle}>Add a salon</p>
+        <input type='text' onKeyPress={sendNewSalon} />
+      </div>
       {/* Affichage de l'array Salons par iteration */}
       {salons.map((salon) => ( 
       <button onClick={() => handleClick(salon)}>
-          {salon}
+          <div style={salonName}>{salon}</div>
         </button>))}
-        {/* Barre d'input pour ajouter un salon */}
-      <div>"Add a salon"</div>  
-        <input type='text' onKeyPress={sendNewSalon} />
-        {/* Barre d'input pour ajouter un message */}
-      <input type='text' onKeyPress={sendMessage} />
-      {/* Affichage de la variable message detenant tout l'historique des messages*/}
+       
+        <div style={chatBox} ><p style={chatTitle}>{currentSalon}</p>
+        {/* Affichage de la variable message detenant tout l'historique des messages*/}
       {message.map((msg) => (
-        <div>{msg}</div>
+        <div style={messageSent}>{msg}</div>
       ))}
+        {/* Barre d'input pour ajouter un message */}
+        <input type='text' onKeyPress={sendMessage} />
+      
+      </div>
    </div>
   );
 }
