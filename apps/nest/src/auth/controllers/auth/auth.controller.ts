@@ -142,6 +142,6 @@ export class AuthController {
 async logOut(@Req() request) {
 request.logOut();
 request.session.cookie.maxAge = 0;
-return("Nice one. You logged out!")
+request.user.isConnected = false;
 }
 }

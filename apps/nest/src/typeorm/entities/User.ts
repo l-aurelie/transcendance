@@ -3,6 +3,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany } from 'typeorm';
 import { RoomEntity } from 'src/chat/model/room.entity';
 import { Socket } from './Socket';
+import { FriendRequest } from './friend-request';
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -21,8 +22,11 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({unique: true, nullable: true})
     email: string;
 
-  //  @Column()
-  //  password:string;
+    @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.sender)
+    RequestsSent: FriendRequest[]; 
+
+    @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.receiver)
+    RequestsReceived: FriendRequest[]; 
 
     @Column({default: undefined, nullable: true})
     authConfirmToken: number;
