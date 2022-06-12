@@ -41,8 +41,9 @@ const salonName = {
 }
 
 
-const Chat = () => {
+const Chat = (props) => {
 
+  const actualUser = props.dataFromParent;
   const [users, setUsers] = useState([]);// Tous les users de la db
   const [userFound, setUserFound] = useState([]); // Contient l'utilisateur si trouve
   const {revele, toggle} = LogiqueModale();// Outils affichage users apres recherche
@@ -90,8 +91,7 @@ const Chat = () => {
     //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
     useEffect(() => {
       socket.on('newsalon', data => {
-        console.log(data);
-        setSalons((salons) => {
+            setSalons((salons) => {
           return ([...salons, data]); });
        });
       }, [])
@@ -109,8 +109,8 @@ const Chat = () => {
   //emit les alon cree par l'utilisateur a tous les autres utilisateurs
   const sendNewSalon = (event) => {
     if(event.key === 'Enter') {
-      console.log(event.target.value)
-      socket.emit('addsalon', event.target.value);
+      console.log(actualUser.id);
+      socket.emit('addsalon', actualUser.id, event.target.value);//, actualUser.id);
       event.target.value = "";
     }
   }

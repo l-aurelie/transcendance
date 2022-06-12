@@ -30,10 +30,10 @@ import { RoomService } from 'src/chat/service/room.service';
   },
   
 ],
-imports: [
+imports: [ UsersModule,
   ConfigModule.forRoot({envFilePath: '.env'}),
 
-  HttpModule, TypeOrmModule.forFeature([User, Socket,FriendRequest, RoomEntity]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, RoomEntity, User]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
 
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {

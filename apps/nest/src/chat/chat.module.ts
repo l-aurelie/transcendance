@@ -3,7 +3,9 @@ import { ChatGateway } from './chat.gateway';
 import { RoomService } from './service/room.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomEntity } from 'src/typeorm';
-import { SocketService } from 'src/users/users.service';
+import { User } from 'src/typeorm';
+import { SocketService, UsersService } from 'src/users/users.service';
+import { UsersModule } from 'src/users/users.module';
 
 
 @Module({

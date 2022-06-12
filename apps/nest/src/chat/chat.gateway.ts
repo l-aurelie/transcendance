@@ -16,7 +16,7 @@ import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
 
 // this decorator will allow us to make use of the socket.io functionnalitu
-@WebSocketGateway({ cors: '*:*' })
+@WebSocketGateway({ cors: 'http://localhost:4200' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // We set up a variable 'server' with the decorator which will give us access to the server instance
     // we then can use this to trigger events and send data to connected clients
@@ -28,7 +28,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private socketService: SocketService,
         @InjectRepository(Socket) private socketRepo : Repository<Socket>,
         @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
-         private roomService: RoomService
+         private roomService: RoomService,
+         private userService: UsersService
         ) {}
 
 
@@ -86,12 +87,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('addsalon')
     // event d'ajout de salon
-    async addsalon(client, salon_to_add) {
-        const getSoc = this.socketRepo.findOne({name: client.id});
-        const creatorRoom = (await getSoc).user;
-        const newRoom = {name : salon_to_add, creatorId: creatorRoom.id};
+    async addsalon(client, infos) {
+
+
+        console.log(infos[0]);
+        const creatorRoom = await this.userService.findUserById(infos[0]);
+   //     const getSoc = await this.socketRepo.findOne({name: client.id});
+   //     console.log("hey here is addsalon!2");
+   //     console.log(client.id, getSoc);
+   //     const creatorRoom = await getSoc.user;
+   //     console.log("hey here is addsalon!3");
+        const newRoom = {name : infos[1], creatorId: infos[0]};
+   //     console.log("hey here is addsalon!4");
         this.roomService.createRoom(newRoom, creatorRoom);
-        this.server.emit('newsalon', salon_to_add);
+   //     console.log("hey here is addsalon!5");
+        this.server.emit('newsalon', infos[1]);
     }
 }
 

@@ -5,6 +5,8 @@ import Logo from '../components/Logo';
 import Game from '../components/Game';
 import UserProfil from '../components/UserProfil';
 import Chat from '../components/Chat';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 // import Socket from './Socket';
 
 /* Style (insere dans la div jsx) */
@@ -25,16 +27,22 @@ const bodyStyle = {
 }
 
 const Home = () => {
-  
+    const [profil, setProfil] = useState([]);
+    useEffect(() => {        
+        axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
+       console.log('in home: ', res.data);
+        setProfil(res.data); 
+      })
+    }, [])
     return (
         <div>
             <div style={headStyle}>
                 <Logo></Logo>
-                <UserProfil></UserProfil>
+                <UserProfil dataFromParent={profil}></UserProfil>
             </div>
             <div style={bodyStyle}>
                 <Game></Game>
-                <Chat></Chat>
+                <Chat dataFromParent={profil}></Chat>
             </div>
         </div>
        
