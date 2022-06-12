@@ -35,6 +35,7 @@ export interface IRoom {
     name? : string;
     description?  : string;
     users? : IUser[];
+    creatorId? : number;
     createdAt?: Date;
     updatedAt? : Date;
 }

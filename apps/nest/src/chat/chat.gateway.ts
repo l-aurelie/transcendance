@@ -89,7 +89,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async addsalon(client, salon_to_add) {
         const getSoc = this.socketRepo.findOne({name: client.id});
         const creatorRoom = (await getSoc).user;
-        const newRoom = {name : salon_to_add, creator: creatorRoom.id};
+        const newRoom = {name : salon_to_add, creatorId: creatorRoom.id};
         this.roomService.createRoom(newRoom, creatorRoom);
         this.server.emit('newsalon', salon_to_add);
     }
