@@ -5,7 +5,7 @@ import { IntraStrategy } from './strategies';
 import { UsersModule } from '../users/users.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Socket, User } from 'src/typeorm';
+import { Socket, User, RoomEntity } from 'src/typeorm';
 import { SessionSerializer } from './utils/Serializer';
 import { HttpModule } from '@nestjs/axios';
 
@@ -16,12 +16,13 @@ import { SocketService, UsersService } from 'src/users/users.service';
 import { ConfigModule } from '@nestjs/config';
 import { ChatGateway } from 'src/chat/chat.gateway';
 import { FriendRequest } from 'src/typeorm/entities/friend-request';
+import { RoomService } from 'src/chat/service/room.service';
 
 
 @Module({
   controllers: [AuthController, createRandomUser, verifyCode ],
   providers: [IntraStrategy, ChatGateway, /*we give our module access to our strategy*/
-  SessionSerializer, AuthService, UsersService, SocketService,
+  SessionSerializer, AuthService, UsersService, SocketService, RoomService,
   {
     /*we can now use authservice functions from auth.service.ts in our files by injecting AUTH_SERVICE*/
     provide: 'AUTH_SERVICE',
@@ -31,11 +32,9 @@ import { FriendRequest } from 'src/typeorm/entities/friend-request';
 ],
 imports: [
   ConfigModule.forRoot({envFilePath: '.env'}),
-<<<<<<< HEAD
-  HttpModule, TypeOrmModule.forFeature([User, Socket]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
-=======
-  HttpModule, TypeOrmModule.forFeature([User, FriendRequest]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
->>>>>>> 421e018798707079300589754f7828cc55da3dff
+
+  HttpModule, TypeOrmModule.forFeature([User, Socket,FriendRequest, RoomEntity]), UsersModule, //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {
         service: "gmail",

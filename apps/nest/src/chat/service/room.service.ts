@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoomEntity } from 'src/chat/model/room.entity';
+import { RoomEntity } from 'src/typeorm/entities/Room';
 import { Repository } from 'typeorm';
-import { IRoom } from 'src/chat/model/room.interface';
+import { IRoom } from 'src/typeorm/entities/Room';
 import IUser from 'src/typeorm/entities/User';
 //import {IPaginationOptions, paginate, Pagination} from 'nestjs-typeorm-paginate';
 @Injectable()

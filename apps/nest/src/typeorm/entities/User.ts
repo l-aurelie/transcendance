@@ -1,7 +1,7 @@
 /*samantha laura*/
 
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany } from 'typeorm';
-import { RoomEntity } from 'src/chat/model/room.entity';
+import { RoomEntity } from './Room';
 import { Socket } from './Socket';
 import { FriendRequest } from './friend-request';
 

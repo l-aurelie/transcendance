@@ -10,7 +10,7 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { IntraAuthGuard } from 'src/auth/guards';
-import { Socket, User } from 'src/typeorm';
+import { Socket, User, RoomEntity } from 'src/typeorm';
 import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
@@ -23,7 +23,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server;
     users: number = 0;
 
-    constructor(private userService: UsersService, @InjectRepository(User) private userRepo : Repository<User>, private socketService: SocketService, @InjectRepository(Socket) private socketRepo : Repository<Socket>) {}
+    constructor(
+        @InjectRepository(User) private userRepo : Repository<User>,
+        private socketService: SocketService,
+        @InjectRepository(Socket) private socketRepo : Repository<Socket>,
+        @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
+         private roomService: RoomService
+        ) {}
 
 
     // The handle connection hooks will keep track of clients connections and disconnection
@@ -81,13 +87,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('addsalon')
     // event d'ajout de salon
     async addsalon(client, salon_to_add) {
-        const newRoom = {name: salon_to_add, users: client};
-        console.log(client.id);
-        //const actualUser = this.userRepo.findUserById(this.users);
-        //this.create
-        //tous les users ecoutant le channel newsalon (donc tt le monde) recoivent l'ajout de salon
-       // console.log(salon_to_add);
-       // console.log(this.users);
+        const getSoc = this.socketRepo.findOne({name: client.id});
+        const creatorRoom = (await getSoc).user;
+        const newRoom = {name : salon_to_add, creator: creatorRoom.id};
+        this.roomService.createRoom(newRoom, creatorRoom);
         this.server.emit('newsalon', salon_to_add);
     }
 }

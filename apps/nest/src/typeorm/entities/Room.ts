@@ -1,25 +1,40 @@
 import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn, ManyToMany, JoinTable } from "typeorm";
 import { User } from "src/typeorm";
+import IUser from "src/typeorm/entities/User";
 
 @Entity()
-export class RoomEntity {
+export class RoomEntity implements IRoom {
 
     @PrimaryGeneratedColumn()
     id: number;
  
-    @Column()
+    @Column({nullable: true})
     name:string;
 
-    @Column()
+    @Column({nullable:true})
     description:string;
 
     @ManyToMany(() => User)
     @JoinTable()
     users: User[];
 
+    @Column()
+    creatorId: number;
+
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;
+}
+
+
+
+export interface IRoom {
+    id?: number;
+    name? : string;
+    description?  : string;
+    users? : IUser[];
+    createdAt?: Date;
+    updatedAt? : Date;
 }

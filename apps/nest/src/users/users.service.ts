@@ -21,18 +21,7 @@ export class UsersService {
     findUserByLogin(login: string): Promise<User> {
         return this.userRepo.findOne(login);//TODO: findOne or fail
         //return this.userRepo.findOne( { login: string } );
-<<<<<<< HEAD
-    };
-
-//    async findUserBySocket(skt: string){ //getter pour trouver user par id
-  //      console.log(skt);
-   //     const usr = await this.userRepo.findOne( {socket: skt} );
-    //    return usr;
-   // };
-
-=======
     };   
->>>>>>> 421e018798707079300589754f7828cc55da3dff
     /* Retourne tous les utilisateurs present dans la table users */
     findAll(): Promise<User[]> {
         return this.userRepo.find( { } );
