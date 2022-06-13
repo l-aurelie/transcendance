@@ -4,6 +4,8 @@ import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param } from '@
 import { UsersService } from './users.service';
 import { AuthenticatedGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
+import { FriendRequest } from 'src/typeorm/entities/friend-request';
+import { User } from 'src/typeorm/entities/User';
 
 /* localhost:3000/users */
 @Controller('users')
@@ -33,6 +35,26 @@ export class UsersController {
       console.log('=====getUserByLogin()', user);
       return (user);
    }
+
+   /* Retourne le user [id] */
+   @Get(':id')
+   async getUserByID(@Param() userStringId: string): Promise<User> {
+      const userId = parseInt(userStringId);
+      const user = await this.userServ.findUserById(userId);
+      return (user);
+   }
+
+     /* send friend request */
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/send/:receiverId')
+     async sendFriendRequest(
+        @Param('receiverId') receiverStringId: string,
+        @Req() request,
+     ): Promise<FriendRequest | { error: string }> {
+      const receiverId = parseInt(receiverStringId);
+      const requestSent = this.userServ.sendFriendRequest(receiverId, request.user);
+      return requestSent ;
+     }
 
 /*
     @Get()
