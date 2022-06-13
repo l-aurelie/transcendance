@@ -94,7 +94,7 @@ export class AuthController {
    //  console.log(request.user);
         //on retourne quoi ?
      //   return {login:"yoooooooo"};
-     if (request.user.isVerified === false)
+     if (request.user.twoFA === true && request.user.isVerified === false)
         res.redirect('http://localhost:4200/Verify');
       else
         res.redirect('http://localhost:4200/Home');
@@ -143,5 +143,6 @@ async logOut(@Req() request) {
 request.logOut();
 request.session.cookie.maxAge = 0;
 request.user.isConnected = false;
+request.user.isVerified = false;
 }
 }

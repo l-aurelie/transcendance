@@ -17,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ChatGateway } from 'src/chat/chat.gateway';
 import { FriendRequest } from 'src/typeorm/entities/friend-request';
 import { RoomService } from 'src/chat/service/room.service';
+import { RoomUser } from 'src/typeorm/entities/RoomUser';
 
 
 @Module({
@@ -33,7 +34,7 @@ import { RoomService } from 'src/chat/service/room.service';
 imports: [ UsersModule,
   ConfigModule.forRoot({envFilePath: '.env'}),
 
-  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, RoomEntity, User]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, RoomEntity, User, RoomUser]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
 
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {

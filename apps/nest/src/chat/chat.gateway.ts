@@ -37,7 +37,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleConnection(client) {
         // A client has connected
         this.users++;
-        console.log(this.users);
+     //   console.log(this.users);
         // Notify connected clients of current users
         
         this.server.emit('users', this.users);
@@ -90,17 +90,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
         console.log(infos[0]);
-        const creatorRoom = await this.userService.findUserById(infos[0]);
+       // const creatorRoom = await this.userService.findUserById(infos[0]);
    //     const getSoc = await this.socketRepo.findOne({name: client.id});
    //     console.log("hey here is addsalon!2");
    //     console.log(client.id, getSoc);
    //     const creatorRoom = await getSoc.user;
    //     console.log("hey here is addsalon!3");
-        const newRoom = {name : infos[1], creatorId: infos[0]};
+    //    const newRoom = {name : infos[2], creatorId: infos[0]};
    //     console.log("hey here is addsalon!4");
-        this.roomService.createRoom(newRoom, creatorRoom);
+        const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2]);
+        this.roomService.associateUserRoom(newRoom, infos[0], infos[1]);
    //     console.log("hey here is addsalon!5");
-        this.server.emit('newsalon', infos[1]);
+        this.server.emit('newsalon', infos[2]);
     }
 }
 

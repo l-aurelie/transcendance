@@ -17,7 +17,7 @@ export class UsersController {
    @Get()
    getUser(@Headers() header, @Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
-     console.log('===getUser', user);
+    // console.log('===getUser', user);
      return (user);
      }
      
@@ -25,7 +25,7 @@ export class UsersController {
    @Get('all')
    async getUsers() {
       const users = await this.userServ.findAll();
-      console.log('GetUsers()');
+    //  console.log('GetUsers()');
       return (users);
    }
    
@@ -33,7 +33,7 @@ export class UsersController {
    @Get(':login')
    async getUserByLogin(@Param() params) {
       const user = await this.userServ.findUserByLogin(params);
-      console.log('=====getUserByLogin()', user);
+     // console.log('=====getUserByLogin()', user);
       return (user);
    }
 

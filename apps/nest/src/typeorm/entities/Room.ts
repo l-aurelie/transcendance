@@ -11,12 +11,16 @@ export class RoomEntity implements IRoom {
     @Column({nullable: true})
     name:string;
 
-    @Column({nullable:true})
-    description:string;
+    @Column({default: false})
+    private: boolean;
+  //  @Column({nullable:true})
+  //  description:string;
 
-    @ManyToMany(() => User)
-    @JoinTable()
-    users: User[];
+ //   @ManyToMany(() => User)
+ //   @JoinTable()
+ //   users: User[];
+    @Column({nullable:true})
+    password: string;
 
     @Column()
     creatorId: number;
@@ -33,8 +37,7 @@ export class RoomEntity implements IRoom {
 export interface IRoom {
     id?: number;
     name? : string;
-    description?  : string;
-    users? : IUser[];
+    private? : boolean;
     creatorId? : number;
     createdAt?: Date;
     updatedAt? : Date;

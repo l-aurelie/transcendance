@@ -110,11 +110,17 @@ const Chat = (props) => {
   const sendNewSalon = (event) => {
     if(event.key === 'Enter') {
       console.log(actualUser.id);
-      socket.emit('addsalon', actualUser.id, event.target.value);//, actualUser.id);
+      socket.emit('addsalon', actualUser.id,false, event.target.value);//, actualUser.id);
       event.target.value = "";
     }
   }
-
+  const sendNewPrSalon = (event) => {
+    if(event.key === 'Enter') {
+      console.log(actualUser.id);
+      socket.emit('addsalon', actualUser.id, true, event.target.value);//, actualUser.id);
+      event.target.value = "";
+    }
+  }
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
   const handleClick = (salon) => {
@@ -138,6 +144,10 @@ const Chat = (props) => {
       <div>
         <p style={chatTitle}>Add a salon</p>
         <input type='text' onKeyPress={sendNewSalon} />
+      </div>
+      <div>
+        <p style={chatTitle}>Add a private salon</p>
+        <input type='text' onKeyPress={sendNewPrSalon} />
       </div>
       {/* Affichage de l'array Salons par iteration */}
       {salons.map((salon) => ( 

@@ -28,17 +28,20 @@ export class User implements IUser { // donne la composition de User, permet de 
     @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.receiver)
     RequestsReceived: FriendRequest[]; 
 
-    @Column({default: undefined, nullable: true})
+    @Column({default: undefined, nullable:true})
     authConfirmToken: number;
 
-    @Column({default: true, nullable: true})
+    @Column({default: false})
     isVerified: boolean;
 
-    @Column({default: false, nullable: true})
+    @Column({default: true})
     isConnected: boolean;
+
+    @Column({default:false})
+    twoFA: boolean;
  
-    @ManyToMany(() => RoomEntity, room => room.users)
-    rooms : RoomEntity;
+ //   @ManyToMany(() => RoomEntity, room => room.users)
+ //   rooms : RoomEntity;
  
     @OneToMany(() => Socket, socket => socket.user)
     socket: Socket[];
@@ -57,5 +60,6 @@ interface IUser {
         authConfirmToken: number;
         isVerified: boolean;
         createAt: Date;
+        twoFA?: boolean;
     }
     export default IUser;
