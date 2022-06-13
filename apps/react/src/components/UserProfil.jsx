@@ -2,13 +2,11 @@
 //TODO: Mettre le bouton login dans son propre composant ?
 
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/modale';
-import {socket} from './Socket';
 const UserProfil = (props) => {
     const user = props.dataFromParent;
-    const [profil, setProfil] = useState([]);
     const {revele, toggle} = LogiqueModale();
     
     const [connected, setConnected] = useState([false]);
@@ -18,7 +16,6 @@ const UserProfil = (props) => {
      console.log('in user profil: ', user);
 //      setProfil(res.data);
  //     setConnected(true);//TODO: pk true ici ? 
-      socket.emit('whoAmI', user);
  //   })
 //  }, [])
   

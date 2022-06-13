@@ -50,6 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //const user = await this.userService.findUserBySocket(client.id);
         //this.userRepo.remove({socket : client.id});
         // Notify connected clients of current users
+        await this.socketRepo.createQueryBuilder().delete().where({ name: client.id }).execute();
         this.server.emit('users', this.users);
     }
 
@@ -59,14 +60,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async onChat(client, data) {
         //any clients listenning  for the chat event on the data.p1 channel would receivethis data instantly
         console.log('sendMessage');
-        const socket = await this.socketRepo.find({ relations: ["user"],
+        const socket = await this.socketRepo.findOne({ relations: ["user"],
         where: {
             name : client.id
         } });
         //const socket = await socks.find(client.id);
         console.log('here===', socket);
-        const ok = new Date(Date.now()).toLocaleString();
-        this.server.emit(data.p1, '[' + socket[0].user.login + '] ' +  '[' + ok + '] ' + data.p2);
+        const time = new Date(Date.now()).toLocaleString();
+        this.server.emit(data.p1, '[' + socket.user.login + '] ' +  '[' + time + '] ' + data.p2);
     }
  
     @SubscribeMessage('whoAmI')
@@ -78,9 +79,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const sock = this.socketRepo.create();
       sock.name = client.id;
       sock.user = user;
-     
       await this.socketRepo.save(sock);
-      console.log('here', sock.user);
       //console.log(user.socket); 
      //this.userRepo.update({id : user.id},{socket : client.id});
     }
