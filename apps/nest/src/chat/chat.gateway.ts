@@ -66,7 +66,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //const socket = await socks.find(client.id);
         console.log('here===', socket);
         const ok = new Date(Date.now()).toLocaleString();
-       // this.server.emit(data.p1, '[' + socket.user.login + '] ' +  '[' + ok + '] ' + data.p2);
+        this.server.emit(data.p1, '[' + socket[0].user.login + '] ' +  '[' + ok + '] ' + data.p2);
     }
  
     @SubscribeMessage('whoAmI')
