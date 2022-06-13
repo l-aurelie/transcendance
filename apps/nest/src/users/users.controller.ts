@@ -1,11 +1,12 @@
 /*aurelie, samantha*/
 
-import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { FriendRequest } from 'src/typeorm/entities/friend-request';
 import { User } from 'src/typeorm/entities/User';
+import { FriendRequestStatus } from 'src/typeorm/entities/friend-request-interface';
 
 /* localhost:3000/users */
 @Controller('users')
@@ -44,7 +45,7 @@ export class UsersController {
       return (user);
    }
 
-     /* send friend request */
+     /* send friend request to receiverId*/
      @UseGuards(AuthenticatedGuard)
      @Get('friendRequest/send/:receiverId')
      async sendFriendRequest(
@@ -55,6 +56,47 @@ export class UsersController {
       const requestSent = this.userServ.sendFriendRequest(receiverId, request.user);
       return requestSent ;
      }
+
+   /*check status of friend request that we have sent to receiverID*/
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/status/:receiverId')
+     async getFriendRequestStatus(
+        @Param('receiverId') receiverStringId: string,
+        @Req() request,
+     ): Promise<FriendRequestStatus> {
+      const receiverId = parseInt(receiverStringId);
+      const status = this.userServ.getFriendRequestStatus(receiverId, request.user);
+      return status ;
+     }
+
+      /*respond to friend request with newStatus (accepted/declined/pending) */
+      @UseGuards(AuthenticatedGuard)
+      @Put('friendRequest/respond/:friendRequestId')
+      async respondToFriendRequest(
+         @Param('friendRequestId') friendRequestStringId: string,
+         @Body() newStatus: FriendRequestStatus,
+      ): Promise<FriendRequestStatus> {
+       const friendRequestId = parseInt(friendRequestStringId);
+       return this.userServ.respondToFriendRequest(friendRequestId, newStatus);
+      }
+
+      /*returns all your received friend requests*/
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/me/received-requests')
+     async getReceivedFriendRequests(
+        @Req() request,
+     ): Promise<FriendRequest[]> {
+      return this.userServ.getReceivedFriendRequests(request.user);
+     }
+
+      /*returns all your sent friend requests*/
+      @UseGuards(AuthenticatedGuard)
+      @Get('friendRequest/me/sent-requests')
+      async getSentFriendRequests(
+         @Req() request,
+      ): Promise<FriendRequest[]> {
+       return this.userServ.getSentFriendRequests(request.user);
+      }
 
 /*
     @Get()

@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import { User } from "src/typeorm";
 import { Socket } from "src/typeorm";
 import { FriendRequest } from "src/typeorm/entities/friend-request";
+import { FriendRequestStatus } from "src/typeorm/entities/friend-request-interface";
 
 @Injectable()
 export class UsersService {
@@ -31,6 +32,11 @@ export class UsersService {
     findAll(): Promise<User[]> {
         return this.userRepo.find( { } );
     };
+
+
+/*********************/
+/****FRIEND REQUESTS */
+/*********************/
 
 async hasRequestBeenSentOrReceived(
     sender: User, 
@@ -60,6 +66,38 @@ async sendFriendRequest(receiverId: number, sender: User): Promise<FriendRequest
     }
     return this.friendRequestRepository.save(MyFriendRequest);
 }
+
+async getFriendRequestStatus(receiverId: number, sender: User): Promise<FriendRequestStatus> {
+    const receiver = await this.findUserById(receiverId);
+    const MyReq = await this.friendRequestRepository.findOne({
+        where: [
+        { sender: sender, receiver: receiver },
+    ],
+    });
+    return MyReq.status;
+}
+
+async getFriendRequestUserById(FriendRequestId: number) : Promise<FriendRequest>{
+    return this.friendRequestRepository.findOne( {id: FriendRequestId} );
+}
+
+async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestStatus) : Promise<FriendRequestStatus> {
+    const friendReq = this.getFriendRequestUserById(FriendRequestId);
+    const ret = await this.friendRequestRepository.save({
+        ...friendReq,
+        status: newStatus,
+    });
+    return ret.status;
+}
+
+async getReceivedFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
+    return this.friendRequestRepository.find({receiver: currentUser });
+}
+
+async getSentFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
+    return this.friendRequestRepository.find({sender: currentUser });
+}
+
 }
 
 @Injectable()
