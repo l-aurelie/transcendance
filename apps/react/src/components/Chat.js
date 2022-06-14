@@ -108,21 +108,7 @@ const Chat = (props) => {
     }
   }
 
-  //emit les alon cree par l'utilisateur a tous les autres utilisateurs
-  const sendNewSalon = (event) => {
-    if(event.key === 'Enter') {
-      console.log(actualUser.id);
-      socket.emit('addsalon', actualUser.id,false, event.target.value);//, actualUser.id);
-      event.target.value = "";
-    }
-  }
-  const sendNewPrSalon = (event) => {
-    if(event.key === 'Enter') {
-      console.log(actualUser.id);
-      socket.emit('addsalon', actualUser.id, true, event.target.value);//, actualUser.id);
-      event.target.value = "";
-    }
-  }
+
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
   const handleClick = (salon) => {
@@ -131,21 +117,7 @@ const Chat = (props) => {
     setCurrentSalon(salon);
   };
 
-/*
-  <div>
 
-  <button onClick={toggle}>
-    <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={user.avatar} alt="description yes"/>
-  </button>
-  <Modale revele={revele} toggle={toggle} name={user.login} />
-  
-  <div>{user.login}</div>
-
-  <button onClick={handleClick}>
-        Logout
-      </button>
-    </div>
-*/
   return (
     <div style={chatStyle}>
       {/* Barre de recherche d'un user + affichage de userFound */}
