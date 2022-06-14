@@ -6,6 +6,8 @@ import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
 import Modale from "./ModaleWindow/modale";
 
+import SalonModale from "./ModaleWindow/salonModale";
+
 /* Style (insere dans la div jsx) */
 const chatStyle = {
   display: 'flex',
@@ -129,9 +131,21 @@ const Chat = (props) => {
     setCurrentSalon(salon);
   };
 
+/*
+  <div>
 
- 
+  <button onClick={toggle}>
+    <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={user.avatar} alt="description yes"/>
+  </button>
+  <Modale revele={revele} toggle={toggle} name={user.login} />
+  
+  <div>{user.login}</div>
 
+  <button onClick={handleClick}>
+        Logout
+      </button>
+    </div>
+*/
   return (
     <div style={chatStyle}>
       {/* Barre de recherche d'un user + affichage de userFound */}
@@ -140,14 +154,12 @@ const Chat = (props) => {
         <input type='text' onKeyPress={displayUser} />
         <Modale revele={revele} toggle={toggle} name={userFound.login} />
       </div>
-      {/* Barre d'input pour ajouter un salon */}
+      {/* Barre d'input pour ajouter un salon */}  
       <div>
-        <p style={chatTitle}>Add a salon</p>
-        <input type='text' onKeyPress={sendNewSalon} />
-      </div>
-      <div>
-        <p style={chatTitle}>Add a private salon</p>
-        <input type='text' onKeyPress={sendNewPrSalon} />
+        <button onClick={toggle}>
+          <p style={chatTitle}>Add a salon</p>
+        </button> 
+        <SalonModale revele={revele} toggle={toggle} user={actualUser}/>
       </div>
       {/* Affichage de l'array Salons par iteration */}
       {salons.map((salon) => ( 

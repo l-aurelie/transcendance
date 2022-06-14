@@ -11,19 +11,12 @@ const UserProfil = (props) => {
     
     const [connected, setConnected] = useState([false]);
 
-   // useEffect(() => {
-   //   axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-     console.log('in user profil: ', user);
-//      setProfil(res.data);
- //     setConnected(true);//TODO: pk true ici ? 
- //   })
-//  }, [])
+   
   
   // fonction trigger lorsque l'on clique sur le bouton, qui va lgout l'utilisateur s'il est connecte ou le login s'il ne l'est pas
   const handleClick = event => {
     if (connected) {
       axios.get("http://localhost:3000/auth/logout", { withCredentials:true })
-      //window.location.href="http://localhost:3000/auth/login";
       setConnected(false);
     }
     else {
