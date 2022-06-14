@@ -51,8 +51,8 @@ const Chat = (props) => {
   const {revele, toggle} = LogiqueModale();// Outils affichage users apres recherche
   
   const [message, setMessage] = useState([]);// Message a envoyer au salon
-  const [currentSalon, setCurrentSalon] = useState(['chat']);// Salon courant
-  const [salons, setSalons] = useState(['chat']); //Array de tous les salons a afficher, que l'on peut selectionner
+  const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
+  const [salons, setSalons] = useState([]); //Array de tous les salons a afficher, que l'on peut selectionner
 
   /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
   useEffect(() => {
