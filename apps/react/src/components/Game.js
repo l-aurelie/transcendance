@@ -1,8 +1,9 @@
-import React, { useRef, useEffect} from 'react'
+import React, { useRef, useEffect, useState} from 'react'
 import { socket } from "./Socket";
 
 const Game = props => {
-  
+ 
+  const [roomName, setRoomName] = useState();
   const canvasRef = useRef(null);
   let begin = 0;
   
@@ -44,20 +45,26 @@ const Game = props => {
 
  
   const handleClick = () => {
-    console.log("Create room for users");
     createNewGame();
     //create socket to handle and wait for user
     begin = 1;
   };
 
   const createNewGame = () => {
-    this.socket.emit('createGame');
+    socket.emit('createGame');
   }
 
+  useEffect(() => {
+    socket.on("game-start", data => {
+      console.log("in game-start, ", data);
+      socket.emit('join', data);
+      setRoomName(data);
+      socket.emit('inWhichRoom', data);
+    });
+  }, [])
   
   // this.socket.on('initilaisation', this.drawBeginGame);
-  
-  useEffect(() => {
+   useEffect(() => {
 
   
     const canvas = canvasRef.current
@@ -80,8 +87,6 @@ const Game = props => {
     //Our draw came here
     const render = () => {
       if(begin === 1) {
-       
-       
         drawWaitingGame(context)
         // console.log('ici;');
         // console.log(socket.id);
@@ -104,9 +109,9 @@ const Game = props => {
   }, [])
   
   return (
-    <div>
+  <div>
   <canvas ref={canvasRef} width={800} height={800} {...props}/>
-  <button onClick={() => handleClick()}>PLAY PONG</button>
+  <button onClick={handleClick}>PLAY PONG</button>
   </div>
   )
 }

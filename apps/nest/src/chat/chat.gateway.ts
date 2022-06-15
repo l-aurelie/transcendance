@@ -16,6 +16,8 @@ import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
 import { MessageService } from './service/message.service';
 
+export var gameQueue = [];
+
 // this decorator will allow us to make use of the socket.io functionnalitu
 @WebSocketGateway({ cors: 'http://localhost:4200' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -60,6 +62,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('join')
     async joinRoom(client, name) {
       client.join(name);
+      console.log("Join ", {name}, "in server");
+    }
+
+    @SubscribeMessage('inWhichRoom')
+    async whichRoom(client, name) {
+      let clientId =client.id;
+      console.log("Hey user ", {clientId}, " bienvenue dans la room ",{name});
     }
 
     @SubscribeMessage('leave')
@@ -123,30 +132,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //--------------------------------------------------------------------------------------------//
     //----------------------------------GAME------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
-
+    
     matchMake(gameQueue: any)
     {
-        if(gameQueue.lenght == 2)
+        console.log("match Make");
+        console.log("gameQueue length", gameQueue.length);
+        let roomName;
+        if(gameQueue.length %2 == 0)//TODO 
         {
-            
+            roomName = gameQueue[0] + gameQueue[1];
+            console.log("roomName=", roomName);
+            this.server.to(gameQueue[0]).emit("game-start",  roomName);  
+            this.server.to(gameQueue[1]).emit("game-start",  roomName);  
         }
+     //   this.server.to(roomName).emit("Bienvenue dans la room");
+        while(gameQueue.length >= 2)
+        {
+            gameQueue.pop();
+        }
+        gameQueue =[];
     }
 
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
-    async createNewGame(socket: Socket, roomCode: string) {
-        let gameQueue = [];
-        gameQueue.push(socket.id);
-        //matchMake(gameQueue);
-        //any clients listenning  for the chat event on the data.p1 channel would receivethis data instantly
+    async createNewGame(socket: Socket) {
+        
+        if(!gameQueue.find(element => socket.id === element))
+            gameQueue.push(socket.id);
+        console.log("gameQueue = " , gameQueue);
+        this.matchMake(gameQueue);
         console.log('in create game');
-       //create a room id
-       let roomName = 2; // faudra fair eune fonction makeID
-      //this.server.emit('roomCode', roomName);
-      //this.server.join(roomName);
-      
-        //this.server.emit('initilaisation', 1);
-
     }
 }
 
