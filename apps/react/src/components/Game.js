@@ -4,17 +4,21 @@ import { socket } from "./Socket";
 const Game = props => {
  
   const [roomName, setRoomName] = useState();
+  const [posHL, setPosHL] = useState(200);
+  const [posHR, setPosHR] = useState(200);
+ // const [posH, setPosHX] = useState();
   const canvasRef = useRef(null);
   let begin = 0;
+ 
   
   const drawLeftPaddle = rect => {
     rect.fillStyle = 'red'
-    rect.fillRect(0, 200, 20, 100)
+    rect.fillRect(0, posHL, 20, 100)
   }
 
   const drawRightPaddle = rect => {
     rect.fillStyle = 'red'
-    rect.fillRect(780, 200, 20, 100)
+    rect.fillRect(780, posHR, 20, 100)
   }
 
   const drawBall = ctx => {
@@ -54,13 +58,21 @@ const Game = props => {
     socket.emit('createGame');
   }
 
+  const handleKey = (e) => {
+    console.log('handleKey');
+    if (e === 'q')
+      setPosHL(posHL + 20);
+  }
+  
+
   useEffect(() => {
     socket.on("game-start", data => {
       console.log("in game-start, ", data);
       socket.emit('join', data);
       setRoomName(data);
       begin = 2;
-      socket.emit('inWhichRoom', data);
+     // socket.emit('inWhichRoom', data);
+     // socket.off('game-start');
     });
   }, [])
   
@@ -111,7 +123,7 @@ const Game = props => {
   
   return (
   <div>
-  <canvas ref={canvasRef} width={800} height={800} {...props}/>
+  <canvas /*onKeyDown={() => handleKey()}*/ ref={canvasRef} width={800} height={800} {...props}/>
   <button onClick={handleClick}>PLAY PONG</button>
   </div>
   )
