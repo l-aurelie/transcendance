@@ -118,9 +118,9 @@ const Chat = (props) => {
   const handleClick = (salon) => {
     if (salon !== currentSalon) {
       socket.emit("leave", currentSalon);
-     };
-    setCurrentSalon(salon);
-  };
+      setCurrentSalon(salon);
+     }
+    };
 
 
   return (
