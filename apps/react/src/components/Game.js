@@ -6,7 +6,6 @@ const Game = props => {
   const [roomName, setRoomName] = useState();
   const [posHL, setPosHL] = useState(200);
   const [posHR, setPosHR] = useState(200);
- // const [posH, setPosHX] = useState();
   const canvasRef = useRef(null);
   let begin = 0;
  
@@ -48,38 +47,33 @@ const Game = props => {
   }
 
  
-  const handleClick = () => {
-    createNewGame();
-    //create socket to handle and wait for user
-    begin = 1;
+  
+ const handleClick = () => {
+  (async function() {
+     begin = 1;
+    })();
+    socket.emit('createGame');
   };
 
-  const createNewGame = () => {
-    socket.emit('createGame');
-  }
-
+/*
   const handleKey = (e) => {
     console.log('handleKey');
     if (e === 'q')
       setPosHL(posHL + 20);
   }
-  
+*/  
 
   useEffect(() => {
     socket.on("game-start", data => {
       console.log("in game-start, ", data);
-      socket.emit('join', data);
+   
       setRoomName(data);
       begin = 2;
-     // socket.emit('inWhichRoom', data);
-     // socket.off('game-start');
+
     });
   }, [])
   
-  // this.socket.on('initilaisation', this.drawBeginGame);
-   useEffect(() => {
-
-  
+   useEffect(() => { 
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
 
@@ -99,26 +93,18 @@ const Game = props => {
     
     //Our draw came here
     const render = () => {
-      if(begin === 1) {
+      if(begin === 1)
         drawWaitingGame(context)
-        // console.log('ici;');
-        // console.log(socket.id);
-        // Permit to create a room in the server-side
-       // socket.emit('join', 1);
-      }
       else if (begin ===  2)
-      {
         drawBeginGame(context)
-      //  socket.emit('join', 1);
-      }
+
      animationFrameId = window.requestAnimationFrame(render)
-      
     }
     render()
     
-    return () => {
-      window.cancelAnimationFrame(animationFrameId)
-    }
+   // return () => {
+      //window.cancelAnimationFrame(animationFrameId)
+    //}
   }, [])
   
   return (

@@ -34,7 +34,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @InjectRepository(Message) private messageRepo: Repository<Message>,
          private messageService: MessageService,
          private roomService: RoomService,
-         private userService: UsersService
+         private userService: UsersService,
+     //    private gameQueue: any[]
         ) {}
 
 
@@ -62,13 +63,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('join')
     async joinRoom(client, name) {
       client.join(name);
-      console.log("Join ", {name}, "in server");
-    }
-
-    @SubscribeMessage('inWhichRoom')
-    async whichRoom(client, name) {
-      let clientId =client.id;
-      console.log("Hey user ", {clientId}, " bienvenue dans la room ",{name});
     }
 
     @SubscribeMessage('leave')
@@ -111,20 +105,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('addsalon')
     // event d'ajout de salon
     async addsalon(client, infos) {
-
-
-        console.log(infos[0]);
-       // const creatorRoom = await this.userService.findUserById(infos[0]);
-   //     const getSoc = await this.socketRepo.findOne({name: client.id});
-   //     console.log("hey here is addsalon!2");
-   //     console.log(client.id, getSoc);
-   //     const creatorRoom = await getSoc.user;
-   //     console.log("hey here is addsalon!3");
-    //    const newRoom = {name : infos[2], creatorId: infos[0]};
-   //     console.log("hey here is addsalon!4");
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2]);
         this.roomService.associateUserRoom(newRoom, infos[0], infos[1]);
-   //     console.log("hey here is addsalon!5");
         this.server.emit('newsalon', infos[2]);
     }
 
@@ -133,18 +115,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //----------------------------------GAME------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     
-    matchMake(gameQueue: any)
+    matchMake()
     {
         console.log("match Make");
         console.log("gameQueue length", gameQueue.length);
         let roomName;
         if(gameQueue.length %2 == 0)//TODO 
         {
-            roomName = gameQueue[gameQueue.length-1] + gameQueue[gameQueue-2];
+            roomName = gameQueue[0].id + gameQueue[1].id;
             console.log("roomName=", roomName);
-            this.server.to(gameQueue[gameQueue.length-2]).emit("game-start",  roomName);  
-            this.server.to(gameQueue[gameQueue.length-1]).emit("game-start",  roomName);
-            gameQueue.splice(gameQueue.length - 2,2);
+            this.joinRoom(gameQueue[0], roomName);
+            this.joinRoom(gameQueue[1], roomName);
+            this.server.to(roomName).emit("game-start",  roomName);  
+            gameQueue.splice(0,2);
   //TODO : stock roomName?
         }
     }
@@ -153,11 +136,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
     async createNewGame(socket: Socket) {
         
-        if(!gameQueue.find(element => socket.id === element))
-            gameQueue.push(socket.id);
-        console.log("gameQueue = " , gameQueue);
-        this.matchMake(gameQueue);
-        console.log('in create game');
+        if(!gameQueue.find(element => socket.id === element.id))
+            gameQueue.push(socket);
+        this.matchMake();
     }
 }
 
