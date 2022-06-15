@@ -42,7 +42,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.users++;
      //   console.log(this.users);
         // Notify connected clients of current users
-        
+        console.log('ICI');
         this.server.emit('users', this.users);
         client.emit()
     }
@@ -117,6 +117,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.roomService.associateUserRoom(newRoom, infos[0], infos[1]);
    //     console.log("hey here is addsalon!5");
         this.server.emit('newsalon', infos[2]);
+    }
+
+
+    //--------------------------------------------------------------------------------------------//
+    //----------------------------------GAME------------------------------------------------------//
+    //--------------------------------------------------------------------------------------------//
+
+    matchMake(gameQueue: any)
+    {
+        if(gameQueue.lenght == 2)
+        {
+            
+        }
+    }
+
+    @SubscribeMessage('createGame')
+    // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
+    async createNewGame(socket: Socket, roomCode: string) {
+        let gameQueue = [];
+        gameQueue.push(socket.id);
+        //matchMake(gameQueue);
+        //any clients listenning  for the chat event on the data.p1 channel would receivethis data instantly
+        console.log('in create game');
+       //create a room id
+       let roomName = 2; // faudra fair eune fonction makeID
+      //this.server.emit('roomCode', roomName);
+      //this.server.join(roomName);
+      
+        //this.server.emit('initilaisation', 1);
+
     }
 }
 
