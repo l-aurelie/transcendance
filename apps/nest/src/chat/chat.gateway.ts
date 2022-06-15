@@ -140,17 +140,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         let roomName;
         if(gameQueue.length %2 == 0)//TODO 
         {
-            roomName = gameQueue[0] + gameQueue[1];
+            roomName = gameQueue[gameQueue.length-1] + gameQueue[gameQueue-2];
             console.log("roomName=", roomName);
-            this.server.to(gameQueue[0]).emit("game-start",  roomName);  
-            this.server.to(gameQueue[1]).emit("game-start",  roomName);  
+            this.server.to(gameQueue[gameQueue.length-2]).emit("game-start",  roomName);  
+            this.server.to(gameQueue[gameQueue.length-1]).emit("game-start",  roomName);
+            gameQueue.splice(gameQueue.length - 2,2);
+  //TODO : stock roomName?
         }
-     //   this.server.to(roomName).emit("Bienvenue dans la room");
-        while(gameQueue.length >= 2)
-        {
-            gameQueue.pop();
-        }
-        gameQueue =[];
     }
 
     @SubscribeMessage('createGame')

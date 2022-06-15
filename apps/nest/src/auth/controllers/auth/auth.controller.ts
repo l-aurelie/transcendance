@@ -140,9 +140,10 @@ export class AuthController {
 @UseGuards(AuthenticatedGuard)
 @Get('logout')
 async logOut(@Req() request) {
-request.logOut();
-request.session.cookie.maxAge = 0;
+
 request.user.isConnected = false;
 request.user.isVerified = false;
+request.logOut();
+request.session.cookie.maxAge = 0;
 }
 }

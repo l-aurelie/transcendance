@@ -59,6 +59,7 @@ const Game = props => {
       console.log("in game-start, ", data);
       socket.emit('join', data);
       setRoomName(data);
+      begin = 2;
       socket.emit('inWhichRoom', data);
     });
   }, [])
@@ -96,7 +97,7 @@ const Game = props => {
       else if (begin ===  2)
       {
         drawBeginGame(context)
-        socket.emit('join', 1);
+      //  socket.emit('join', 1);
       }
      animationFrameId = window.requestAnimationFrame(render)
       
