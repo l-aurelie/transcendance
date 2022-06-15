@@ -2,11 +2,11 @@
 //import axios from "axios";
 import React from "react";
 
-
-
+/* Formulaire de modif de profil */
 class UserForm extends React.Component {
     constructor(props) {
       super(props);
+      /* Valeurs par defaut */
       this.state = {
           login: '',
           email: '',
@@ -17,6 +17,7 @@ class UserForm extends React.Component {
       this.handleSubmit = this.handleSubmit.bind(this);
     }
   
+    /* Gestion des champs controles/chgt des valeur */
     handleChange(e) {
         const name = e.target.name;
         const type = e.target.type;
@@ -26,6 +27,7 @@ class UserForm extends React.Component {
         });
     }
   
+    /* Envoie du formulaire */
     handleSubmit(event) {
       alert('Le nom a été soumis : ' + this.state.value);
       event.preventDefault();

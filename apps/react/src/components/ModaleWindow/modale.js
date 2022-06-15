@@ -2,6 +2,7 @@
 import React from 'react';
 import Logo from '../Logo';
 import UserProfilExtended from '../UserProfilExtended'
+import UserForm from '../UserForm'
 
 /* Assombri l'arriere plan */
 const background = {
@@ -38,7 +39,7 @@ const Modale = ({revele, toggle, name}) => revele ? (
             {/* Composants contenus dans la fenetre */}
             <Logo />
             <UserProfilExtended name={name}/>
-            
+            <UserForm /> 
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>
