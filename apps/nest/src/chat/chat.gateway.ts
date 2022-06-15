@@ -10,7 +10,7 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { IntraAuthGuard } from 'src/auth/guards';
-import { Socket, User, RoomEntity, Message } from 'src/typeorm';
+import { Socket, User, RoomEntity, Message, RoomUser } from 'src/typeorm';
 import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
@@ -29,6 +29,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private socketService: SocketService,
         @InjectRepository(Socket) private socketRepo : Repository<Socket>,
         @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
+        @InjectRepository(RoomUser) private roomUserRepo: Repository<RoomUser>,
         @InjectRepository(Message) private messageRepo: Repository<Message>,
          private messageService: MessageService,
          private roomService: RoomService,
@@ -44,7 +45,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // Notify connected clients of current users
         console.log('ICI');
         this.server.emit('users', this.users);
-        client.emit()
     }
 
     async handleDisconnect(client) {
@@ -57,15 +57,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit('users', this.users);
     }
 
-    @SubscribeMessage('join')
-    async joinRoom(client, name) {
-      client.join(name);
-    }
+    @SubscribeMessage('fetchsalon')
+    async fetch_salon(client, name) {
+        const salons = await this.roomRepo.find({where: { private : false }});
+        console.log(salons);
+        client.emit('fetchsalon', salons);
+     }
 
-    @SubscribeMessage('leave')
-    async leaveRoom(client, name) {
-      client.leave(name);
-    }
+     @SubscribeMessage('user_joins_room')
+     async user_joins_room(client, infos) {
+
+       const userRoom = {userId: infos[0], roomId: infos[1].id};
+       console.log(userRoom);
+       this.roomUserRepo.save(userRoom);
+       client.join(infos[1].name);
+       client.emit('joinedsalon', infos[1].name);
+     }
 
     // this decorator is used to listenning incomming messages. chat channel
     @SubscribeMessage('chat')
@@ -82,7 +89,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const time = new Date(Date.now()).toLocaleString();
         console.log(data.p1);
         await this.messageService.addMessage(data.p2, data.p1, socket.user.id);
-        this.server.to(data.p1).emit('chat', '[' + socket.user.login + '] ' +  '[' + time + '] ' + data.p2);
+        this.server.to(data.p1).emit('chat', {p1: data.p1, p2: '[' + socket.user.login + '] ' +  '[' + time + '] ' + data.p2});
     }
  
     @SubscribeMessage('whoAmI')

@@ -1,6 +1,6 @@
 /* aurelie */
 import axios from "axios";
-
+import React, {Component} from 'react';
 import { useEffect, useState } from "react";
 import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
@@ -52,7 +52,7 @@ const Chat = (props) => {
   
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
-  const [salons, setSalons] = useState([]); //Array de tous les salons a afficher, que l'on peut selectionner
+  const [joinedSalons, setJoinedSalons] = useState([]); //Array de tous les salons a afficher, que l'on peut selectionner
 
   /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
   useEffect(() => {
@@ -77,27 +77,31 @@ const Chat = (props) => {
     }
   }
  
-  //on join le nouvaeu salon, on entendra et n'émitera alors plus que sur lui
-   useEffect(() => {
-    console.log('connection');
-    socket.emit("join", currentSalon)
-    }, [currentSalon])
-
   //Ecoute chat pour afficher tout nouveaux messages
   useEffect(() => {
     console.log(socket.id);
     socket.on("chat", data => {
-      console.log(currentSalon);
-      setMessage((message) => {
-        //data = {'\n'} + data;
-        return ([...message, data]); });
+        setMessage((message) => {
+          console.log('origin vs currentSalon', data.p1, currentSalon)
+        //  if (data.p1 === currentSalon)
+            return ([...message, data.p2]);
+       //   else {
+  //        const search = element => element === data.p1;
+    //      const idx = joinedSalons.findIndex(search);
+        //  console.log(idx, joinedSalons, data.p1);
+         // if (idx !== -1)
+        //    joinedSalons[idx] = data.p1 + " NEW";
+     //       return ([message]);
+      //    }
+      //});
      });
+      });
     }, [])
 
     //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
     useEffect(() => {
-      socket.on('newsalon', data => {
-            setSalons((salons) => {
+      socket.on('joinedsalon', data => {
+            setJoinedSalons((salons) => {
           return ([...salons, data]); });
        });
       }, [])
@@ -116,10 +120,7 @@ const Chat = (props) => {
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
   const handleClick = (salon) => {
-    if (salon !== currentSalon) {
-      socket.emit("leave", currentSalon);
       setCurrentSalon(salon);
-     }
     };
 
 
@@ -134,12 +135,12 @@ const Chat = (props) => {
       {/* Barre d'input pour ajouter un salon */}  
       <div>
         <button onClick={toggle}>
-          <p style={chatTitle}>Add a salon</p>
+          <p style={chatTitle}>Salons</p>
         </button> 
         <SalonModale revele={revele} toggle={toggle} user={actualUser}/>
       </div>
       {/* Affichage de l'array Salons par iteration */}
-      {salons.map((salon) => ( 
+      {joinedSalons.map((salon) => ( 
       <button onClick={() => handleClick(salon)}>
           <div style={salonName}>{salon}</div>
         </button>))}
