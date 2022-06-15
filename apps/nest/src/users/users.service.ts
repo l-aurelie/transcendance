@@ -82,11 +82,16 @@ async getFriendRequestUserById(FriendRequestId: number) : Promise<FriendRequest>
 }
 
 async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestStatus) : Promise<FriendRequestStatus> {
-    const friendReq = this.getFriendRequestUserById(FriendRequestId);
-    const ret = await this.friendRequestRepository.save({
-        ...friendReq,
-        status: newStatus,
-    });
+    const friendReq = await this.getFriendRequestUserById(FriendRequestId);
+    friendReq.status = newStatus;
+    const ret = await this.friendRequestRepository.save(friendReq);
+    return ret.status;
+}
+
+async testAcceptFriendRequest(FriendRequestId: number, newStatus: FriendRequestStatus) : Promise<FriendRequestStatus> {
+    const friendReq = await this.getFriendRequestUserById(FriendRequestId);
+    friendReq.status = newStatus;
+    const ret = await this.friendRequestRepository.save(friendReq);
     return ret.status;
 }
 
@@ -96,6 +101,32 @@ async getReceivedFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
 
 async getSentFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
     return this.friendRequestRepository.find({sender: currentUser });
+}
+
+async getFriendList(currentUser: User) : Promise<User[]> { 
+    console.log("iN SERVICES FUNCTION");
+    //QUERY ONE: get all rows from friend_request where status == accepted and sender is currentUser 
+    //autrement dit: get all friend requests sent by current user and accepted by receiver
+    let group_one = await this.friendRequestRepository.find( 
+        { relations: ["sender", "receiver"],
+        where: [
+            { sender: currentUser, status: "accepted" },
+        ],
+    }
+    );
+     //QUERY TWO: get all rows from friend_request where status == accepted and receiver is currentUser
+     //Autrement dit: get all friend requests accepted by the current user
+    let group_two = await this.friendRequestRepository.find( 
+        { relations: ["sender", "receiver"],
+        where: [
+            { receiver: currentUser, status: "accepted" },
+        ],
+    }
+    );
+    //get the users who accepted this user's friend requests OR get the users who sent requests to this user which have been accepted, i.e. FRIENDS!
+    let friends : User[] = group_one.map( group_one => group_one.receiver, group_two => group_two.sender);
+    console.log(friends);
+   return friends;
 }
 
 }

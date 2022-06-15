@@ -57,6 +57,16 @@ export class UsersController {
       return requestSent ;
      }
 
+      /*returns all your friends*/
+      @UseGuards(AuthenticatedGuard)
+      @Get('friendRequest/me/friendlist')
+      async getFriendList(
+         @Req() request,
+      ) : Promise<User[]> {
+      console.log("IN CORRECT FUNCTION");
+      return await this.userServ.getFriendList(request.user);
+      }
+
    /*check status of friend request that we have sent to receiverID*/
      @UseGuards(AuthenticatedGuard)
      @Get('friendRequest/status/:receiverId')
@@ -79,6 +89,16 @@ export class UsersController {
        const friendRequestId = parseInt(friendRequestStringId);
        return this.userServ.respondToFriendRequest(friendRequestId, newStatus);
       }
+
+       /*easy way to change friend request to accept for tests */
+       @UseGuards(AuthenticatedGuard)
+       @Get('friendRequest/testAccept/:friendRequestId')
+       async testAcceptFriendRequest(
+          @Param('friendRequestId') friendRequestStringId: string,
+       ): Promise<FriendRequestStatus> {
+        const friendRequestId = parseInt(friendRequestStringId);
+        return this.userServ.testAcceptFriendRequest(friendRequestId,"accepted");
+       }
 
       /*returns all your received friend requests*/
      @UseGuards(AuthenticatedGuard)
