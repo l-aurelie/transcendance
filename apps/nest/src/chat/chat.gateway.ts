@@ -10,10 +10,11 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { IntraAuthGuard } from 'src/auth/guards';
-import { Socket, User, RoomEntity } from 'src/typeorm';
+import { Socket, User, RoomEntity, Message } from 'src/typeorm';
 import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
+import { MessageService } from './service/message.service';
 
 // this decorator will allow us to make use of the socket.io functionnalitu
 @WebSocketGateway({ cors: 'http://localhost:4200' })
@@ -28,6 +29,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private socketService: SocketService,
         @InjectRepository(Socket) private socketRepo : Repository<Socket>,
         @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
+        @InjectRepository(Message) private messageRepo: Repository<Message>,
+         private messageService: MessageService,
          private roomService: RoomService,
          private userService: UsersService
         ) {}
@@ -67,6 +70,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //const socket = await socks.find(client.id);
         console.log('here===', socket);
         const time = new Date(Date.now()).toLocaleString();
+        console.log(data.p1);
+        await this.messageService.addMessage(data.p2, data.p1, socket.user.id);
         this.server.emit(data.p1, '[' + socket.user.login + '] ' +  '[' + time + '] ' + data.p2);
     }
  
