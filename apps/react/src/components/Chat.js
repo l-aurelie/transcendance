@@ -60,7 +60,6 @@ const Chat = (props) => {
       setUsers(res.data);
       console.log('find all pour la barre de recherche:', users);
     });
-
   }, [])
  
   /* Apres enter dans la barre de recherche users */
@@ -78,17 +77,22 @@ const Chat = (props) => {
     }
   }
  
-  //Definit le salon que l'on ecoute, hooked sur currentSalon, pour reactualiser le salon d'ecoute a chqaue changement de salon
-  //Ecoute le salon courant pour afficher tout nouveaux messages
+  //on join le nouvaeu salon, on entendra et n'émitera alors plus que sur lui
+   useEffect(() => {
+    console.log('connection');
+    socket.emit("join", currentSalon)
+    }, [currentSalon])
+
+  //Ecoute chat pour afficher tout nouveaux messages
   useEffect(() => {
     console.log(socket.id);
-    socket.on(currentSalon, data => {
+    socket.on("chat", data => {
       console.log(currentSalon);
       setMessage((message) => {
         //data = {'\n'} + data;
         return ([...message, data]); });
      });
-    }, [currentSalon])
+    }, [])
 
     //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
     useEffect(() => {
@@ -112,8 +116,9 @@ const Chat = (props) => {
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
   const handleClick = (salon) => {
-    if (salon !== currentSalon)
-      socket.off(currentSalon);
+    if (salon !== currentSalon) {
+      socket.emit("leave", currentSalon);
+     };
     setCurrentSalon(salon);
   };
 

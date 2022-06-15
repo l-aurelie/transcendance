@@ -57,6 +57,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit('users', this.users);
     }
 
+    @SubscribeMessage('join')
+    async joinRoom(client, name) {
+      client.join(name);
+    }
+
+    @SubscribeMessage('leave')
+    async leaveRoom(client, name) {
+      client.leave(name);
+    }
+
     // this decorator is used to listenning incomming messages. chat channel
     @SubscribeMessage('chat')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
@@ -72,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const time = new Date(Date.now()).toLocaleString();
         console.log(data.p1);
         await this.messageService.addMessage(data.p2, data.p1, socket.user.id);
-        this.server.emit(data.p1, '[' + socket.user.login + '] ' +  '[' + time + '] ' + data.p2);
+        this.server.to(data.p1).emit('chat', '[' + socket.user.login + '] ' +  '[' + time + '] ' + data.p2);
     }
  
     @SubscribeMessage('whoAmI')
