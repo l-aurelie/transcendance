@@ -1,6 +1,19 @@
 import React, { useRef, useEffect, useState} from 'react'
 import { socket } from "./Socket";
+const divStyle = {
+  position: "relative",
+}
 
+const playButton = {
+  position: "absolute",
+  right: "0",
+  bottom: "0",
+  width: "800px",
+  fontSize: "20px",
+  borderRadius: "5px",
+  color: "white",
+  cursor: "pointer",
+}
 const Game = props => {
  
   const actualUser = props.dataFromParent;
@@ -133,9 +146,9 @@ const Game = props => {
   }, [])
   
   return (
-  <div>
+  <div style={divStyle}>
   <canvas ref={canvasRef} width={800} height={800} {...props}/>
-  <button onClick={joinGame}>PLAY PONG</button>
+  {inGame ? null : <button style={playButton} onClick={joinGame}>PLAY PONG</button>}
   </div>
   )
 }
