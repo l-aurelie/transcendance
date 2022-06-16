@@ -5,6 +5,8 @@ import { TypeORMSession } from './entities/Session';
 import {RoomEntity} from './entities/Room';
 import { Socket } from './entities/Socket';
 import { Message } from './entities/message';
-export const entities = [User, TypeORMSession, RoomEntity, Socket, Message];
+import { Games } from './entities/Games';
 
-export { User, TypeORMSession, RoomEntity, Socket, Message };
+export const entities = [User, TypeORMSession, RoomEntity, Socket, Message, Games];
+
+export { User, TypeORMSession, RoomEntity, Socket, Message, Games };

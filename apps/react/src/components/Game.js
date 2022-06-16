@@ -3,12 +3,16 @@ import { socket } from "./Socket";
 
 const Game = props => {
  
-  const [roomName, setRoomName] = useState();
-  const [posHL, setPosHL] = useState(200);
-  const [posHR, setPosHR] = useState(200);
+  const actualUser = props.dataFromParent;
+  console.log("actualUser = ", actualUser.id);
+  const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
- const [inGame, setInGame] = useState(false);
-  
+  const [inGame, setInGame] = useState(false);
+  let posHL = 200;
+  let posHR = 200;
+  let ballX = 400;
+  let ballY = 400;
+
   const drawLeftPaddle = rect => {
     rect.fillStyle = 'red'
     rect.fillRect(0, posHL, 20, 100)
@@ -22,7 +26,7 @@ const Game = props => {
   const drawBall = ctx => {
     ctx.fillStyle = 'white'
     ctx.beginPath()
-    ctx.arc(400, 400, 10, 0, 2*Math.PI)
+    ctx.arc(ballX, ballY, 10, 0, 2*Math.PI)
     ctx.fill()
   }
 
@@ -44,20 +48,13 @@ const Game = props => {
     ctx.fillText("Waiting for an opponent joining the game...", 10, 90);
   }
 
+//on click, emit to server to ask a matchMaking
  const joinGame = () => {
          drawWaitingGame(canvasRef.current.getContext('2d'))
-         socket.emit('createGame');
+         socket.emit('createGame', actualUser.id);
   }
 
-
-/*
-  const handleKey = (e) => {
-    console.log('handleKey');
-    if (e === 'q')
-      setPosHL(posHL + 20);
-  }
-*/  
-
+//listen permanently if a game starting
   useEffect(() => {
     socket.on("game-start", data => {
       setRoomName(data);
@@ -67,6 +64,49 @@ const Game = props => {
     });
   }, [])
   
+  //listen permanently if a key was pressed
+  //if a game is launched, verify the arrow key and emit to the server to inform that there is movment
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (roomName === 0)
+        return ;
+      if (event.keyCode === 38)
+      {
+        event.preventDefault();
+        socket.emit('moveUp', actualUser.id, roomName);
+      }
+      if (event.keyCode === 40)
+      {
+        event.preventDefault();
+        socket.emit('moveDown', actualUser.id, roomName);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [actualUser.id, roomName]);
+
+  //listen permanently if server return a movement to execute for left paddle
+  useEffect(() => {
+    socket.on("left-move", data => {
+      console.log('return left move');
+      posHL = data;
+      drawBeginGame(canvasRef.current.getContext('2d'))
+
+  });
+  }, [])
+
+  //listen permanently if server return a movement to execute for right paddle
+  useEffect(() => {
+    socket.on("right-move", data => {
+      console.log('return right move');
+     posHR = data;
+     drawBeginGame(canvasRef.current.getContext('2d'))
+     
+    });
+  }, [])
+
    useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
@@ -94,7 +134,7 @@ const Game = props => {
   
   return (
   <div>
-  <canvas /*onKeyDown={() => handleKey()}*/ ref={canvasRef} width={800} height={800} {...props}/>
+  <canvas ref={canvasRef} width={800} height={800} {...props}/>
   <button onClick={joinGame}>PLAY PONG</button>
   </div>
   )

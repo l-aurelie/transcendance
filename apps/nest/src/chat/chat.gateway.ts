@@ -10,7 +10,7 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { IntraAuthGuard } from 'src/auth/guards';
-import { Socket, User, RoomEntity, Message } from 'src/typeorm';
+import { Socket, User, RoomEntity, Message, Games } from 'src/typeorm';
 import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
@@ -32,9 +32,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @InjectRepository(Socket) private socketRepo : Repository<Socket>,
         @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
         @InjectRepository(Message) private messageRepo: Repository<Message>,
-         private messageService: MessageService,
-         private roomService: RoomService,
-         private userService: UsersService,
+        @InjectRepository(Games) private gameRepo: Repository<Games>,
+        private messageService: MessageService,
+        private roomService: RoomService,
+        private userService: UsersService,
      //    private gameQueue: any[]
         ) {}
 
@@ -115,30 +116,84 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //----------------------------------GAME------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
     
-    matchMake()
+    async matchMake()
     {
         console.log("match Make");
         console.log("gameQueue length", gameQueue.length);
         let roomName;
         if(gameQueue.length %2 == 0)//TODO 
         {
-            roomName = gameQueue[0].id + gameQueue[1].id;
-            console.log("roomName=", roomName);
-            this.joinRoom(gameQueue[0], roomName);
-            this.joinRoom(gameQueue[1], roomName);
+            console.log(gameQueue[0].user)
+            const details = {
+               playerLeft: gameQueue[0].user,
+               playerRight: gameQueue[1].user,
+            }
+            const newGame = await this.gameRepo.save(details);
+            roomName = newGame.id;
+            this.joinRoom(gameQueue[0].sock, roomName);
+            this.joinRoom(gameQueue[1].sock, roomName);
             this.server.to(roomName).emit("game-start",  roomName);  
             gameQueue.splice(0,2);
-  //TODO : stock roomName?
         }
     }
 
+
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
-    async createNewGame(socket: Socket) {
-        
-        if(!gameQueue.find(element => socket.id === element.id))
-            gameQueue.push(socket);
+    async createNewGame(socket: Socket, userId) {
+        this.server.to(socket.id).emit("received");
+        const tab = { sock: socket, user: userId };        
+        if(!gameQueue.find(element =>  socket.id === element.sock.id))
+            gameQueue.push(tab);
         this.matchMake();
     }
+
+   
+    @SubscribeMessage('moveDown')
+    async  paddleDown(client, infos) { //infos[0] => userId, infos[1] -> roomGameId infos[2] ->posHR infos[3] ->posHL
+        const idGame = await this.gameRepo.findOne({id:infos[1]});
+        if (idGame.playerLeft === infos[0] )
+        {
+            const pos = idGame.posLeft;
+            let newPos = pos + 20;
+            if(newPos >= 700)
+                newPos = 700;
+            this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
+            this.server.to(infos[1]).emit("left-move", newPos);
+        }
+        else if (idGame.playerRight === infos[0])
+        {
+            const pos = idGame.posRight;
+            let newPos = pos + 20;
+            if(newPos >= 700)
+                newPos = 700;
+            this.gameRepo.update({id : infos[1]}, {posRight : newPos});
+            this.server.to(infos[1]).emit("right-move", newPos);
+        }
+    }
+
+    @SubscribeMessage('moveUp')
+    async  paddleUp(client, infos) { //infos[0] == userId, infos[1] == roomGameId 
+        const idGame = await this.gameRepo.findOne({id:infos[1]});
+        if (idGame.playerLeft === infos[0] )
+        {
+            const pos = idGame.posLeft;
+            let newPos = pos - 20;
+            if(newPos <= 0)
+                newPos = 0;
+            this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
+            this.server.to(infos[1]).emit("left-move", newPos);
+        }
+        else if (idGame.playerRight === infos[0])
+        {
+            const pos = idGame.posRight;
+            let newPos = pos - 20;
+            if(newPos <= 0)
+                newPos = 0;
+            this.gameRepo.update({id : infos[1]}, {posRight : newPos});
+            this.server.to(infos[1]).emit("right-move", newPos);
+        }
+    }
+
 }
 

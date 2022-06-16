@@ -5,7 +5,7 @@ import { IntraStrategy } from './strategies';
 import { UsersModule } from '../users/users.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Socket, User, RoomEntity, Message } from 'src/typeorm';
+import { Socket, User, RoomEntity, Message, Games } from 'src/typeorm';
 import { SessionSerializer } from './utils/Serializer';
 import { HttpModule } from '@nestjs/axios';
 
@@ -35,7 +35,7 @@ import { MessageService } from 'src/chat/service/message.service';
 imports: [ UsersModule,
   ConfigModule.forRoot({envFilePath: '.env'}),
 
-  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, RoomEntity, User, RoomUser, Message]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, Games, RoomEntity, User, RoomUser, Message]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
 
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {
