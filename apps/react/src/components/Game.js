@@ -49,10 +49,17 @@ const Game = props => {
  
   
  const handleClick = () => {
-  (async function() {
+      console.log("clicked", begin)
      begin = 1;
-    })();
-    socket.emit('createGame');
+     console.log("clicked after", begin)
+     if (begin=== 1) {
+         console.log("clicked after condition", begin)
+         drawWaitingGame()
+         socket.emit('createGame');
+     }
+     else if ( begin ===2) {
+         drawBeginGame()
+     }
   };
 
 /*
@@ -63,49 +70,46 @@ const Game = props => {
   }
 */  
 
-  useEffect(() => {
-    socket.on("game-start", data => {
-      console.log("in game-start, ", data);
-   
-      setRoomName(data);
-      begin = 2;
-
-    });
-  }, [])
+  // useEffect(() => {
+  //   socket.on("game-start", data => {
+  //     console.log("in game-start, ", data);
+  //
+  //     setRoomName(data);
+  //     begin = 2;
+  //
+  //   });
+  // }, [])
   
-   useEffect(() => { 
+   useEffect(() => {
+    console.log('here')
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-
+    console.log('here2')
     context.fillStyle = '#000000'
     context.fillRect(0, 0, 800, 800)
     context.font = "50px Verdana";
     context.fillStyle = "white";
     context.fillText("PONG", 300, 400);
-    
+    console.log('here3')
     // if(begin === 1)
     //   drawBeginGame(context)
     // drawLeftPaddle(context)
     // drawRightPaddle(context)
     // drawBall(context)
    // let frameCount = 0
-    let animationFrameId
+   //  let animationFrameId
     
     //Our draw came here
-    const render = () => {
-      if(begin === 1)
-        drawWaitingGame(context)
-      else if (begin ===  2)
-        drawBeginGame(context)
+    // const render = () => {
 
-     animationFrameId = window.requestAnimationFrame(render)
-    }
-    render()
+    //  animationFrameId = window.requestAnimationFrame(render)
+    // }
+    // render()
     
    // return () => {
       //window.cancelAnimationFrame(animationFrameId)
     //}
-  }, [])
+  }, [canvasRef])
   
   return (
   <div>
