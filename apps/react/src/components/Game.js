@@ -7,8 +7,7 @@ const Game = props => {
   const [posHL, setPosHL] = useState(200);
   const [posHR, setPosHR] = useState(200);
   const canvasRef = useRef(null);
-  let begin = 0;
- 
+ const [inGame, setInGame] = useState(false);
   
   const drawLeftPaddle = rect => {
     rect.fillStyle = 'red'
@@ -37,30 +36,19 @@ const Game = props => {
   }
 
   // draw when 1 player is on the board 
-  const drawWaitingGame = ctx => {
+  const drawWaitingGame = (ctx) => {
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, 800, 800)
-   
     ctx.font = "30px Verdana";
     ctx.fillStyle = "white";
     ctx.fillText("Waiting for an opponent joining the game...", 10, 90);
   }
 
- 
-  
- const handleClick = () => {
-      console.log("clicked", begin)
-     begin = 1;
-     console.log("clicked after", begin)
-     if (begin=== 1) {
-         console.log("clicked after condition", begin)
-         drawWaitingGame()
+ const joinGame = () => {
+         drawWaitingGame(canvasRef.current.getContext('2d'))
          socket.emit('createGame');
-     }
-     else if ( begin ===2) {
-         drawBeginGame()
-     }
-  };
+  }
+
 
 /*
   const handleKey = (e) => {
@@ -70,51 +58,44 @@ const Game = props => {
   }
 */  
 
-  // useEffect(() => {
-  //   socket.on("game-start", data => {
-  //     console.log("in game-start, ", data);
-  //
-  //     setRoomName(data);
-  //     begin = 2;
-  //
-  //   });
-  // }, [])
+  useEffect(() => {
+    socket.on("game-start", data => {
+      setRoomName(data);
+      drawBeginGame(canvasRef.current.getContext('2d'))
+        setInGame(true);
+
+    });
+  }, [])
   
    useEffect(() => {
-    console.log('here')
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-    console.log('here2')
     context.fillStyle = '#000000'
     context.fillRect(0, 0, 800, 800)
     context.font = "50px Verdana";
     context.fillStyle = "white";
     context.fillText("PONG", 300, 400);
-    console.log('here3')
-    // if(begin === 1)
-    //   drawBeginGame(context)
-    // drawLeftPaddle(context)
-    // drawRightPaddle(context)
-    // drawBall(context)
-   // let frameCount = 0
-   //  let animationFrameId
+
+    let animationFrameId
     
     //Our draw came here
-    // const render = () => {
+    const render = () => {
 
-    //  animationFrameId = window.requestAnimationFrame(render)
-    // }
-    // render()
+     animationFrameId = window.requestAnimationFrame(render)
+        // if(inGame === true)
+        //     render le jeu
+    }
+    render()
     
-   // return () => {
-      //window.cancelAnimationFrame(animationFrameId)
-    //}
-  }, [canvasRef])
+   return () => {
+      window.cancelAnimationFrame(animationFrameId)
+    }
+  }, [])
   
   return (
   <div>
   <canvas /*onKeyDown={() => handleKey()}*/ ref={canvasRef} width={800} height={800} {...props}/>
-  <button onClick={handleClick}>PLAY PONG</button>
+  <button onClick={joinGame}>PLAY PONG</button>
   </div>
   )
 }
