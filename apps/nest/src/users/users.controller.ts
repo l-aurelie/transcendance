@@ -109,6 +109,12 @@ export class UsersController {
       return this.userServ.getReceivedFriendRequests(request.user);
      }
 
+     @Get('getAllLogins')
+     async getLogins()
+     {
+        return this.userServ.getAllLogins();
+     }
+
       /*returns all your sent friend requests*/
       @UseGuards(AuthenticatedGuard)
       @Get('friendRequest/me/sent-requests')

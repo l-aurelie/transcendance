@@ -99,6 +99,16 @@ async getReceivedFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
     return this.friendRequestRepository.find({receiver: currentUser });
 }
 
+async getAllLogins() : Promise<string[]>{
+        let userz = await this.userRepo.find(
+            {
+                select: ["login"],
+            }
+        );
+        let ret : string[] = userz.map( userz => userz.login );
+        return ret;
+    }
+
 async getSentFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
     return this.friendRequestRepository.find({sender: currentUser });
 }
