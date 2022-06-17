@@ -84,15 +84,22 @@ const Chat = (props) => {
  
   //Ecoute chat pour afficher tout nouveaux messages
   useEffect(() => {
-    console.log(currentSalon);
+    console.log('FIRST USE EFFECT', currentSalon);
+    if (currentSalon.length !== 0) {
+      socket.on('fetchmessage', data => {
+        console.log(typeof data, data);
+        setMessage(data);
+      });
+      socket.emit('fetchmessage', currentSalon);
+    }
     socket.on("chat", data => {
         setMessage((message) => {
-          console.log('origin vs currentSalon', data.p1, currentSalon)
-          if (data.p1 === currentSalon)
-            return ([...message, data.p2]);
+          console.log('origin vs currentSalon', data.emittingRoom, currentSalon)
+          if (data.emittingRoom === currentSalon)
+            return ([...message, data.message]);
           else {
-            joinedSalons.set(data.p1, true);
-            setJoinedSalons(map => new Map(map.set(data.p1, true)));
+            joinedSalons.set(data.emittingRoom, true);
+            setJoinedSalons(map => new Map(map.set(data.emittingRoom, true)));
             return (message);
           }
       //});
@@ -102,11 +109,13 @@ const Chat = (props) => {
 
     //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
     useEffect(() => {
-      socket.on('joinedsalon', data => {
-          console.log('iciii', data);
-          joinedSalons.set(data, false);
+      socket.on('joinedsalon', salonName => {
+          console.log('iciii', salonName);
+          joinedSalons.set(salonName, false);
+          console.log(joinedSalons);
           socket.off('chat');
-          setCurrentSalon(data);
+          socket.off('fetchmessage');
+          setCurrentSalon(salonName);
        });
       }, [])
   
@@ -115,7 +124,7 @@ const Chat = (props) => {
     if(event.key === 'Enter') {
       console.log(currentSalon);
 
-      socket.emit('chat', {p1: currentSalon, p2: event.target.value});
+      socket.emit('chat', {roomToEmit: currentSalon, message : event.target.value, whoAmI: actualUser});
       event.target.value = "";
       console.log(joinedSalons);
     }
@@ -127,11 +136,12 @@ const Chat = (props) => {
   const handleClick = (salon) => {
     console.log(salon);
       if (salon !== currentSalon) {
-        console.log(salon, currentSalon);
+        console.log('beforeadd', salon, currentSalon);
         setJoinedSalons(map => new Map(map.set(salon, false)));
         console.log(joinedSalons);
 
         socket.off('chat');
+        socket.off('fetchmessage');
         setCurrentSalon(salon);
       }
     };
@@ -154,7 +164,7 @@ const Chat = (props) => {
       </div>
       {/* Affichage de l'array Salons par iteration */}
       {Array.from(joinedSalons.entries()).map((salon) => ( 
-      <button onClick={() => handleClick(salon)}>
+      <button onClick={() => handleClick(salon[0])}>
 
         {
           salon[1] ?

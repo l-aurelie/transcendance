@@ -35,7 +35,7 @@ const CreateSalon = ({toggle, user}) => {
     };
 
   const handleClick = (salon) => {
-      socket.emit('user_joins_room', user.id, salon);
+      socket.emit('user_joins_room', {userId: user.id, room: salon});
       toggle();
     };
 
