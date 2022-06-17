@@ -79,13 +79,13 @@ const Chat = (props) => {
  
   //on join le nouvaeu salon, on entendra et n'émitera alors plus que sur lui
    useEffect(() => {
-    console.log('connection');
+   // console.log('connection');
     socket.emit("join", currentSalon)
     }, [currentSalon])
 
   //Ecoute chat pour afficher tout nouveaux messages
   useEffect(() => {
-    console.log(socket.id);
+    console.log("socketId =", socket.id);
     socket.on("chat", data => {
       console.log(currentSalon);
       setMessage((message) => {

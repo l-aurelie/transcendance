@@ -14,10 +14,11 @@ const playButton = {
   color: "white",
   cursor: "pointer",
 }
-const Game = props => {
+const Game = (props) => {
  
-  const actualUser = props.dataFromParent;
-  console.log("actualUser = ", actualUser.id);
+  //console.log("actualUser = ", actualUser.id);
+  const {dataFromParent, ...rest} = props;
+  console.log("props = ",props, " ||| ");
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
@@ -25,6 +26,7 @@ const Game = props => {
   let posHR = 200;
   let ballX = 400;
   let ballY = 400;
+  const actualUser = props.dataFromParent;
 
   const drawLeftPaddle = rect => {
     rect.fillStyle = 'red'
@@ -130,7 +132,7 @@ const Game = props => {
     context.fillText("PONG", 300, 400);
 
     let animationFrameId
-    
+  
     //Our draw came here
     const render = () => {
 
@@ -147,7 +149,9 @@ const Game = props => {
   
   return (
   <div style={divStyle}>
-  <canvas ref={canvasRef} width={800} height={800} {...props}/>
+
+    <canvas ref={canvasRef} width={800} height={800} {...rest}/>
+ 
   {inGame ? null : <button style={playButton} onClick={joinGame}>PLAY PONG</button>}
   </div>
   )
