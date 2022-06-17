@@ -37,6 +37,7 @@ export class UsersService {
 /*********************/
 /****FRIEND REQUESTS */
 /*********************/
+//TODO: friend service 
 
 async hasRequestBeenSentOrReceived(
     sender: User, 
