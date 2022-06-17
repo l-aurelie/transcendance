@@ -33,7 +33,7 @@ export class UsersController {
    @Get(':login')
    async getUserByLogin(@Param() params) {
       const user = await this.userServ.findUserByLogin(params);
-     // console.log('=====getUserByLogin()', user);
+      console.log('=====getUserByLogin()', user);
       return (user);
    }
 
@@ -53,6 +53,7 @@ export class UsersController {
         @Req() request,
      ): Promise<FriendRequest | { error: string }> {
       const receiverId = parseInt(receiverStringId);
+      console.log("SENDING FRIENDE REQUEST TO ", receiverId);
       const requestSent = this.userServ.sendFriendRequest(receiverId, request.user);
       return requestSent ;
      }
@@ -109,8 +110,8 @@ export class UsersController {
       return this.userServ.getReceivedFriendRequests(request.user);
      }
 
-     @Get('getAllLogins')
-     async getLogins()
+     @Get('data/getAllLogins')
+     async getLogins() : Promise<string[]>
      {
         return this.userServ.getAllLogins();
      }

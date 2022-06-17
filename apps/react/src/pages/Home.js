@@ -8,7 +8,6 @@ import Chat from '../components/Chat';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
-import {} from '../css/home.css';
 import SearchBar from '../components/Searchbar';
 // import Socket from './Socket';
 

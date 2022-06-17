@@ -106,6 +106,7 @@ async getAllLogins() : Promise<string[]>{
             }
         );
         let ret : string[] = userz.map( userz => userz.login );
+        console.log("IN GETALLLOGINS, ret is:", ret);
         return ret;
     }
 
