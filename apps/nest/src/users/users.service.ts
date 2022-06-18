@@ -55,6 +55,21 @@ async hasRequestBeenSentOrReceived(
         return true;
     }
 
+    async hasSentMe(
+        User: User, 
+        Me: User
+        ): Promise<boolean> {
+           
+            const check = await this.friendRequestRepository.findOne({
+                where: [
+                { sender: User, receiver: Me },
+            ],
+            });
+            if (!check)
+                return false;
+            return true;
+        }
+
 async sendFriendRequest(receiverId: number, sender: User): Promise<FriendRequest | { error: string }> {
     if (receiverId == sender.id)
         return {error: "You cant add yourself as a friend, loser"};

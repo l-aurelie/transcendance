@@ -145,6 +145,15 @@ export class UsersController {
       return this.userServ.getReceivedFriendRequests(request.user);
      }
 
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/me/hasSentMe/:UserId')
+     async hasSentMe(
+      @Param('user') the_user : User,
+      @Req() request,
+      ): Promise<boolean> {
+      return this.userServ.hasSentMe(the_user, request.user);
+   }
+
      @Get('data/getAllLogins')
      async getLogins() : Promise<string[]>
      {
