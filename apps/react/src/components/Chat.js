@@ -1,6 +1,6 @@
 /* aurelie */
 import axios from "axios";
-
+import React, {Component} from 'react';
 import { useEffect, useState } from "react";
 import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
@@ -42,6 +42,11 @@ const salonName = {
 
 }
 
+const notifSalon = {
+  marginTop: "auto", 
+  backgroundColor: 'pink',
+}
+
 
 const Chat = (props) => {
 
@@ -52,7 +57,7 @@ const Chat = (props) => {
   
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
-  const [salons, setSalons] = useState([]); //Array de tous les salons a afficher, que l'on peut selectionner
+  const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
 
   /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
   useEffect(() => {
@@ -77,28 +82,40 @@ const Chat = (props) => {
     }
   }
  
-  //on join le nouvaeu salon, on entendra et n'émitera alors plus que sur lui
-   useEffect(() => {
-   // console.log('connection');
-    socket.emit("join", currentSalon)
-    }, [currentSalon])
-
   //Ecoute chat pour afficher tout nouveaux messages
   useEffect(() => {
-    console.log("socketId =", socket.id);
+    console.log('FIRST USE EFFECT', currentSalon);
+    if (currentSalon.length !== 0) {
+      socket.on('fetchmessage', data => {
+        console.log(typeof data, data);
+        setMessage(data);
+      });
+      socket.emit('fetchmessage', currentSalon);
+    }
     socket.on("chat", data => {
-      console.log(currentSalon);
-      setMessage((message) => {
-        //data = {'\n'} + data;
-        return ([...message, data]); });
+        setMessage((message) => {
+          console.log('origin vs currentSalon', data.emittingRoom, currentSalon)
+          if (data.emittingRoom === currentSalon)
+            return ([...message, data.message]);
+          else {
+            joinedSalons.set(data.emittingRoom, true);
+            setJoinedSalons(map => new Map(map.set(data.emittingRoom, true)));
+            return (message);
+          }
+      //});
      });
-    }, [])
+      });
+    }, [currentSalon])
 
     //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
     useEffect(() => {
-      socket.on('newsalon', data => {
-            setSalons((salons) => {
-          return ([...salons, data]); });
+      socket.on('joinedsalon', salonName => {
+          console.log('iciii', salonName);
+          joinedSalons.set(salonName, false);
+          console.log(joinedSalons);
+          socket.off('chat');
+          socket.off('fetchmessage');
+          setCurrentSalon(salonName);
        });
       }, [])
   
@@ -107,8 +124,9 @@ const Chat = (props) => {
     if(event.key === 'Enter') {
       console.log(currentSalon);
 
-      socket.emit('chat', {p1: currentSalon, p2: event.target.value});
+      socket.emit('chat', {roomToEmit: currentSalon, message : event.target.value, whoAmI: actualUser});
       event.target.value = "";
+      console.log(joinedSalons);
     }
   }
 
@@ -116,10 +134,16 @@ const Chat = (props) => {
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
   const handleClick = (salon) => {
-    if (salon !== currentSalon) {
-      socket.emit("leave", currentSalon);
-      setCurrentSalon(salon);
-     }
+    console.log(salon);
+      if (salon !== currentSalon) {
+        console.log('beforeadd', salon, currentSalon);
+        setJoinedSalons(map => new Map(map.set(salon, false)));
+        console.log(joinedSalons);
+
+        socket.off('chat');
+        socket.off('fetchmessage');
+        setCurrentSalon(salon);
+      }
     };
 
 
@@ -134,17 +158,28 @@ const Chat = (props) => {
       {/* Barre d'input pour ajouter un salon */}  
       <div>
         <button onClick={toggle}>
-          <p style={chatTitle}>Add a salon</p>
+          <p style={chatTitle}>Salons</p>
         </button> 
         <SalonModale revele={revele} toggle={toggle} user={actualUser}/>
       </div>
       {/* Affichage de l'array Salons par iteration */}
-      {salons.map((salon) => ( 
-      <button onClick={() => handleClick(salon)}>
-          <div style={salonName}>{salon}</div>
+      {Array.from(joinedSalons.entries()).map((salon) => ( 
+      <button onClick={() => handleClick(salon[0])}>
+
+        {
+          salon[1] ?
+           <div style={notifSalon}>
+            {salon[0]}
+           </div>
+         :
+            <div style={salonName}>
+             {salon[0]}
+            </div>
+       }
         </button>))}
        
         <div style={chatBox} ><p style={chatTitle}>{currentSalon}</p>
+
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
       {message.map((msg) => (
         <div style={messageSent}>{msg}</div>

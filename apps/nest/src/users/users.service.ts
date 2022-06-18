@@ -16,8 +16,8 @@ export class UsersService {
         @InjectRepository(FriendRequest)
         private readonly friendRequestRepository: Repository<FriendRequest>) {}
   
-    findUserById(idnum: number){ //getter pour trouver user par id
-        return this.userRepo.findOne( {id: idnum} );
+    async findUserById(idnum: number){ //getter pour trouver user par id
+        return await this.userRepo.findOne( {id: idnum} );
     };
     /*findUserById(idnum: number){ //getter pour trouver user par id
         return this.userRepo.findOne( {id: idnum} );
