@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
 import SearchBar from '../components/Searchbar';
+import SideBarChat from '../components/SideBatChat';
 // import Socket from './Socket';
 
 /* Style (insere dans la div jsx) */
@@ -30,6 +31,7 @@ const background = {
 }
 const bodyStyle = {
     display: 'flex',
+    //flexDirection: 'row',
     justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
@@ -61,6 +63,7 @@ const Home = () => {
 
             <div style={bodyStyle}>
                 <Game dataFromParent={profil}/>
+                <SideBarChat />
                 <Chat dataFromParent={profil}></Chat>
             </div>
         </div>

@@ -8,7 +8,7 @@ import Modale from './ModaleWindow/FriendProfileModale.js';
 const SearchBar = (props) => {
   const [value, setValue] = useState([]);
   
-    const {revele, toggle} = LogiqueModale();
+    const {revele, toggle} = LogiqueModale(1);
 
 const onChange = (event) => {
   setValue(event.target.value);

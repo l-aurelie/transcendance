@@ -9,6 +9,8 @@ import Modale from "./ModaleWindow/modale";
 import SalonModale from "./ModaleWindow/salonModale";
 
 /* Style (insere dans la div jsx) */
+
+
 const chatStyle = {
   display: 'flex',
   flexDirection: 'column',
@@ -54,11 +56,10 @@ const Chat = (props) => {
   const [users, setUsers] = useState([]);// Tous les users de la db
   const [userFound, setUserFound] = useState([]); // Contient l'utilisateur si trouve
   const {revele, toggle} = LogiqueModale();// Outils affichage users apres recherche
-  
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
-
+ 
   /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
   useEffect(() => {
     axios.get("http://localhost:3000/users/all", { withCredentials: true }).then((res) => {
@@ -98,7 +99,6 @@ const Chat = (props) => {
           if (data.emittingRoom === currentSalon)
             return ([...message, data.message]);
           else {
-            joinedSalons.set(data.emittingRoom, true);
             setJoinedSalons(map => new Map(map.set(data.emittingRoom, true)));
             return (message);
           }
@@ -111,7 +111,7 @@ const Chat = (props) => {
     useEffect(() => {
       socket.on('joinedsalon', salonName => {
           console.log('iciii', salonName);
-          joinedSalons.set(salonName, false);
+          setJoinedSalons(map => new Map(map.set(salonName, false)));
           console.log(joinedSalons);
           socket.off('chat');
           socket.off('fetchmessage');
@@ -148,6 +148,7 @@ const Chat = (props) => {
 
 
   return (
+     
     <div style={chatStyle}>
       {/* Barre de recherche d'un user + affichage de userFound */}
       <div>
@@ -156,12 +157,12 @@ const Chat = (props) => {
         <Modale revele={revele} toggle={toggle} name={userFound.login} />
       </div>
       {/* Barre d'input pour ajouter un salon */}  
-      <div>
-        <button onClick={toggle}>
-          <p style={chatTitle}>Salons</p>
-        </button> 
-        <SalonModale revele={revele} toggle={toggle} user={actualUser}/>
-      </div>
+        <div>
+            <button onClick={toggle}>
+            <p style={chatTitle}>Salons</p>
+            </button> 
+            <SalonModale revele={revele} toggle={toggle} user={actualUser}/>
+          </div>
       {/* Affichage de l'array Salons par iteration */}
       {Array.from(joinedSalons.entries()).map((salon) => ( 
       <button onClick={() => handleClick(salon[0])}>
