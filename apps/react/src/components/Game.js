@@ -21,7 +21,7 @@ const Game = (props) => {
  
   //console.log("actualUser = ", actualUser.id);
   const {dataFromParent, ...rest} = props;
-  console.log("props = ",props, " ||| ");
+ // console.log("props = ",props, " ||| ");
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
@@ -132,7 +132,7 @@ const Game = (props) => {
 
 
   //listen permanently if server return a movement to execute for left paddle
-  useEffect(() => {
+  /*useEffect(() => {
     socket.on("left-move", data => {
       console.log('return left move');
       posHL = data;
@@ -150,7 +150,7 @@ const Game = (props) => {
      
     });
   }, [])
-
+*/
   
   useEffect(() => {
     if (inGame === false) {
@@ -162,29 +162,33 @@ const Game = (props) => {
       context.fillStyle = "white";
       context.fillText("PONG", 300, 400);
     }
+    socket.on("left-move", data => {
+    //  console.log('return left move');
+      posHL = data;});
+    socket.on("right-move", data => {
+   //   console.log('return right move');
+      posHR = data;});
+      socket.on("updatedBall", data => {
+     //   console.log('ball = ' + data.x + " " + data.y);
+        ballX= data.x;
+        ballY = data.y;
+       // drawBeginGame(canvasRef.current.getContext('2d'))
+       
+      });
 
     let animationFrameId
       
     //Our draw came here
     const render = () => {
       if (inGame === true) {
+        
         // context.clearRect(0, 0, width, height);
        // drawBall(canvasRef.current.getContext('2d'))
        socket.emit('ball', roomName,  ballX, ballY);
        drawBeginGame(canvasRef.current.getContext('2d'))
-       socket.on("updatedBall", data => {
-        console.log('ball = ' + data.x + " " + data.y);
-        ballX= data.x;
-        ballY = data.y;
-      
-       // drawBeginGame(canvasRef.current.getContext('2d'))
        
-      });
       }
       animationFrameId = window.requestAnimationFrame(render)
-    
-      
-    
     }
     render()
     
