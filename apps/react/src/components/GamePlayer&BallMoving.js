@@ -56,15 +56,14 @@ const Game = (props) => {
     ctx.fillStyle = 'white'
     ctx.fill()
     ctx.closePath();
-    //
-    // if(ballX + dx > width - ballRadius || ballX + dx < ballRadius) {
-    //   dx = -dx;
-    // }
-    // if(ballY + dy > height - ballRadius || ballY + dy < ballRadius) {
-    //     dy = -dy;
-    // }
-    // ballX += dx;
-    // ballY += dy;
+    if(ballX + dx > width - ballRadius || ballX + dx < ballRadius) {
+      dx = -dx;
+    }
+    if(ballY + dy > height - ballRadius || ballY + dy < ballRadius) {
+        dy = -dy;
+    }
+    ballX += dx;
+    ballY += dy;
    
   }
 
@@ -76,7 +75,7 @@ const Game = (props) => {
   
     drawLeftPaddle(ctx)
     drawRightPaddle(ctx)
-    drawBall(ctx)
+    // drawBall(ctx)
   }
 
   // draw when 1 player is on the board 
@@ -170,16 +169,8 @@ const Game = (props) => {
       if (inGame === true) {
         // context.clearRect(0, 0, width, height);
        // drawBall(canvasRef.current.getContext('2d'))
-       socket.emit('ball', roomName,  ballX, ballY);
        drawBeginGame(canvasRef.current.getContext('2d'))
-       socket.on("updatedBall", data => {
-        console.log('ball = ' + data.x + " " + data.y);
-        ballX= data.x;
-        ballY = data.y;
       
-       // drawBeginGame(canvasRef.current.getContext('2d'))
-       
-      });
       }
       animationFrameId = window.requestAnimationFrame(render)
     
@@ -191,7 +182,7 @@ const Game = (props) => {
    return () => {
       window.cancelAnimationFrame(animationFrameId)
     }
-  }, [inGame, roomName])
+  }, [inGame])
   
   return (
   <div style={divStyle}>

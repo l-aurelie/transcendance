@@ -195,5 +195,43 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    @SubscribeMessage('ball')
+    async  updateBallX(server, infos) { //infos[0] == roomName 
+        
+        var ballRadius = 10;
+        var dx = 2;
+        var dy = -2;
+        let width = 800;
+        let height = 800;
+        const ball = {
+            x: infos[1],
+           y: infos[2],
+        }
+
+        const idGame = await this.gameRepo.findOne({id:infos[0]});
+        
+        if (idGame)
+        {
+            console.log("ON EST LAA")
+           
+            if(ball.x + dx > width-ballRadius || ball.x + dx < ballRadius) {
+                dx = -dx;
+              }
+              if(ball.y + dy > height-ballRadius || ball.y + dy < ballRadius) {
+                  dy = -dy;
+              }
+            
+              ball.x += dx;
+              ball.y += dy;
+            //   var newX = infos[1];
+            //   var newY = infos[2];
+              console.log('infos = ' + ball.x + "  " + ball.y);
+
+          this.gameRepo.update({id : infos[0]}, {posBallX : ball.x, posBallY: ball.y});
+           
+          }this.server.to(infos[0]).emit("updatedBall", ball);
+        }
+      
+
 }
 

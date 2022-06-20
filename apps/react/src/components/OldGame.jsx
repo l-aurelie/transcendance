@@ -6,8 +6,8 @@ import { BACKGROUND,  BALL, PLAYER } from './Box';
 
 
 /* taille du tableau de jeu */
-const ROW_SIZE = 10;
-const COL_SIZE = 21;
+const ROW_SIZE = 10; //height
+const COL_SIZE = 21; //width
 
 /* taille  barre de joueur  
 		 _

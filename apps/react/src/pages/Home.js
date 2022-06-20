@@ -20,6 +20,7 @@ const headStyle = {
     borderWidth: '1px',
     borderColor: 'dark',
 }
+
 const background = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
@@ -29,9 +30,10 @@ const background = {
     bottom: '0',
     zIndex: '9998'
 }
+
 const bodyStyle = {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-space-around',
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'dark',
