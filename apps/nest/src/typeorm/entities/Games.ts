@@ -24,16 +24,16 @@ export class Games implements IGames {
     @Column({default:false})
     finish: boolean;
 
-    @Column({default: 200})
+    @Column({default: 125})
     posLeft : number;
 
-    @Column({default: 200})
+    @Column({default: 225})
     posRight:number;
 
-    @Column({default: 240})
+    @Column({default: 200})
     posBallX: number;
 
-    @Column({default: 290})
+    @Column({default: 150})
     posBallY : number;
 
     @Column({default: 2})

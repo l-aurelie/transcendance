@@ -27,13 +27,15 @@ const Game = (props) => {
 
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
-  let width = 480;
-  let height = 320;
-  let posHL = 200;
-  let posHR = 200;
+  let width = 800;
+  let height = 600;
+  let posHL = height/2-((height/6)/2); 
+  let posHR = height/2-((height/6)/2); 
   let ballX = width / 2;
-  let ballY = height - 30;
-  var ballRadius = 10;
+  let ballY = height / 2;
+  var ballRadius = height/30;
+  const rapportWidth = width/400;
+  const rapportHeight = height/300;
   var dy = -2;
   var dx = 2;
 
@@ -42,12 +44,12 @@ const Game = (props) => {
   
   const drawLeftPaddle = rect => {
     rect.fillStyle = 'red'
-    rect.fillRect(0, posHL, 20, 100)
+    rect.fillRect(0, posHL, width/30, height/6)
   }
 
   const drawRightPaddle = rect => {
     rect.fillStyle = 'red'
-    rect.fillRect(780, posHR, 20, 100)
+    rect.fillRect(width-(width/30), posHR, width/30, height/6)
   }
 
   const drawBall = ctx => {
@@ -56,17 +58,7 @@ const Game = (props) => {
     ctx.fillStyle = 'white'
     ctx.fill()
     ctx.closePath();
-			
-	/*	if((ballX + dx > width - ballRadius) || (ballX + dx < ballRadius)) {
-			dx = -dx;
-		}
-		if((ballY + dy > height - ballRadius) || (ballY + dy < ballRadius)) {
-			dy = -dy;
-		}
 
-		ballX += dx;
-    ballY += dy;
-    */
   }
 
   // Draw Board with paddle and ball
@@ -199,12 +191,12 @@ const Game = (props) => {
   
 */
     socket.on("left-move", data => {
-      posHL = data;});
+      posHL = data * rapportHeight;});
     socket.on("right-move", data => {
-      posHR = data;});
+      posHR = data * rapportHeight;});
       socket.on("updatedBall", data => {
-      ballX= data.x;
-      ballY = data.y;
+      ballX= data.x * rapportWidth;
+      ballY = data.y * rapportHeight;
       });
     let animationFrameId
       
@@ -233,7 +225,7 @@ const Game = (props) => {
 //        document.removeEventListener('keydown', handleKeyDown);
 
     }
-  }, [inGame, roomName, key])
+  }, [inGame, roomName, key, rapportHeight, rapportWidth])
   
   return (
   <div style={divStyle}>

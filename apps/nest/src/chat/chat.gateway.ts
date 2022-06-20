@@ -157,8 +157,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
             const pos = idGame.posLeft;
             let newPos = pos + 20;
-            if(newPos >= 300)
-                newPos = 300;
+            if(newPos >= 250)
+                newPos = 250;
             this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
             this.server.to(infos[1]).emit("left-move", newPos);
         }
@@ -166,8 +166,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
             const pos = idGame.posRight;
             let newPos = pos + 20;
-            if(newPos >= 300)
-                newPos = 300;
+            if(newPos >= 250)
+                newPos = 250;
             this.gameRepo.update({id : infos[1]}, {posRight : newPos});
             this.server.to(infos[1]).emit("right-move", newPos);
         }
@@ -200,8 +200,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName 
         
-        let width = 480;
-        let height = 320;
+        let width = 400;
+        let height = 300;
         var ballRadius = 10;
     
         const idGame = await this.gameRepo.findOne({id:infos[0]});
