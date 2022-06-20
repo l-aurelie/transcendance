@@ -151,6 +151,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    
     @SubscribeMessage('moveDown')
     async  paddleDown(client, infos) { //infos[0] => userId, infos[1] -> roomGameId infos[2] ->posHR infos[3] ->posHL
+       console.log('in move down');
         const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (idGame.playerLeft === infos[0] )
         {
@@ -174,6 +175,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('moveUp')
     async  paddleUp(client, infos) { //infos[0] == userId, infos[1] == roomGameId 
+       console.log('in move up');
         const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (idGame.playerLeft === infos[0] )
         {
@@ -201,16 +203,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         let width = 480;
         let height = 320;
         var ballRadius = 10;
-        var dx = 2;
-        var dy = -2;
-        const ball = {
-            x: infos[1],
-            y: infos[2],
-        }
-
+    
         const idGame = await this.gameRepo.findOne({id:infos[0]});
-        // ball.x = idGame.posBallX;
-        // ball.y = idGame.posBallY;
+        var dx = idGame.deltaX;
+        var dy = idGame.deltaY;
+        var by = idGame.posBallY;
+        var bx = idGame.posBallX;
         if (idGame)
         {
 
@@ -219,18 +217,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             // 1. si ca touche le paddle on change rien 
             //2. si ca touche le mur score pour l'adversaire
           
-            if((ball.x + dx > width - ballRadius) || (ball.x + dx < ballRadius)) {
-                dx = -dx;
+            if((idGame.posBallX + idGame.deltaX > width - ballRadius) || (idGame.posBallX + idGame.deltaX < ballRadius)) {
+                dx = -idGame.deltaX;
             }
-            if((ball.y + dy > height - ballRadius) || (ball.y + dy < ballRadius)) {
-                dy = -dy;
+            if((idGame.posBallY + idGame.deltaY > height - ballRadius) || (idGame.posBallY + idGame.deltaY < ballRadius)) {
+               dy = -idGame.deltaY;
             }
             
-            ball.x += dx;
-            ball.y += dy;
+            bx = idGame.posBallX + idGame.deltaX;
+            by = idGame.posBallY + idGame.deltaY;
+
          //     console.log('infos = ' + ball.x + "  " + ball.y);
 
-            this.gameRepo.update({id : infos[0]}, {posBallX : ball.x, posBallY: ball.y});
+            this.gameRepo.update( {id : infos[0]}, {posBallX:bx, posBallY:by, deltaX: dx, deltaY:dy});
+            const ball = {x : bx, y: by}
             this.server.to(infos[0]).emit("updatedBall", ball);
         }
          

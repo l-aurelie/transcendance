@@ -30,11 +30,18 @@ export class Games implements IGames {
     @Column({default: 200})
     posRight:number;
 
-    @Column({default: 400})
+    @Column({default: 240})
     posBallX: number;
 
-    @Column({default: 400})
+    @Column({default: 290})
     posBallY : number;
+
+    @Column({default: 2})
+    deltaX:number;
+    
+    @Column({default: -2})
+    deltaY:number;
+
 }
 
 export interface IGames {
@@ -49,4 +56,6 @@ export interface IGames {
     posRight?:number;
     posBallX?: number;
     posBallY?: number;
+    deltaX?: number;
+    deltaY?:number;
 }
