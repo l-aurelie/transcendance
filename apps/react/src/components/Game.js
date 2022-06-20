@@ -9,7 +9,7 @@ const playButton = {
   position: "absolute",
   right: "0",
   bottom: "0",
-  width: "800px",
+  width: "480px",
   fontSize: "20px",
   borderRadius: "5px",
   color: "white",
@@ -25,16 +25,15 @@ const Game = (props) => {
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
-  let width = 800;
-  let height = 800;
+  let width = 480;
+  let height = 320;
   let posHL = 200;
   let posHR = 200;
-  let ballX = width/2;
-  let ballY = height/2;
+  let ballX = width / 2;
+  let ballY = height - 30;
   var ballRadius = 10;
-  // const ball = {x: width/2, y:  height-30}
-  var dy = -width;
-  var dx = -1;
+  var dy = -2;
+  var dx = 2;
 
   const actualUser = props.dataFromParent;
 
@@ -50,22 +49,21 @@ const Game = (props) => {
   }
 
   const drawBall = ctx => {
-    // ctx.clearRect(0, 0, 800, 800);
     ctx.beginPath()
     ctx.arc(ballX, ballY, ballRadius, 0, 2*Math.PI)
     ctx.fillStyle = 'white'
     ctx.fill()
     ctx.closePath();
-    //
-    // if(ballX + dx > width - ballRadius || ballX + dx < ballRadius) {
-    //   dx = -dx;
-    // }
-    // if(ballY + dy > height - ballRadius || ballY + dy < ballRadius) {
-    //     dy = -dy;
-    // }
-    // ballX += dx;
-    // ballY += dy;
-   
+			
+		if((ballX + dx > width - ballRadius) || (ballX + dx < ballRadius)) {
+			dx = -dx;
+		}
+		if((ballY + dy > height - ballRadius) || (ballY + dy < ballRadius)) {
+			dy = -dy;
+		}
+
+		ballX += dx;
+		ballY += dy;
   }
 
   // Draw Board with paddle and ball
@@ -83,7 +81,7 @@ const Game = (props) => {
   const drawWaitingGame = (ctx) => {
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, width, height)
-    ctx.font = "30px Verdana";
+    ctx.font = "10px Verdana";
     ctx.fillStyle = "white";
     ctx.fillText("Waiting for an opponent joining the game...", 10, 90);
   }
@@ -153,40 +151,37 @@ const Game = (props) => {
 */
   
   useEffect(() => {
+    
     if (inGame === false) {
       const canvas = canvasRef.current
       const context = canvas.getContext('2d')
       context.fillStyle = '#000000'
       context.fillRect(0, 0, width, height)
-      context.font = "50px Verdana";
+      context.font = "20px Verdana";
       context.fillStyle = "white";
-      context.fillText("PONG", 300, 400);
+      context.fillText("PONG", width/2, height/2);
     }
-    socket.on("left-move", data => {
-    //  console.log('return left move');
-      posHL = data;});
-    socket.on("right-move", data => {
-   //   console.log('return right move');
-      posHR = data;});
+      socket.on("left-move", data => {
+      //  console.log('return left move');
+        posHL = data;});
+      socket.on("right-move", data => {
+    //   console.log('return right move');
+        posHR = data;});
       socket.on("updatedBall", data => {
-     //   console.log('ball = ' + data.x + " " + data.y);
-        ballX= data.x;
-        ballY = data.y;
-       // drawBeginGame(canvasRef.current.getContext('2d'))
-       
+      //  console.log('ballBEFORE = ' + data.x + " " + data.y);
+          ballX= data.x;
+          ballY = data.y;
+       // console.log('ballAFTER = ' + data.x + " " + data.y);
+        
       });
-
     let animationFrameId
       
     //Our draw came here
     const render = () => {
       if (inGame === true) {
-        
-        // context.clearRect(0, 0, width, height);
-       // drawBall(canvasRef.current.getContext('2d'))
-       socket.emit('ball', roomName,  ballX, ballY);
+      
+      //  socket.emit('ball', roomName,  ballX, ballY);
        drawBeginGame(canvasRef.current.getContext('2d'))
-       
       }
       animationFrameId = window.requestAnimationFrame(render)
     }

@@ -156,8 +156,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
             const pos = idGame.posLeft;
             let newPos = pos + 20;
-            if(newPos >= 700)
-                newPos = 700;
+            if(newPos >= 300)
+                newPos = 300;
             this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
             this.server.to(infos[1]).emit("left-move", newPos);
         }
@@ -165,8 +165,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
             const pos = idGame.posRight;
             let newPos = pos + 20;
-            if(newPos >= 700)
-                newPos = 700;
+            if(newPos >= 300)
+                newPos = 300;
             this.gameRepo.update({id : infos[1]}, {posRight : newPos});
             this.server.to(infos[1]).emit("right-move", newPos);
         }
@@ -198,40 +198,42 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName 
         
+        let width = 480;
+        let height = 320;
         var ballRadius = 10;
         var dx = 2;
         var dy = -2;
-        let width = 800;
-        let height = 800;
         const ball = {
             x: infos[1],
-           y: infos[2],
+            y: infos[2],
         }
 
         const idGame = await this.gameRepo.findOne({id:infos[0]});
-        
+        // ball.x = idGame.posBallX;
+        // ball.y = idGame.posBallY;
         if (idGame)
         {
-            console.log("ON EST LAA")
-           
-            if(ball.x + dx > width-ballRadius || ball.x + dx < ballRadius) {
+
+            //dans la condition si dessous si la balle touche les bords droits
+            //et gauches on devra verifier si ca touche le paddle
+            // 1. si ca touche le paddle on change rien 
+            //2. si ca touche le mur score pour l'adversaire
+          
+            if((ball.x + dx > width - ballRadius) || (ball.x + dx < ballRadius)) {
                 dx = -dx;
-              }
-              if(ball.y + dy > height-ballRadius || ball.y + dy < ballRadius) {
-                  dy = -dy;
-              }
+            }
+            if((ball.y + dy > height - ballRadius) || (ball.y + dy < ballRadius)) {
+                dy = -dy;
+            }
             
-              ball.x += dx;
-              ball.y += dy;
-            //   var newX = infos[1];
-            //   var newY = infos[2];
-              console.log('infos = ' + ball.x + "  " + ball.y);
+            ball.x += dx;
+            ball.y += dy;
+         //     console.log('infos = ' + ball.x + "  " + ball.y);
 
-          this.gameRepo.update({id : infos[0]}, {posBallX : ball.x, posBallY: ball.y});
-           
-          }this.server.to(infos[0]).emit("updatedBall", ball);
+            this.gameRepo.update({id : infos[0]}, {posBallX : ball.x, posBallY: ball.y});
+            this.server.to(infos[0]).emit("updatedBall", ball);
         }
-      
-
+         
+    } 
 }
 
