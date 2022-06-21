@@ -25,8 +25,9 @@ export class UsersService {
 
    /* Retourne l'utilisateur [login] */
     findUserByLogin(login: string): Promise<User> {
+        //console.log("USER SEARCHING", login);
         return this.userRepo.findOne(login);//TODO: findOne or fail
-        //return this.userRepo.findOne( { login: string } );
+        //return this.userRepo.findOne( {login} );
     };   
     /* Retourne tous les utilisateurs present dans la table users */
     findAll(): Promise<User[]> {
@@ -58,7 +59,7 @@ async hasRequestBeenSentOrReceived(
     async hasSentMe(
         User: User, 
         Me: User
-        ): Promise<boolean> {
+        ): Promise<FriendRequest | { error: string }> {
            
             const check = await this.friendRequestRepository.findOne({
                 where: [
@@ -66,8 +67,13 @@ async hasRequestBeenSentOrReceived(
             ],
             });
             if (!check)
-                return false;
-            return true;
+            {
+                //console.log("FALSE NOT FOUND ANYTHING!!!!");
+                return { error: "Not found"};
+            }
+            //console.log("TRUEEE");
+            //console.log("Check is: ", check);
+            return check;
         }
 
 async sendFriendRequest(receiverId: number, sender: User): Promise<FriendRequest | { error: string }> {
@@ -98,9 +104,13 @@ async getFriendRequestUserById(FriendRequestId: number) : Promise<FriendRequest>
 }
 
 async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestStatus) : Promise<FriendRequestStatus> {
+    
     const friendReq = await this.getFriendRequestUserById(FriendRequestId);
+    
     friendReq.status = newStatus;
+    
     const ret = await this.friendRequestRepository.save(friendReq);
+    
     return ret.status;
 }
 
@@ -111,8 +121,14 @@ async testAcceptFriendRequest(FriendRequestId: number, newStatus: FriendRequestS
     return ret.status;
 }
 
-async getReceivedFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
-    return this.friendRequestRepository.find({receiver: currentUser });
+async getReceivedFriendRequests(currentUser: User) : Promise<any> {
+    
+
+    const temp = await this.friendRequestRepository.find({
+        relations: ["sender"],
+        where: [ {receiver: currentUser, status: "pending"}],
+    });
+        return temp;
 }
 
 async getAllLogins() : Promise<string[]>{
@@ -122,7 +138,7 @@ async getAllLogins() : Promise<string[]>{
             }
         );
         let ret : string[] = userz.map( userz => userz.login );
-        console.log("IN GETALLLOGINS, ret is:", ret);
+        //console.log("IN GETALLLOGINS, ret is:", ret);
         return ret;
     }
 
@@ -131,7 +147,7 @@ async getSentFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
 }
 
 async getFriendList(currentUser: User) : Promise<User[]> { 
-    console.log("iN SERVICES FUNCTION");
+    //console.log("getting friend list");
     //QUERY ONE: get all rows from friend_request where status == accepted and sender is currentUser 
     //autrement dit: get all friend requests sent by current user and accepted by receiver
     let group_one = await this.friendRequestRepository.find( 
@@ -144,16 +160,19 @@ async getFriendList(currentUser: User) : Promise<User[]> {
      //QUERY TWO: get all rows from friend_request where status == accepted and receiver is currentUser
      //Autrement dit: get all friend requests accepted by the current user
     let group_two = await this.friendRequestRepository.find( 
-        { relations: ["sender", "receiver"],
+        { relations: 
+            ["sender", "receiver"],
         where: [
             { receiver: currentUser, status: "accepted" },
         ],
     }
     );
     //get the users who accepted this user's friend requests OR get the users who sent requests to this user which have been accepted, i.e. FRIENDS!
-    let friends : User[] = group_one.map( group_one => group_one.receiver, group_two => group_two.sender);
-    console.log(friends);
-   return friends;
+    
+    let friends1 : User[] = group_one.map( group_one => group_one.receiver);
+    let friends2 : User[] = group_two.map( group_two => group_two.sender);
+    //console.log(friends);
+   return friends1.concat(friends2);
 }
 
 }
