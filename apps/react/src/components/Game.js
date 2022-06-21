@@ -29,14 +29,14 @@ const Game = (props) => {
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
-  let width = 800;
-  let height = 600;
+  let widthExt = 800;
+  let heightExt = 600;
   const actualUser = props.dataFromParent;
 
   // draw when 1 player is on the board 
   const drawWaitingGame = (ctx) => {
     ctx.fillStyle = '#000000'
-    ctx.fillRect(0, 0, width, height)
+    ctx.fillRect(0, 0, widthExt, heightExt)
     ctx.font = "10px Verdana";
     ctx.fillStyle = "white";
     ctx.fillText("Waiting for an opponent joining the game...", 10, 90);
@@ -70,6 +70,8 @@ const Game = (props) => {
       context.fillText("PONG", width/2, height/2);
     }
     var key = 0;
+    var height = canvas.height;
+    var width = canvas.width;
     var posHL = height/2-((height/6)/2);
     var posHR = height/2-((height/6)/2); 
     var ballX = width / 2;
@@ -138,7 +140,7 @@ const Game = (props) => {
       document.removeEventListener('keyup', handleKeyUp);
 
     }
-  }, [inGame, actualUser.id, roomName, height,width])
+  }, [inGame, actualUser.id, roomName/*, height,width*/])
   
   return (
   <div >
