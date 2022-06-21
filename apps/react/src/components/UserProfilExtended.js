@@ -1,6 +1,7 @@
 /* aurel */
 import axios from "axios";
 import Friends from './friends.jsx'
+import FriendReqs from './friendreqs.jsx'
 import { useEffect, useState } from "react";
 
 //TODO: Rendre l'affichage conditionnel (selon si current user) de logout, setProfile
@@ -31,6 +32,7 @@ const UserProfilExtended = ({name}) => {
             <p>Ligue []</p>
             <div>{user.email}</div>
             <Friends></Friends>
+            <FriendReqs></FriendReqs>
             <div>2fa</div>
             <button>Logout</button>
         </div>

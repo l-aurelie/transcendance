@@ -1,4 +1,4 @@
-/*aurelie, samantha*/
+/*aurelie, samantha, Laura*/
 
 import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -32,7 +32,6 @@ export class UsersController {
    /* WIP: set le profil avec le formulaire envoye */
    @Put('set')
    async setUsers(@Req() req: any, @Body() body: setProfilDto) {
-     // console.log('REQ1', req);
       console.log('BODY1', body);
      // await this.userRepo.update({ login: req.body.login }, { email: req.body.email });
       console.log('SetUsers()');
@@ -50,7 +49,7 @@ export class UsersController {
    @Get(':login')
    async getUserByLogin(@Param() params) {
       const user = await this.userServ.findUserByLogin(params);
-      console.log('=====getUserByLogin()', user);
+      //console.log('=====getUserByLogin()', user);
       return (user);
    }
 
@@ -74,7 +73,7 @@ export class UsersController {
 */
 
 /*--------------------------------------------------------------------------------------*/
-/*----------------------------------------FRIEND----------------------------------------*/
+/*----------------------------------------FRIEND [Laura]--------------------------------*/
 /*--------------------------------------------------------------------------------------*/
 //TODO: friend controller
 
@@ -86,7 +85,6 @@ export class UsersController {
         @Req() request,
      ): Promise<FriendRequest | { error: string }> {
       const receiverId = parseInt(receiverStringId);
-      console.log("SENDING FRIENDE REQUEST TO ", receiverId);
       const requestSent = this.userServ.sendFriendRequest(receiverId, request.user);
       return requestSent ;
      }
@@ -97,9 +95,20 @@ export class UsersController {
       async getFriendList(
          @Req() request,
       ) : Promise<User[]> {
-      console.log("IN CORRECT FUNCTION");
       return await this.userServ.getFriendList(request.user);
       }
+
+     /*check status of friend request that we have sent to receiverID*/
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/testing/:SenderId')
+     async testing(
+        @Param('SenderId') SenderStringId: string,
+        @Req() request,
+     ): Promise<FriendRequest | { error: string; }> {
+      const SenderId = parseInt(SenderStringId);
+      const sender = await this.userServ.findUserById(SenderId);
+      return this.userServ.sendFriendRequest(request.user.id, sender);
+     }
 
    /*check status of friend request that we have sent to receiverID*/
      @UseGuards(AuthenticatedGuard)
@@ -115,26 +124,25 @@ export class UsersController {
 
       /*respond to friend request with newStatus (accepted/declined/pending) */
       @UseGuards(AuthenticatedGuard)
-      @Put('friendRequest/respond/:friendRequestId')
-      async respondToFriendRequest(
+      @Get('friendRequest/accept/:friendRequestId')
+      async acceptFriendRequest(
          @Param('friendRequestId') friendRequestStringId: string,
-         @Body() newStatus: FriendRequestStatus,
       ): Promise<FriendRequestStatus> {
        const friendRequestId = parseInt(friendRequestStringId);
-       return this.userServ.respondToFriendRequest(friendRequestId, newStatus);
+       return this.userServ.respondToFriendRequest(friendRequestId, "accepted");
       }
 
-       /*easy way to change friend request to accept for tests */
-       @UseGuards(AuthenticatedGuard)
-       @Get('friendRequest/testAccept/:friendRequestId')
-       async testAcceptFriendRequest(
-          @Param('friendRequestId') friendRequestStringId: string,
-       ): Promise<FriendRequestStatus> {
-        const friendRequestId = parseInt(friendRequestStringId);
-        return this.userServ.testAcceptFriendRequest(friendRequestId,"accepted");
-       }
+      /*rejects friend request indicated*/
+      @UseGuards(AuthenticatedGuard)
+      @Get('friendRequest/reject/:friendRequestId')
+      async rejectFriendRequest(
+         @Param('friendRequestId') friendRequestStringId: string,
+      ): Promise<FriendRequestStatus> {
+       const friendRequestId = parseInt(friendRequestStringId);
+       return this.userServ.respondToFriendRequest(friendRequestId, "rejected");
+      }
 
-      /*returns all your received friend requests*/
+      /*returns all your PENDING received friend requests*/
      @UseGuards(AuthenticatedGuard)
      @Get('friendRequest/me/received-requests')
      async getReceivedFriendRequests(
@@ -143,15 +151,20 @@ export class UsersController {
       return this.userServ.getReceivedFriendRequests(request.user);
      }
 
+     /*Checks if user has already sent a friend request to you. If yes, returns the request. If not, returns an error message*/
      @UseGuards(AuthenticatedGuard)
-     @Get('friendRequest/me/hasSentMe/:UserId')
+     @Get('friendRequest/me/hasSentMe/:Userlogin')
      async hasSentMe(
-      @Param('user') the_user : User,
+      @Param('Userlogin') user_login : string,
       @Req() request,
-      ): Promise<boolean> {
+      ): Promise<FriendRequest | { error: string }> {
+      /*get user from login*/
+      const the_user = await this.userRepo.findOne({where: [{ login: user_login}],
+      });
       return this.userServ.hasSentMe(the_user, request.user);
    }
 
+      /*returns all user.logins in database*/
      @Get('data/getAllLogins')
      async getLogins() : Promise<string[]>
      {
