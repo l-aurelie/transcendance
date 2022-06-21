@@ -1,4 +1,5 @@
-/* aurel */
+/*LAURA: friend profile part 1*/
+
 import React from 'react';
 import FriendUserProfilExtended from '../FriendUserProfileExtended'
 
@@ -36,7 +37,6 @@ const Modale = ({revele, toggle, Value}) => revele ? (
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
             <FriendUserProfilExtended Value={Value}/>
-            
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>

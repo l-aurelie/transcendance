@@ -1,4 +1,4 @@
-/* laura */
+/*LAURA: friend requests modal: Base sur le modale de Aurelie mais avec les detailles des requetes "pending" recues + un button accept/reject*/
 import React, { useState } from 'react';
 import AcceptButton from '../AcceptButton';
 import RejectButton from '../RejectButton';

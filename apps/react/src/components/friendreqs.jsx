@@ -1,3 +1,5 @@
+/*LAURA: friend requests component qui ouvre la fenetre FriendReqsModale quand on clicke sur le button "friend requests" */
+
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import Modale from './ModaleWindow/FriendReqsmodale';
@@ -16,7 +18,6 @@ setreqs(res.data);
 });
 
     return(
-        
         <div>
          <button onClick={toggle}>Friend Reqs</button>
          <Modale revele={revele} toggle={toggle} reqs={reqs} />

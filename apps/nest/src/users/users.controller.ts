@@ -1,4 +1,4 @@
-/*aurelie, samantha*/
+/*aurelie, samantha, Laura*/
 
 import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -76,7 +76,7 @@ export class UsersController {
 */
 
 /*--------------------------------------------------------------------------------------*/
-/*----------------------------------------FRIEND----------------------------------------*/
+/*----------------------------------------FRIEND [Laura]--------------------------------*/
 /*--------------------------------------------------------------------------------------*/
 //TODO: friend controller
 
@@ -135,6 +135,7 @@ export class UsersController {
        return this.userServ.respondToFriendRequest(friendRequestId, "accepted");
       }
 
+      /*rejects friend request indicated*/
       @UseGuards(AuthenticatedGuard)
       @Get('friendRequest/reject/:friendRequestId')
       async rejectFriendRequest(
@@ -144,17 +145,7 @@ export class UsersController {
        return this.userServ.respondToFriendRequest(friendRequestId, "rejected");
       }
 
-       /*easy way to change friend request to accept for tests */
-       @UseGuards(AuthenticatedGuard)
-       @Get('friendRequest/testAccept/:friendRequestId')
-       async testAcceptFriendRequest(
-          @Param('friendRequestId') friendRequestStringId: string,
-       ): Promise<FriendRequestStatus> {
-        const friendRequestId = parseInt(friendRequestStringId);
-        return this.userServ.testAcceptFriendRequest(friendRequestId,"accepted");
-       }
-
-      /*returns all your received friend requests*/
+      /*returns all your PENDING received friend requests*/
      @UseGuards(AuthenticatedGuard)
      @Get('friendRequest/me/received-requests')
      async getReceivedFriendRequests(
@@ -163,21 +154,20 @@ export class UsersController {
       return this.userServ.getReceivedFriendRequests(request.user);
      }
 
+     /*Checks if user has already sent a friend request to you. If yes, returns the request. If not, returns an error message*/
      @UseGuards(AuthenticatedGuard)
      @Get('friendRequest/me/hasSentMe/:Userlogin')
      async hasSentMe(
       @Param('Userlogin') user_login : string,
       @Req() request,
       ): Promise<FriendRequest | { error: string }> {
-      //console.log("1USER SEARCHING: ", user_login);
-      //console.log("CALL OF INTEREST");
+      /*get user from login*/
       const the_user = await this.userRepo.findOne({where: [{ login: user_login}],
       });
-      //console.log("OUR USER: ", the_user.login);
       return this.userServ.hasSentMe(the_user, request.user);
-      //return false;
    }
 
+      /*returns all user.logins in database*/
      @Get('data/getAllLogins')
      async getLogins() : Promise<string[]>
      {
