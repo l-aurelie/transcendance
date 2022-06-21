@@ -54,7 +54,6 @@ const Game = (props) => {
       setRoomName(data);
       setInGame(true);
     }, []);
-  
     console.log("afetr game-start ? Game = " + inGame)
   
   },)
@@ -72,14 +71,37 @@ const Game = (props) => {
     var key = 0;
     var height = canvas.height;
     var width = canvas.width;
+    console.log("w and h", width, height);
     var posHL = height/2-((height/6)/2);
     var posHR = height/2-((height/6)/2); 
     var ballX = width / 2;
     var ballY = height / 2;
     var ballRadius = height/30;
+    var deltaX = 2;
+    var deltaY = -2;
+    var scoreL = 0;
+    var scoreR = 0;
+    var stop = false;
+    var winner = '';
     const rapportWidth = width/400;
     const rapportHeight = height/300;
-    
+    var paddleSize = height/6;
+    var paddleLarge = width/25;
+    const allPos = {
+      ballRadius:ballRadius,
+       width:width, 
+       height:height, 
+       paddleLarge:paddleLarge, 
+       paddleSize:paddleSize, 
+       posHL:posHL, 
+       posHR:posHR, 
+       ballX:ballX, 
+       ballY:ballY, 
+       scoreL:scoreL, 
+       scoreR:scoreR, 
+       deltaX:deltaX,
+       deltaY:deltaY
+      };
     const handleKeyDown = event => {
       if (roomName === 0)
         return ;
@@ -95,40 +117,61 @@ const Game = (props) => {
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('keyup', handleKeyUp);
   
+  socket.on("game-stop", data => {
+    winner = data;
+    stop = true;
+  });
   socket.on("left-move", data => {
-   posHL = data * rapportHeight;
+   allPos.posHL = data;
   });
   socket.on("right-move", data => {
-    posHR= data * rapportHeight;
+    allPos.posHR = data;
   });
   socket.on("updatedBall", data => {
-    ballX = data.x * rapportWidth;
-    ballY = data.y * rapportHeight;
+    allPos.ballX = data.x;
+    allPos.ballY = data.y;
+    allPos.deltaX = data.dx;
+    allPos.deltaY = data.dy;
+    allPos.scoreL = data.scoreLeft;
+    allPos.scoreR = data.scoreRight;
+    console.log(allPos.ballX);
   });
-
 
   let animationFrameId;
       
     //Our draw came here
     const render = () => {
-      if (inGame === true) {
+      if (inGame === true && stop === false) {
+        console.log(allPos.scoreL);
         if (key === 38)
-          socket.emit('moveUp', actualUser.id, roomName);
-        if (key === 40)
-          socket.emit('moveDown', actualUser.id, roomName);
-        socket.emit('ball', roomName,  ballX, ballY);
+        socket.emit('moveUp', actualUser.id, roomName, allPos);
+      if (key === 40)
+        socket.emit('moveDown', actualUser.id, roomName, allPos);
+        socket.emit('ball', roomName,  allPos);
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
-        context.fillRect(0, 0, width, height)
+        context.fillRect(0, 0, width, height);
+        context.font = "20px Verdana";
+        context.fillStyle = "white";
+        context.fillText(allPos.scoreL, width/4, height/10);
+        context.fillText(allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'red'
-        context.fillRect(width-(width/30), posHR, width/30, height/6)
+        context.fillRect(width-(width/25), allPos.posHR, width/30, height/6)
         context.fillStyle = 'red'
-        context.fillRect(0, posHL, width/30, height/6)
+        context.fillRect(0, allPos.posHL, width/25, height/6)
         context.beginPath()
-        context.arc(ballX, ballY, ballRadius, 0, 2*Math.PI)
+        context.arc(allPos.ballX, allPos.ballY, ballRadius, 0, 2*Math.PI)
         context.fillStyle = 'white'
         context.fill()
         context.closePath();
+      }
+      if (stop === true) {
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = '#000000'
+        context.fillRect(0, 0, width, height);
+        context.font = "20px Verdana";
+        context.fillStyle = "white";
+        context.fillText(winner + ' won!', width/3, height/2);
       }
       animationFrameId = window.requestAnimationFrame(render)
     }

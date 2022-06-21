@@ -12,10 +12,10 @@ export class Games implements IGames {
     @Column()
     playerRight:number;
 
-    @Column({nullable:true})
+    @Column({default: 0})
     scoreLeft: number;
 
-    @Column({nullable:true})
+    @Column({default: 0})
     scoreRight: number;
 
     @Column({nullable:true})
@@ -27,7 +27,7 @@ export class Games implements IGames {
     @Column({default: 125})
     posLeft : number;
 
-    @Column({default: 225})
+    @Column({default: 125})
     posRight:number;
 
     @Column({default: 200})
