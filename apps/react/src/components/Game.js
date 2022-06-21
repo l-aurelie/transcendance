@@ -19,12 +19,8 @@ const playButton = {
 
 const Game = (props) => {
  
-  //console.log("actualUser = ", actualUser.id);
   const {dataFromParent, ...rest} = props;
- // console.log("props = ",props, " ||| ");
   const [roomName, setRoomName] = useState(0);
-  const [key, setKey] = useState(0);
-
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
   let width = 800;
@@ -36,9 +32,6 @@ const Game = (props) => {
   var ballRadius = height/30;
   const rapportWidth = width/400;
   const rapportHeight = height/300;
-  var dy = -2;
-  var dx = 2;
-
   const actualUser = props.dataFromParent;
 
   
@@ -70,7 +63,6 @@ const Game = (props) => {
     drawLeftPaddle(ctx)
     drawRightPaddle(ctx)
     drawBall(ctx)
- 
   }
 
   // draw when 1 player is on the board 
@@ -93,59 +85,11 @@ const Game = (props) => {
     socket.on("game-start", data => {
       setRoomName(data);
       setInGame(true);
-      // drawBeginGame(canvasRef.current.getContext('2d'))
     }, []);
   
     console.log("afetr game-start ? Game = " + inGame)
   
   },)
-  
-/*
-  //listen permanently if a key was pressed
-  //if a game is launched, verify the arrow key and emit to the server to inform that there is movment
-  useEffect(() => {
-    const handleKeyDown = event => {
-      if (roomName === 0)
-        return ;
-      else {
-        event.preventDefault();
-        setKey(event.keyCode);
-      }
-    };
-    const handleKeyUp = event => {
-      setKey(0);
-    }
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-
-    };
-  }, [actualUser.id, roomName]);
-
-
-  //listen permanently if server return a movement to execute for left paddle
-  useEffect(() => {
-    socket.on("left-move", data => {
-      console.log('return left move');
-      posHL = data;
-    //  drawBeginGame(canvasRef.current.getContext('2d'))
-
-  });
-  }, [])
-
-  //listen permanently if server return a movement to execute for right paddle
-  useEffect(() => {
-    socket.on("right-move", data => {
-      console.log('return right move');
-      posHR = data;
-     // drawBeginGame(canvasRef.current.getContext('2d'))
-     
-    });
-  }, [])
-*/
 
   useEffect(() => {
     
@@ -158,61 +102,42 @@ const Game = (props) => {
       context.fillStyle = "white";
       context.fillText("PONG", width/2, height/2);
     }
-    
-    const handleKeyDown = (event) => {
+    var key = 0;
+    const handleKeyDown = event => {
       if (roomName === 0)
         return ;
-      if (event.keyCode === 38)
-      {
+      else {
         event.preventDefault();
-        socket.emit('moveUp', actualUser.id, roomName);
-      }
-      if (event.keyCode === 40)
-      {
-        event.preventDefault();
-        socket.emit('moveDown', actualUser.id, roomName);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-   
-  /*const handleKeyDown = event => {
-    if (roomName === 0)
-      return ;
-    else {
-      event.preventDefault();
-      setKey(event.keyCode);
+        key = event.keyCode;
     }
   };
   const handleKeyUp = event => {
-    setKey(0);
+    event.preventDefault();
+    key = 0;
   }
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('keyup', handleKeyUp);
-  
-*/
-    socket.on("left-move", data => {
-      posHL = data * rapportHeight;});
-    socket.on("right-move", data => {
-      posHR = data * rapportHeight;});
-      socket.on("updatedBall", data => {
-      ballX= data.x * rapportWidth;
-      ballY = data.y * rapportHeight;
-      });
-    let animationFrameId
+  socket.on("left-move", data => {
+    posHL = data * rapportHeight;
+  });
+  socket.on("right-move", data => {
+    posHR = data * rapportHeight;
+  });
+  socket.on("updatedBall", data => {
+    ballX = data.x * rapportWidth;
+    ballY = data.y * rapportHeight;
+  });
+  let animationFrameId;
       
     //Our draw came here
     const render = () => {
       if (inGame === true) {
-        
- /* if (key === 38)
-    socket.emit('moveUp', actualUser.id, roomName);
-  if (key === 40)
-    socket.emit('moveDown', actualUser.id, roomName);
-   */
-       // context.clearRect(0, 0, width, height);
-       // drawBall(canvasRef.current.getContext('2d'))
-       socket.emit('ball', roomName,  ballX, ballY);
-       drawBeginGame(canvasRef.current.getContext('2d'))
+        if (key === 38)
+          socket.emit('moveUp', actualUser.id, roomName);
+        if (key === 40)
+          socket.emit('moveDown', actualUser.id, roomName);
+      socket.emit('ball', roomName,  ballX, ballY);
+      drawBeginGame(canvasRef.current.getContext('2d'))
       }
       animationFrameId = window.requestAnimationFrame(render)
     }
@@ -221,11 +146,10 @@ const Game = (props) => {
    return () => {
       window.cancelAnimationFrame(animationFrameId);
       document.removeEventListener('keydown', handleKeyDown);
-    //  document.removeEventListener('keyup', handleKeyUp);
-//        document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
 
     }
-  }, [inGame, roomName, key, rapportHeight, rapportWidth])
+  }, [inGame, roomName, rapportHeight, rapportWidth])
   
   return (
   <div style={divStyle}>

@@ -156,7 +156,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (idGame.playerLeft === infos[0] )
         {
             const pos = idGame.posLeft;
-            let newPos = pos + 20;
+            let newPos = pos + 10;
             if(newPos >= 250)
                 newPos = 250;
             this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
@@ -165,7 +165,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         else if (idGame.playerRight === infos[0])
         {
             const pos = idGame.posRight;
-            let newPos = pos + 20;
+            let newPos = pos + 10;
             if(newPos >= 250)
                 newPos = 250;
             this.gameRepo.update({id : infos[1]}, {posRight : newPos});
@@ -180,7 +180,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (idGame.playerLeft === infos[0] )
         {
             const pos = idGame.posLeft;
-            let newPos = pos - 20;
+            let newPos = pos - 10;
             if(newPos <= 0)
                 newPos = 0;
             this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
@@ -189,7 +189,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         else if (idGame.playerRight === infos[0])
         {
             const pos = idGame.posRight;
-            let newPos = pos - 20;
+            let newPos = pos - 10;
             if(newPos <= 0)
                 newPos = 0;
             this.gameRepo.update({id : infos[1]}, {posRight : newPos});
