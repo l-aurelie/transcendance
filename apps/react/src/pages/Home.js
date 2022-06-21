@@ -33,10 +33,19 @@ const background = {
 
 const bodyStyle = {
     display: 'flex',
-    justifyContent: 'flex-space-around',
+    justifyContent: 'space-around',
+    width: "100%",
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'dark',
+}
+
+const chatStyle = {
+    width: "30%",
+}
+
+const gameStyle = {
+    width: "70%",
 }
 
 const Home = () => {
@@ -63,8 +72,8 @@ const Home = () => {
             </div>
 
             <div style={bodyStyle}>
-                <Game dataFromParent={profil}/>
-                <Chat dataFromParent={profil}></Chat>
+                <Game style={gameStyle} dataFromParent={profil}/>
+                <Chat style={chatStyle} dataFromParent={profil}></Chat>
             </div>
         </div>
        

@@ -2,7 +2,13 @@ import React, { useRef, useEffect, useState} from 'react'
 import { socket } from "./Socket";
 
 const divStyle = {
-  position: "relative",
+  width:"100%",
+  objectFit: "contain",
+}
+
+const canvasStyle = {
+  width:"100%",
+  objectFit: "contain",
 }
 
 const playButton = {
@@ -25,6 +31,8 @@ const Game = (props) => {
   const [inGame, setInGame] = useState(false);
   let width = 800;
   let height = 600;
+  width= canvasRef.width;
+  // height=canvasRef.height;
   let posHL = height/2-((height/6)/2); 
   let posHR = height/2-((height/6)/2); 
   let ballX = width / 2;
@@ -152,8 +160,8 @@ const Game = (props) => {
   }, [inGame, roomName, rapportHeight, rapportWidth])
   
   return (
-  <div style={divStyle}>
-    <canvas ref={canvasRef} width={width} height={height} {...rest}/>
+  <div >
+    <canvas style={canvasStyle} ref={canvasRef}  {...rest}/>
     {inGame ? null : <button style={playButton} onClick={joinGame}>PLAY PONG</button>}
   </div>
   )
