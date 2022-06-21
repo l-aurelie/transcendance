@@ -7,7 +7,7 @@ import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/modale';
 const UserProfil = (props) => {
     const user = props.dataFromParent;
-    const {revele, toggle} = LogiqueModale(1);
+    const {revele, toggle} = LogiqueModale();
     
     const [connected, setConnected] = useState([false]);
 

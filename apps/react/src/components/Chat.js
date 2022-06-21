@@ -6,8 +6,6 @@ import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
 import Modale from "./ModaleWindow/modale";
 
-import SalonModale from "./ModaleWindow/salonModale";
-
 /* Style (insere dans la div jsx) */
 
 
@@ -156,13 +154,7 @@ const Chat = (props) => {
         <input type='text' onKeyPress={displayUser} />
         <Modale revele={revele} toggle={toggle} name={userFound.login} />
       </div>
-      {/* Barre d'input pour ajouter un salon */}  
-        <div>
-            <button onClick={toggle}>
-            <p style={chatTitle}>Salons</p>
-            </button> 
-            <SalonModale revele={revele} toggle={toggle} user={actualUser}/>
-          </div>
+      
       {/* Affichage de l'array Salons par iteration */}
       {Array.from(joinedSalons.entries()).map((salon) => ( 
       <button onClick={() => handleClick(salon[0])}>

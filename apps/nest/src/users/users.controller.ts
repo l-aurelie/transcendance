@@ -32,11 +32,9 @@ export class UsersController {
    /* WIP: set le profil avec le formulaire envoye */
    @Put('set')
    async setUsers(@Req() req: any, @Body() body: setProfilDto) {
-      console.log('REQ1', req);
+     // console.log('REQ1', req);
       console.log('BODY1', body);
-      // console.log("req in set: ", req, data);
-      //const users = await this.userServ.findAll();
-      //await this.userRepo.update({ login: req.params.login }, { email: Req.params.login });
+     // await this.userRepo.update({ login: req.body.login }, { email: req.body.email });
       console.log('SetUsers()');
       return ('SetUsers()');
    }     

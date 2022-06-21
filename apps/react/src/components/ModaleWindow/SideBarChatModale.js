@@ -1,8 +1,8 @@
 /* aurel john*/
 import React from 'react';
 import Logo from '../Logo';
+import SideBarChatNav from '../SideBarChatNav';
 
-/* Assombri l'arriere plan */
 
 const modale = {
     display: 'flex',
@@ -13,16 +13,6 @@ const modale = {
     width: '250px',
     zIndex: '9999'
   }
-/*const modale = {
-    height: '500px',
-    width: '700px',
-    background: 'rgba(214,105,127)',
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    zIndex: '9999',
-    transform: 'translate(-50%, -50%)'
-}*/
 
 const button = {
     position: 'absolute',
@@ -30,15 +20,12 @@ const button = {
     top: '15px'
 }
 
-/* Ternaire, affiche modale si revele recu en parametre est true  */
-const SideBarChatModale = ({revele, toggle}) => revele ? (
+/* Fait apparaitre la sideBarChat */
+const SideBarChatModale = ({revele, toggle, user}) => revele ? (
     <React.Fragment>
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
-            <Logo />
-
-
-            
+            <SideBarChatNav user={user} />  
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>

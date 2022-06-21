@@ -1,7 +1,8 @@
 /* sam */
 import React from 'react';
 import Logo from '../Logo';
-import CreateSalon from '../createSalon';
+import CreateSalon from '../AddChannel';
+import AddNav from '../AddNav';
 
 /* Assombri l'arriere plan */
 const background = {
@@ -31,15 +32,15 @@ const button = {
 }
 
 
-/* Ternaire, affiche modale si revele recu en parametre est true  */
-const SalonModale = ({revele, toggle, user}) => revele ? (
+/* Affiche la modale d'ajout de Friend/Channels */
+const AddModale = ({user, revele, toggle}) => revele ? (
     
     <React.Fragment>
         <div style={background} />
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
             <Logo />
-            <CreateSalon toggle={toggle} user={user}/>
+            <AddNav user={user}/>
            
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
@@ -48,4 +49,4 @@ const SalonModale = ({revele, toggle, user}) => revele ? (
  ) : null;
 
 
-export default SalonModale;
+export default AddModale;

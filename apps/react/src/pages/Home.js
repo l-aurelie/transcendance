@@ -63,7 +63,7 @@ const Home = () => {
 
             <div style={bodyStyle}>
                 <Game dataFromParent={profil}/>
-                <SideBarChat />
+                <SideBarChat dataFromParent={profil}/>
                 <Chat dataFromParent={profil}></Chat>
             </div>
         </div>
