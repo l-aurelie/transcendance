@@ -151,7 +151,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    
     @SubscribeMessage('moveDown')
     async  paddleDown(client, infos) { //infos[0] => userId, infos[1] -> roomGameId infos[2] ->posHR infos[3] ->posHL
-       console.log('in move down');
+     //  console.log('in move down');
         const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (idGame.playerLeft === infos[0] )
         {
@@ -175,7 +175,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('moveUp')
     async  paddleUp(client, infos) { //infos[0] == userId, infos[1] == roomGameId 
-       console.log('in move up');
+   //    console.log('in move up');
         const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (idGame.playerLeft === infos[0] )
         {
