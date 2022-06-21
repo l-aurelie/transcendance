@@ -234,7 +234,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 && by + dy < infos[1].posHR + infos[1].paddleSize
                 && bx + dx >= width - infos[1].paddleLarge) {    
                     newDx = -dx;
-      //          }
+                }
             //dans la condition si dessous si la balle touche les bords droits
             //et gauches on devra verifier si ca touche le paddle
             // 1. si ca touche le paddle on change rien 
@@ -249,15 +249,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             
             if(bx + dx > width - ballRadius) {
                 newScoreL += 1;
-                newBx = 200;
-                newBy = 150;
+                newBx = infos[1].width/2;
+                newBy = infos[1].height/2;
             }
             if (bx + dx < ballRadius) {
                 newScoreR += 1;
-                newBx = 200;
-                newBy = 150;
+                newBx = infos[1].width/2;
+                newBy = infos[1].height/2;
             }
-            console.log(newBx);
          //     console.log('infos = ' + ball.x + "  " + ball.y);
           //  this.gameRepo.update( {id : infos[0]}, {posBallX:bx, posBallY:by, deltaX: dx, deltaY:dy, scoreLeft:sL, scoreRight:sR});
             const ball = {x : newBx, y: newBy, scoreLeft: newScoreL, scoreRight: newScoreR, dx:newDx, dy:newDy}
@@ -275,7 +274,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 this.server.to(infos[0]).emit("game-stop", user.login);
             }
 
-        }
+       // }
          
     } 
 }
