@@ -20,6 +20,9 @@ export class Games implements IGames {
 
     @Column({nullable:true})
     winner: number;
+    
+    @Column({nullable:true})
+    looser: number;
 
     @Column({default:false})
     finish: boolean;
@@ -33,5 +36,6 @@ export interface IGames {
     scoreLeft?: number;
     scoreRight?: number;
     winner?: number;
+    looser?:number;
     finish?: boolean;
 }

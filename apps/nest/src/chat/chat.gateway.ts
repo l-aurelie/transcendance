@@ -272,13 +272,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
-            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, scoreLeft:sL, scoreRight:sR});
+            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, scoreLeft:sL, scoreRight:sR});
             const user = await this.userRepo.findOne({id: idGame.playerLeft});
             this.server.to(infos[0]).emit("game-stop", user.login);
         }
         if (sR >= 11 && sL < sR - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
-            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, scoreLeft:sL, scoreRight:sR});
+            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser:idGame.playerLeft, scoreLeft:sL, scoreRight:sR});
             const user = await this.userRepo.findOne({id: idGame.playerRight});
             this.server.to(infos[0]).emit("game-stop", user.login);
         }
