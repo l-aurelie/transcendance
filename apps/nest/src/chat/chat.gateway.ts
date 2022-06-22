@@ -227,13 +227,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if(infos[1].ballX + infos[1].deltaX > width - ballRadius) {
             sL += 1;
             bx = infos[1].width/2;
-            by = infos[1].height/2;
+            by = infos[1].height/2;   
         }
         if (bx + dx < ballRadius) {
             sR += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
         }
+
         const ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy}
         this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {

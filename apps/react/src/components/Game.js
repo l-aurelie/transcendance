@@ -24,7 +24,7 @@ const playButton = {
 }
 
 const Game = (props) => {
- 
+
   const {dataFromParent, ...rest} = props;
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
@@ -37,9 +37,9 @@ const Game = (props) => {
   const drawWaitingGame = (ctx) => {
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, widthExt, heightExt)
-    ctx.font = "10px Verdana";
+    ctx.font = "30px Verdana";
     ctx.fillStyle = "white";
-    ctx.fillText("Waiting for an opponent joining the game...", 10, 90);
+    ctx.fillText("Waiting for an opponent joining the game...", 0, heightExt/2);
   }
 
 //on click, emit to server to ask a matchMaking
@@ -54,8 +54,6 @@ const Game = (props) => {
       setRoomName(data);
       setInGame(true);
     }, []);
-    console.log("afetr game-start ? Game = " + inGame)
-  
   },)
 
   useEffect(() => {
@@ -92,13 +90,14 @@ const Game = (props) => {
        deltaX:deltaX,
        deltaY:deltaY
       };
+    
 
     if (inGame === false) {
       context.fillStyle = '#000000'
       context.fillRect(0, 0, width, height)
-      context.font = "20px Verdana";
+      context.font = "60px Verdana";
       context.fillStyle = "white";
-      context.fillText("PONG", width/2, height/2);
+      context.fillText("PONG", width/2.5, height/2);
     }
 
     const handleKeyDown = event => {
@@ -119,6 +118,7 @@ const Game = (props) => {
     socket.on("game-stop", data => {
       winner = data;
       stop = true;
+      
     });
     socket.on("left-move", data => {
       allPos.posHL = data;
@@ -134,6 +134,7 @@ const Game = (props) => {
       allPos.scoreL = data.scoreLeft;
       allPos.scoreR = data.scoreRight;
     });
+   
     let animationFrameId;
       
     //Our draw came here
@@ -147,7 +148,7 @@ const Game = (props) => {
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);
-        context.font = "20px Verdana";
+        context.font = "30px Verdana";
         context.fillStyle = "white";
         context.fillText(allPos.scoreL, width/4, height/10);
         context.fillText(allPos.scoreR, width/2 + width/4, height/10);
@@ -158,6 +159,10 @@ const Game = (props) => {
         context.beginPath()
         context.arc(allPos.ballX, allPos.ballY, ballRadius, 0, 2*Math.PI)
         context.fillStyle = 'white'
+        context.strokeStyle = 'white';
+        context.moveTo(width/2, 0)
+        context.lineTo(width/2, height)
+        context.stroke()
         context.fill()
         context.closePath();
       }
@@ -165,7 +170,7 @@ const Game = (props) => {
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);
-        context.font = "20px Verdana";
+        context.font = "30px Verdana";
         context.fillStyle = "white";
         context.fillText(winner + ' won!', width/3, height/2);
       }
@@ -183,8 +188,8 @@ const Game = (props) => {
   
   return (
   <div >
-    <canvas style={canvasStyle} ref={canvasRef}  {...rest}/>
-    {inGame ? null : <button style={playButton} onClick={joinGame}>PLAY PONG</button>}
+    <canvas style={canvasStyle} ref={canvasRef} width={widthExt} height={heightExt}  {...rest}/>
+    {inGame ? null : <button style={playButton} onClick={joinGame}>PLAY</button>}
   </div>
   )
 }
