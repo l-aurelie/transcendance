@@ -22,7 +22,8 @@ const modale = {
     top: '50%',
     left: '50%',
     zIndex: '9999',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    overflowY: 'scroll'
 }
 
 const button = {

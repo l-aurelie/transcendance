@@ -9,6 +9,10 @@ const imgStyle = {
     borderRadius: '100%'
 }
 
+const lists = {
+    overflowY: 'scroll'
+}
+
 /* WIP : liste de display des amis et myChannels pour pouvoir changer le currentChannel*/
  const MySalons = () => {
 
@@ -21,7 +25,7 @@ const imgStyle = {
         })
 }, [])
     return(
-        <div>
+        <div style={lists}>
             <p>WIP : listes des amis et des channels rejoint, onClick, devient le channel courant de discussion du chat</p>
             {friends.map(friends => (
             <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={friends.avatar}/> {friends.login} | Spectate | Defeat |<br></br></p>
