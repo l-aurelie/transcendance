@@ -211,12 +211,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (infos[1].ballY + infos[1].deltaY > infos[1].posHL
             && infos[1].ballY + infos[1].deltaY < infos[1].posHL + infos[1].paddleSize
             && infos[1].ballX + infos[1].deltaX <= infos[1].paddleLarge) {
-                dx = -dx;
+                console.log('inLEFT dx', dx, ' dy',dy, ' bx', bx,' by',by, ' posHL', infos[1].posHL, ' poshr', infos[1].posHR, ' width', width, ' height', height,  ' paddlesize', infos[1].paddleSize, ' padleLarge', infos[1].paddleLarge);
+                if (infos[1].ballX > infos[1].paddleLarge)
+                    dx = -dx;
             }
-        if (infos[1].ballY + infos[1].deltaY > infos[1].posHR
+        else if (infos[1].ballY + infos[1].deltaY > infos[1].posHR
             && infos[1].ballY + infos[1].deltaY < infos[1].posHR + infos[1].paddleSize
-            && infos[1].ballX + infos[1].deltaX >= width - infos[1].paddleLarge) {    
-                dx = -dx;
+            && infos[1].ballX + infos[1].deltaX >= width - infos[1].paddleLarge) {
+                console.log('inRIGHT dx', dx, ' dy',dy, ' bx', bx,' by',by, ' posHL', infos[1].posHL, ' poshr', infos[1].posHR, ' width', width, ' height', height,  ' paddlesize', infos[1].paddleSize, ' padleLarge', infos[1].paddleLarge);
+
+                if (infos[1].ballX <width - infos[1].paddleLarge)
+                    dx = -dx;
             }
         if((infos[1].ballY + infos[1].deltaY > height - ballRadius)
             || (infos[1].ballY + infos[1].deltaY < ballRadius)) {

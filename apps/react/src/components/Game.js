@@ -6,7 +6,6 @@ const divStyle = {
   width:"80%",
   objectFit: "contain",
 }
-
 const canvasStyle = {
   width:"100%",
   objectFit: "contain",
