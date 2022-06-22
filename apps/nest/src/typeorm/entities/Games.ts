@@ -12,10 +12,10 @@ export class Games implements IGames {
     @Column()
     playerRight:number;
 
-    @Column({nullable:true})
+    @Column({default: 0})
     scoreLeft: number;
 
-    @Column({nullable:true})
+    @Column({default: 0})
     scoreRight: number;
 
     @Column({nullable:true})
@@ -24,17 +24,6 @@ export class Games implements IGames {
     @Column({default:false})
     finish: boolean;
 
-    @Column({default: 200})
-    posLeft : number;
-
-    @Column({default: 200})
-    posRight:number;
-
-    @Column({default: 400})
-    posBallX: number;
-
-    @Column({default: 400})
-    posBallY : number;
 }
 
 export interface IGames {
@@ -45,8 +34,4 @@ export interface IGames {
     scoreRight?: number;
     winner?: number;
     finish?: boolean;
-    posLeft?:number;
-    posRight?:number;
-    posBallX?: number;
-    posBallY?: number;
 }

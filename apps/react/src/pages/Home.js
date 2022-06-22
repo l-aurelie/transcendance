@@ -20,6 +20,7 @@ const headStyle = {
     borderWidth: '1px',
     borderColor: 'dark',
 }
+/*
 const background = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
@@ -29,13 +30,28 @@ const background = {
     bottom: '0',
     zIndex: '9998'
 }
+*/
 const bodyStyle = {
     display: 'flex',
-    //flexDirection: 'row',
-    justifyContent: 'flex-end',
+    width:"100%",
+    height: "85vh",
+    objectFit: "contain",
+    justifyContent: 'center',
+    //justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'dark',
+}
+
+const chatStyle = {
+    width: "30%",
+    
+}
+
+const gameStyle = {
+    width: "70%",
+    flexDirection: "column", // pour que le bouton soit en dessous du jeu
+ 
 }
 
 const Home = () => {
@@ -62,9 +78,9 @@ const Home = () => {
             </div>
 
             <div style={bodyStyle}>
-                <Game dataFromParent={profil}/>
+                <Game style={gameStyle} dataFromParent={profil}/>
                 <SideBarChat dataFromParent={profil}/>
-                <Chat dataFromParent={profil}></Chat>
+                <Chat style={chatStyle} dataFromParent={profil}></Chat>
             </div>
         </div>
        
