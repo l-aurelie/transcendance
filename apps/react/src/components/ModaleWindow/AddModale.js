@@ -1,8 +1,8 @@
-/* aurel */
+/* sam */
 import React from 'react';
 import Logo from '../Logo';
-import UserProfilExtended from '../UserProfilExtended'
-import UserForm from '../UserForm'
+import CreateSalon from '../AddChannel';
+import AddNav from '../AddNav';
 
 /* Assombri l'arriere plan */
 const background = {
@@ -22,8 +22,7 @@ const modale = {
     top: '50%',
     left: '50%',
     zIndex: '9999',
-    transform: 'translate(-50%, -50%)',
-    overflowY: 'scroll'
+    transform: 'translate(-50%, -50%)'
 }
 
 const button = {
@@ -32,15 +31,17 @@ const button = {
     top: '15px'
 }
 
-/* Ternaire, affiche modale si revele recu en parametre est true  */
-const Modale = ({revele, toggle, name}) => revele ? (
+
+/* Affiche la modale d'ajout de Friend/Channels */
+const AddModale = ({user, revele, toggle}) => revele ? (
+    
     <React.Fragment>
         <div style={background} />
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
             <Logo />
-            <UserProfilExtended name={name}/>
-            <UserForm /> 
+            <AddNav user={user}/>
+           
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>
@@ -48,4 +49,4 @@ const Modale = ({revele, toggle, name}) => revele ? (
  ) : null;
 
 
-export default Modale;
+export default AddModale;

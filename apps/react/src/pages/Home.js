@@ -8,8 +8,9 @@ import Chat from '../components/Chat';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
-import {} from '../css/home.css';
 import SearchBar from '../components/Searchbar';
+import SideBarChat from '../components/SideBatChat';
+// import Socket from './Socket';
 
 /* Style (insere dans la div jsx) */
 const headStyle = {
@@ -36,6 +37,7 @@ const bodyStyle = {
     height: "85vh",
     objectFit: "contain",
     justifyContent: 'center',
+    //justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'dark',
@@ -70,13 +72,14 @@ const Home = () => {
     return (
         <div>
             <div style={headStyle}>
-                <SearchBar></SearchBar>
+                {/*<SearchBar></SearchBar>*/}
                 <Logo></Logo>
                 <UserProfil dataFromParent={profil}></UserProfil>
             </div>
 
             <div style={bodyStyle}>
                 <Game style={gameStyle} dataFromParent={profil}/>
+                <SideBarChat dataFromParent={profil}/>
                 <Chat style={chatStyle} dataFromParent={profil}></Chat>
             </div>
         </div>

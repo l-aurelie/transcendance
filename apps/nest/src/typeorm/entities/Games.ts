@@ -36,6 +36,8 @@ export interface IGames {
     scoreLeft?: number;
     scoreRight?: number;
     winner?: number;
+
     looser?: number;
+
     finish?: boolean;
 }

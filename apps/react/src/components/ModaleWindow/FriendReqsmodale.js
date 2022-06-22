@@ -1,8 +1,7 @@
-/* aurel */
-import React from 'react';
-import Logo from '../Logo';
-import UserProfilExtended from '../UserProfilExtended'
-import UserForm from '../UserForm'
+/*LAURA: friend requests modal: Base sur le modale de Aurelie mais avec les detailles des requetes "pending" recues + un button accept/reject*/
+import React, { useState } from 'react';
+import AcceptButton from '../AcceptButton';
+import RejectButton from '../RejectButton';
 
 /* Assombri l'arriere plan */
 const background = {
@@ -23,7 +22,7 @@ const modale = {
     left: '50%',
     zIndex: '9999',
     transform: 'translate(-50%, -50%)',
-    overflowY: 'scroll'
+    overflowY: 'scroll',
 }
 
 const button = {
@@ -33,15 +32,16 @@ const button = {
 }
 
 /* Ternaire, affiche modale si revele recu en parametre est true  */
-const Modale = ({revele, toggle, name}) => revele ? (
+const Modale = ({revele, toggle, reqs}) => revele ? (
     <React.Fragment>
         <div style={background} />
         <div style={modale}>
-            {/* Composants contenus dans la fenetre */}
-            <Logo />
-            <UserProfilExtended name={name}/>
-            <UserForm /> 
-            {/* Bouton pour fermer la fenetre */}
+            <h1>Friend Requests</h1>
+            {reqs.map(reqs => (
+            <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={reqs.sender.avatar}/><br></br> 
+             {reqs.status} request from {reqs.sender.login}
+            <AcceptButton FriendReq = {reqs}></AcceptButton>
+            <RejectButton FriendReq = {reqs}></RejectButton></p>))}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>
     </React.Fragment>

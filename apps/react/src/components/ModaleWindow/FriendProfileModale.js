@@ -1,7 +1,7 @@
-/* sam */
+/*LAURA: friend profile part 1*/
+
 import React from 'react';
-import Logo from '../Logo';
-import CreateSalon from '../createSalon';
+import FriendUserProfilExtended from '../FriendUserProfileExtended'
 
 /* Assombri l'arriere plan */
 const background = {
@@ -21,7 +21,8 @@ const modale = {
     top: '50%',
     left: '50%',
     zIndex: '9999',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    overflowY: 'scroll'
 }
 
 const button = {
@@ -30,17 +31,13 @@ const button = {
     top: '15px'
 }
 
-
 /* Ternaire, affiche modale si revele recu en parametre est true  */
-const SalonModale = ({revele, toggle, user}) => revele ? (
-    
+const Modale = ({revele, toggle, Value}) => revele ? (
     <React.Fragment>
         <div style={background} />
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
-            <Logo />
-            <CreateSalon toggle={toggle} user={user}/>
-           
+            <FriendUserProfilExtended Value={Value}/>
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>
@@ -48,4 +45,4 @@ const SalonModale = ({revele, toggle, user}) => revele ? (
  ) : null;
 
 
-export default SalonModale;
+export default Modale;

@@ -1,4 +1,4 @@
-/*aurelie, samantha*/
+/*aurelie, samantha, Laura*/
 
 import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -7,11 +7,19 @@ import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { FriendRequest } from 'src/typeorm/entities/friend-request';
 import { User } from 'src/typeorm/entities/User';
 import { FriendRequestStatus } from 'src/typeorm/entities/friend-request-interface';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
+export class setProfilDto {
+   login: string;
+   email:string;
+   twoFA: boolean;
+}
 
 /* localhost:3000/users */
 @Controller('users')
 export class UsersController {
-   constructor(private userServ : UsersService) {}
+   constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>) {}
    /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
@@ -20,7 +28,15 @@ export class UsersController {
     // console.log('===getUser', user);
      return (user);
      }
-     
+
+   /* WIP: set le profil avec le formulaire envoye */
+   @Put('set')
+   async setUsers(@Req() req: any, @Body() body: setProfilDto) {
+      console.log('BODY1', body);
+     // await this.userRepo.update({ login: req.body.login }, { email: req.body.email });
+      console.log('SetUsers()');
+      return ('SetUsers()');
+   }     
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')
    async getUsers() {
@@ -28,12 +44,12 @@ export class UsersController {
     //  console.log('GetUsers()');
       return (users);
    }
-   
+
    /* Retourne le user [login] */
    @Get(':login')
    async getUserByLogin(@Param() params) {
       const user = await this.userServ.findUserByLogin(params);
-     // console.log('=====getUserByLogin()', user);
+      //console.log('=====getUserByLogin()', user);
       return (user);
    }
 
@@ -44,6 +60,22 @@ export class UsersController {
       const user = await this.userServ.findUserById(userId);
       return (user);
    }
+
+/*
+    @Get()
+    getUser(@Headers() header) {
+      // console.log(header);
+      const user = this.userServ.findUserById(1).then((result) => { // trouve dans la db l'utilisateur ayant pour identifiant '1'
+         return result; // retourne le login de l'utilisateur avec id '1'
+      })
+    return user; //return login de l'utilisateur ayant l' id '1'
+    }
+*/
+
+/*--------------------------------------------------------------------------------------*/
+/*----------------------------------------FRIEND [Laura]--------------------------------*/
+/*--------------------------------------------------------------------------------------*/
+//TODO: friend controller
 
      /* send friend request to receiverId*/
      @UseGuards(AuthenticatedGuard)
@@ -63,9 +95,20 @@ export class UsersController {
       async getFriendList(
          @Req() request,
       ) : Promise<User[]> {
-      console.log("IN CORRECT FUNCTION");
       return await this.userServ.getFriendList(request.user);
       }
+
+     /*check status of friend request that we have sent to receiverID*/
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/testing/:SenderId')
+     async testing(
+        @Param('SenderId') SenderStringId: string,
+        @Req() request,
+     ): Promise<FriendRequest | { error: string; }> {
+      const SenderId = parseInt(SenderStringId);
+      const sender = await this.userServ.findUserById(SenderId);
+      return this.userServ.sendFriendRequest(request.user.id, sender);
+     }
 
    /*check status of friend request that we have sent to receiverID*/
      @UseGuards(AuthenticatedGuard)
@@ -81,26 +124,25 @@ export class UsersController {
 
       /*respond to friend request with newStatus (accepted/declined/pending) */
       @UseGuards(AuthenticatedGuard)
-      @Put('friendRequest/respond/:friendRequestId')
-      async respondToFriendRequest(
+      @Get('friendRequest/accept/:friendRequestId')
+      async acceptFriendRequest(
          @Param('friendRequestId') friendRequestStringId: string,
-         @Body() newStatus: FriendRequestStatus,
       ): Promise<FriendRequestStatus> {
        const friendRequestId = parseInt(friendRequestStringId);
-       return this.userServ.respondToFriendRequest(friendRequestId, newStatus);
+       return this.userServ.respondToFriendRequest(friendRequestId, "accepted");
       }
 
-       /*easy way to change friend request to accept for tests */
-       @UseGuards(AuthenticatedGuard)
-       @Get('friendRequest/testAccept/:friendRequestId')
-       async testAcceptFriendRequest(
-          @Param('friendRequestId') friendRequestStringId: string,
-       ): Promise<FriendRequestStatus> {
-        const friendRequestId = parseInt(friendRequestStringId);
-        return this.userServ.testAcceptFriendRequest(friendRequestId,"accepted");
-       }
+      /*rejects friend request indicated*/
+      @UseGuards(AuthenticatedGuard)
+      @Get('friendRequest/reject/:friendRequestId')
+      async rejectFriendRequest(
+         @Param('friendRequestId') friendRequestStringId: string,
+      ): Promise<FriendRequestStatus> {
+       const friendRequestId = parseInt(friendRequestStringId);
+       return this.userServ.respondToFriendRequest(friendRequestId, "rejected");
+      }
 
-      /*returns all your received friend requests*/
+      /*returns all your PENDING received friend requests*/
      @UseGuards(AuthenticatedGuard)
      @Get('friendRequest/me/received-requests')
      async getReceivedFriendRequests(
@@ -109,8 +151,22 @@ export class UsersController {
       return this.userServ.getReceivedFriendRequests(request.user);
      }
 
-     @Get('getAllLogins')
-     async getLogins()
+     /*Checks if user has already sent a friend request to you. If yes, returns the request. If not, returns an error message*/
+     @UseGuards(AuthenticatedGuard)
+     @Get('friendRequest/me/hasSentMe/:Userlogin')
+     async hasSentMe(
+      @Param('Userlogin') user_login : string,
+      @Req() request,
+      ): Promise<FriendRequest | { error: string }> {
+      /*get user from login*/
+      const the_user = await this.userRepo.findOne({where: [{ login: user_login}],
+      });
+      return this.userServ.hasSentMe(the_user, request.user);
+   }
+
+      /*returns all user.logins in database*/
+     @Get('data/getAllLogins')
+     async getLogins() : Promise<string[]>
      {
         return this.userServ.getAllLogins();
      }
@@ -124,27 +180,23 @@ export class UsersController {
        return this.userServ.getSentFriendRequests(request.user);
       }
 
-/*
-    @Get()
-    getUser(@Headers() header) {
-      // console.log(header);
-      const user = this.userServ.findUserById(1).then((result) => { // trouve dans la db l'utilisateur ayant pour identifiant '1'
-         return result; // retourne le login de l'utilisateur avec id '1'
-      })
-    return user; //return login de l'utilisateur ayant l' id '1'
-    }
-*/
-    /* constroller pour post sur path user */
-    @Post()
-    addUser() {
-       console.log('log : user successfully add');
-       return 'user successfully add';
-    }
+      /*Game stats*/
+      @UseGuards(AuthenticatedGuard)
+      @Get('stats/getWins')
+     async getWins(
+      @Req() request,
+     ) : Promise<number>
+     {
+        return this.userServ.getWins(request.user);
+     }
 
-    /* constroller pour delete sur path user */
-    @Delete()
-    deleteUser() {
-       console.log('log : user successfully delete');
-       return 'user successfully delete';
-    }
+     @UseGuards(AuthenticatedGuard)
+      @Get('stats/getLosses')
+     async getLosses(
+      @Req() request,
+     ) : Promise<number>
+     {
+        return this.userServ.getLosses(request.user);
+     }
+
 }
