@@ -56,7 +56,7 @@ const Home = () => {
     return (
         <div>
             <div style={headStyle}>
-                <SearchBar></SearchBar>
+                {/*<SearchBar></SearchBar>*/}
                 <Logo></Logo>
                 <UserProfil dataFromParent={profil}></UserProfil>
             </div>
