@@ -1,21 +1,21 @@
 import React, { useRef, useEffect, useState} from 'react'
 import { socket } from "./Socket";
-/*
+
+
 const divStyle = {
-  width:"100%",
+  width:"80%",
   objectFit: "contain",
 }
-*/
+
 const canvasStyle = {
   width:"100%",
   objectFit: "contain",
 }
 
 const playButton = {
-  position: "absolute",
-  right: "0",
-  bottom: "0",
-  width: "480px",
+  
+  width: "70%",
+  objectFit: "contain",
   fontSize: "20px",
   borderRadius: "5px",
   color: "white",
@@ -67,8 +67,8 @@ const Game = (props) => {
     var ballX = width / 2;
     var ballY = height / 2;
     var ballRadius = height/30;
-    var deltaX = 2;
-    var deltaY = -2;
+    var deltaX = -2;
+    var deltaY = 2;
     var scoreL = 0;
     var scoreR = 0;
     var stop = false;
@@ -187,7 +187,7 @@ const Game = (props) => {
   }, [inGame, actualUser.id, roomName])
   
   return (
-  <div >
+  <div style={divStyle}>
     <canvas style={canvasStyle} ref={canvasRef} width={widthExt} height={heightExt}  {...rest}/>
     {inGame ? null : <button style={playButton} onClick={joinGame}>PLAY</button>}
   </div>

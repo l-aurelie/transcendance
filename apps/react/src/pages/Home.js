@@ -10,7 +10,6 @@ import axios from 'axios';
 import {socket} from '../components/Socket';
 import {} from '../css/home.css';
 import SearchBar from '../components/Searchbar';
-// import Socket from './Socket';
 
 /* Style (insere dans la div jsx) */
 const headStyle = {
@@ -33,8 +32,10 @@ const background = {
 */
 const bodyStyle = {
     display: 'flex',
-    justifyContent: 'space-around',
-    width: "100%",
+    width:"100%",
+    height: "85vh",
+    objectFit: "contain",
+    justifyContent: 'center',
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'dark',
@@ -42,10 +43,13 @@ const bodyStyle = {
 
 const chatStyle = {
     width: "30%",
+    
 }
 
 const gameStyle = {
     width: "70%",
+    flexDirection: "column", // pour que le bouton soit en dessous du jeu
+ 
 }
 
 const Home = () => {
