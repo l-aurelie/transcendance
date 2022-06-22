@@ -180,4 +180,23 @@ export class UsersController {
        return this.userServ.getSentFriendRequests(request.user);
       }
 
+      /*Game stats*/
+      @UseGuards(AuthenticatedGuard)
+      @Get('stats/getWins')
+     async getWins(
+      @Req() request,
+     ) : Promise<number>
+     {
+        return this.userServ.getWins(request.user);
+     }
+
+     @UseGuards(AuthenticatedGuard)
+      @Get('stats/getLosses')
+     async getLosses(
+      @Req() request,
+     ) : Promise<number>
+     {
+        return this.userServ.getLosses(request.user);
+     }
+
 }

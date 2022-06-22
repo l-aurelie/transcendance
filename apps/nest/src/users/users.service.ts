@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import { User } from "src/typeorm";
 import { Socket } from "src/typeorm";
 import { FriendRequest } from "src/typeorm/entities/friend-request";
+import { Games } from "src/typeorm/entities/Games";
 import { FriendRequestStatus } from "src/typeorm/entities/friend-request-interface";
 
 @Injectable()
@@ -13,6 +14,8 @@ export class UsersService {
     constructor (
         @InjectRepository(User)
         private userRepo: Repository<User>,
+        @InjectRepository(Games)
+        private readonly gamesRepository: Repository<Games>,
         @InjectRepository(FriendRequest)
         private readonly friendRequestRepository: Repository<FriendRequest>) {}
   
@@ -167,6 +170,31 @@ async getFriendList(currentUser: User) : Promise<User[]> {
     let friends2 : User[] = group_two.map( group_two => group_two.sender);
     //retourne friends1 + friends2
    return friends1.concat(friends2);
+}
+
+async getWins(the_user: User) : Promise<number> {
+
+    const list = await this.gamesRepository.find(
+    {
+    where: [
+        { winner: the_user.id },
+    ],
+}
+    );
+    console.log("!!!!!!!!!!!!!!!!!!!!1TESING", list.length)
+    return list.length;
+}
+
+async getLosses(the_user: User) : Promise<number> {
+
+    const list = await this.gamesRepository.find(
+    {
+    where: [
+        { looser: the_user.id },
+    ],
+}
+    );
+    return list.length;
 }
 
 }
