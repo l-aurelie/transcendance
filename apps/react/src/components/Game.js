@@ -59,19 +59,11 @@ const Game = (props) => {
   },)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
-    if (inGame === false) {
-      context.fillStyle = '#000000'
-      context.fillRect(0, 0, width, height)
-      context.font = "20px Verdana";
-      context.fillStyle = "white";
-      context.fillText("PONG", width/2, height/2);
-    }
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
     var key = 0;
     var height = canvas.height;
     var width = canvas.width;
-    console.log("w and h", width, height);
     var posHL = height/2-((height/6)/2);
     var posHR = height/2-((height/6)/2); 
     var ballX = width / 2;
@@ -83,12 +75,10 @@ const Game = (props) => {
     var scoreR = 0;
     var stop = false;
     var winner = '';
-    const rapportWidth = width/400;
-    const rapportHeight = height/300;
     var paddleSize = height/6;
     var paddleLarge = width/25;
     const allPos = {
-      ballRadius:ballRadius,
+      ballRadius: ballRadius,
        width:width, 
        height:height, 
        paddleLarge:paddleLarge, 
@@ -102,51 +92,57 @@ const Game = (props) => {
        deltaX:deltaX,
        deltaY:deltaY
       };
+
+    if (inGame === false) {
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height)
+      context.font = "20px Verdana";
+      context.fillStyle = "white";
+      context.fillText("PONG", width/2, height/2);
+    }
+
     const handleKeyDown = event => {
       if (roomName === 0)
         return ;
       else {
         event.preventDefault();
         key = event.keyCode;
+      }
+    };
+    const handleKeyUp = event => {
+     event.preventDefault();
+      key = 0;
     }
-  };
-  const handleKeyUp = event => {
-    event.preventDefault();
-    key = 0;
-  }
-  document.addEventListener('keydown', handleKeyDown);
-  document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
   
-  socket.on("game-stop", data => {
-    winner = data;
-    stop = true;
-  });
-  socket.on("left-move", data => {
-   allPos.posHL = data;
-  });
-  socket.on("right-move", data => {
-    allPos.posHR = data;
-  });
-  socket.on("updatedBall", data => {
-    allPos.ballX = data.x;
-    allPos.ballY = data.y;
-    allPos.deltaX = data.dx;
-    allPos.deltaY = data.dy;
-    allPos.scoreL = data.scoreLeft;
-    allPos.scoreR = data.scoreRight;
-    console.log(allPos.ballX);
-  });
-
-  let animationFrameId;
+    socket.on("game-stop", data => {
+      winner = data;
+      stop = true;
+    });
+    socket.on("left-move", data => {
+      allPos.posHL = data;
+    });
+    socket.on("right-move", data => {
+      allPos.posHR = data;
+    });
+    socket.on("updatedBall", data => {
+      allPos.ballX = data.x;
+      allPos.ballY = data.y;
+      allPos.deltaX = data.dx;
+      allPos.deltaY = data.dy;
+      allPos.scoreL = data.scoreLeft;
+      allPos.scoreR = data.scoreRight;
+    });
+    let animationFrameId;
       
     //Our draw came here
     const render = () => {
       if (inGame === true && stop === false) {
-        console.log(allPos.scoreL);
         if (key === 38)
-        socket.emit('moveUp', actualUser.id, roomName, allPos);
-      if (key === 40)
-        socket.emit('moveDown', actualUser.id, roomName, allPos);
+          socket.emit('moveUp', actualUser.id, roomName, allPos);
+        if (key === 40)
+          socket.emit('moveDown', actualUser.id, roomName, allPos);
         socket.emit('ball', roomName,  allPos);
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
@@ -156,9 +152,9 @@ const Game = (props) => {
         context.fillText(allPos.scoreL, width/4, height/10);
         context.fillText(allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'red'
-        context.fillRect(width-(width/25), allPos.posHR, width/30, height/6)
+        context.fillRect(width-(width/25), allPos.posHR, paddleLarge, paddleSize)
         context.fillStyle = 'red'
-        context.fillRect(0, allPos.posHL, width/25, height/6)
+        context.fillRect(0, allPos.posHL, paddleLarge, paddleSize)
         context.beginPath()
         context.arc(allPos.ballX, allPos.ballY, ballRadius, 0, 2*Math.PI)
         context.fillStyle = 'white'
@@ -183,7 +179,7 @@ const Game = (props) => {
       document.removeEventListener('keyup', handleKeyUp);
 
     }
-  }, [inGame, actualUser.id, roomName/*, height,width*/])
+  }, [inGame, actualUser.id, roomName])
   
   return (
   <div >

@@ -24,24 +24,6 @@ export class Games implements IGames {
     @Column({default:false})
     finish: boolean;
 
-    @Column({default: 125})
-    posLeft : number;
-
-    @Column({default: 125})
-    posRight:number;
-
-    @Column({default: 200})
-    posBallX: number;
-
-    @Column({default: 150})
-    posBallY : number;
-
-    @Column({default: 2})
-    deltaX:number;
-    
-    @Column({default: -2})
-    deltaY:number;
-
 }
 
 export interface IGames {
@@ -52,10 +34,4 @@ export interface IGames {
     scoreRight?: number;
     winner?: number;
     finish?: boolean;
-    posLeft?:number;
-    posRight?:number;
-    posBallX?: number;
-    posBallY?: number;
-    deltaX?: number;
-    deltaY?:number;
 }

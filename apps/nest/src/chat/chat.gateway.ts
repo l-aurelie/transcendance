@@ -150,8 +150,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
    
     @SubscribeMessage('moveDown')
-    async  paddleDown(client, infos) { //infos[0] => userId, infos[1] -> roomGameId infos[2] ->posHR infos[3] ->posHL
-     //  console.log('in move down');
+    async  paddleDown(client, infos) { //infos[0]=userId, infos[1]=roomGameId, infos[2]=allPos
         const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (idGame.playerLeft === infos[0] )
         {
@@ -163,7 +162,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log("paddleSize", infos[2].paddleSize);
             if(newPos + infos[2].paddleSize >= infos[2].height - infos[2].paddleSize)
                 newPos = infos[2].height - infos[2].paddleSize;
-       //     this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
             this.server.to(infos[1]).emit("left-move", newPos);
         }
         else if (idGame.playerRight === infos[0])
@@ -172,15 +170,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos + 10;
             if(newPos + infos[2].paddleSize >= infos[2].height - infos[2].paddleSize)
                 newPos = infos[2].height - infos[2].paddleSize;
-          //  this.gameRepo.update({id : infos[1]}, {posRight : newPos});
-
             this.server.to(infos[1]).emit("right-move", newPos);
         }
     }
 
     @SubscribeMessage('moveUp')
     async  paddleUp(client, infos) { //infos[0] == userId, infos[1] == roomGameId , infos[2] == allPos
-   //    console.log('in move up');
         const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (idGame.playerLeft === infos[0] )
         {
@@ -188,7 +183,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos - 10;
             if(newPos <= 0)
                 newPos = 0;
-    //        this.gameRepo.update({id : infos[1]}, {posLeft : newPos});
             this.server.to(infos[1]).emit("left-move", newPos);
         }
         else if (idGame.playerRight === infos[0])
@@ -197,7 +191,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos - 10;
             if(newPos <= 0)
                 newPos = 0;
-       //     this.gameRepo.update({id : infos[1]}, {posRight : newPos});
             this.server.to(infos[1]).emit("right-move", newPos);
         }
     }
@@ -205,77 +198,56 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName , infos[1] = allPos
         
-        let width = infos[1].width; // largeur paddle
-        let height = infos[1].height; //hauteur paddle = 50
+        let width = infos[1].width; 
+        let height = infos[1].height; 
         var ballRadius = infos[1].ballRadius;
-    
-   //     const idGame = await this.gameRepo.findOne({id:infos[0]});
         var dx = infos[1].deltaX;
         var dy = infos[1].deltaY;
         var by = infos[1].ballY;
         var bx = infos[1].ballX;
-       // console.log(bx);
         var sL = infos[1].scoreL;
         var sR = infos[1].scoreR;
-        var newDx = dx;
-        var newDy = dy;
-        var newScoreL = sL;
-        var newScoreR = sR;
-        var newBx = bx;
-        var newBy = by;
-   //     if (idGame)
-    //    {
-            if (by+ dy > infos[1].posHL
-                && by + dy < infos[1].posHL + infos[1].paddleSize
-                && bx + dx <= infos[1].paddleLarge) {
-                    newDx = -dx;
-                }
-            if (by + dy > infos[1].posHR
-                && by + dy < infos[1].posHR + infos[1].paddleSize
-                && bx + dx >= width - infos[1].paddleLarge) {    
-                    newDx = -dx;
-                }
-            //dans la condition si dessous si la balle touche les bords droits
-            //et gauches on devra verifier si ca touche le paddle
-            // 1. si ca touche le paddle on change rien 
-            //2. si ca touche le mur score pour l'adversaire
-          
-            
-            if((by + dy > height - ballRadius) || (by + dy < ballRadius)) {
-               newDy = -dy;
-            }  
-            newBx = bx + newDx;
-            newBy = by + newDy;
-            
-            if(bx + dx > width - ballRadius) {
-                newScoreL += 1;
-                newBx = infos[1].width/2;
-                newBy = infos[1].height/2;
-            }
-            if (bx + dx < ballRadius) {
-                newScoreR += 1;
-                newBx = infos[1].width/2;
-                newBy = infos[1].height/2;
-            }
-         //     console.log('infos = ' + ball.x + "  " + ball.y);
-          //  this.gameRepo.update( {id : infos[0]}, {posBallX:bx, posBallY:by, deltaX: dx, deltaY:dy, scoreLeft:sL, scoreRight:sR});
-            const ball = {x : newBx, y: newBy, scoreLeft: newScoreL, scoreRight: newScoreR, dx:newDx, dy:newDy}
-            this.server.to(infos[0]).emit("updatedBall", ball);
-            if (newScoreL >= 11 && newScoreR < newScoreL - 1) {
-        const idGame = await this.gameRepo.findOne({id:infos[0]});
-                this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft});
-                const user = await this.userRepo.findOne({id: idGame.playerLeft});
-                this.server.to(infos[0]).emit("game-stop", user.login);
-            }
-            if (newScoreR >= 11 && newScoreL < newScoreR - 1) {
-        const idGame = await this.gameRepo.findOne({id:infos[0]});
-                this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight});
-                const user = await this.userRepo.findOne({id: idGame.playerRight});
-                this.server.to(infos[0]).emit("game-stop", user.login);
-            }
 
-       // }
-         
+        if (infos[1].ballY + infos[1].deltaY > infos[1].posHL
+            && infos[1].ballY + infos[1].deltaY < infos[1].posHL + infos[1].paddleSize
+            && infos[1].ballX + infos[1].deltaX <= infos[1].paddleLarge) {
+                dx = -dx;
+            }
+        if (infos[1].ballY + infos[1].deltaY > infos[1].posHR
+            && infos[1].ballY + infos[1].deltaY < infos[1].posHR + infos[1].paddleSize
+            && infos[1].ballX + infos[1].deltaX >= width - infos[1].paddleLarge) {    
+                dx = -dx;
+            }
+        if((infos[1].ballY + infos[1].deltaY > height - ballRadius)
+            || (infos[1].ballY + infos[1].deltaY < ballRadius)) {
+            dy = -dy;
+        }  
+        bx = bx + dx;
+        by = by + dy;
+        if(infos[1].ballX + infos[1].deltaX > width - ballRadius) {
+            sL += 1;
+            bx = infos[1].width/2;
+            by = infos[1].height/2;
+        }
+        if (bx + dx < ballRadius) {
+            sR += 1;
+            bx = infos[1].width/2;
+            by = infos[1].height/2;
+        }
+        const ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy}
+        this.server.to(infos[0]).emit("updatedBall", ball);
+        if (sL >= 11 && sR < sL - 1) {
+            const idGame = await this.gameRepo.findOne({id:infos[0]});
+            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, scoreLeft:sL, scoreRight:sR});
+            const user = await this.userRepo.findOne({id: idGame.playerLeft});
+            this.server.to(infos[0]).emit("game-stop", user.login);
+        }
+        if (sR >= 11 && sL < sR - 1) {
+            const idGame = await this.gameRepo.findOne({id:infos[0]});
+            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, scoreLeft:sL, scoreRight:sR});
+            const user = await this.userRepo.findOne({id: idGame.playerRight});
+            this.server.to(infos[0]).emit("game-stop", user.login);
+        }
     } 
 }
 
