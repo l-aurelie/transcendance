@@ -12,13 +12,17 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UsersController } from './users/users.controller';
+import { FriendsModule } from './friends/friends.module';
+import { StatsService } from './stats/stats.service';
+import { StatsModule } from './stats/stats.module';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
     /*session refers to cookie session*/
     PassportModule.register({ session: true }), 
     ConfigModule.forRoot({envFilePath: '.env'}),
-    UsersModule, AuthModule,
+    UsersModule, AuthModule, FriendsModule, StatsModule,
     TypeOrmModule.forRoot({
       /*configures TypeOrm to database*/
       type: 'postgres',

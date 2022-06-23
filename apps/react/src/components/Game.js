@@ -71,6 +71,7 @@ const Game = (props) => {
     var scoreL = 0;
     var scoreR = 0;
     var stop = false;
+    var sleep = false;
     var winner = '';
     var paddleSize = height/6;
     var paddleLarge = width/25;
@@ -87,7 +88,8 @@ const Game = (props) => {
        scoreL:scoreL, 
        scoreR:scoreR, 
        deltaX:deltaX,
-       deltaY:deltaY
+       deltaY:deltaY,
+       sleep: sleep,
       };
     
 
@@ -132,6 +134,7 @@ const Game = (props) => {
       allPos.deltaY = data.dy;
       allPos.scoreL = data.scoreLeft;
       allPos.scoreR = data.scoreRight;
+      allPos.sleep = data.sleep;
     });
    
     let animationFrameId;
@@ -143,7 +146,9 @@ const Game = (props) => {
           socket.emit('moveUp', actualUser.id, roomName, allPos);
         if (key === 40)
           socket.emit('moveDown', actualUser.id, roomName, allPos);
-        socket.emit('ball', roomName,  allPos);
+        if (allPos.sleep === false) {
+          socket.emit('ball', roomName,  allPos);
+        }
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);

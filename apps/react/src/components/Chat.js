@@ -1,10 +1,9 @@
-/* aurelie */
+/* aurelie John */
 import axios from "axios";
 import React, {Component} from 'react';
 import { useEffect, useState } from "react";
 import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
-import Modale from "./ModaleWindow/modale";
 import MySalons from "./MySalons";
 
 /* Style (insere dans la div jsx) */
@@ -32,12 +31,10 @@ const messageStyle = {
   borderColor: 'dark',
   width: '250px',
 }
-
 const chatBox = {
   marginTop: 'auto',
   border: '2px",'
 }
-
 const chatTitle = {
   display: "flex",
   justifyContent: "center",
@@ -47,16 +44,13 @@ const chatTitle = {
  // height: "80px",
   borderRadius: "2rem",
 }
-
 const messageSent = {
   textAlign: 'right',
 }
-
 const salonName = {
   marginTop: "auto", 
 
 }
-
 const notifSalon = {
   marginTop: "auto", 
   backgroundColor: 'pink',
@@ -66,35 +60,13 @@ const notifSalon = {
 const Chat = (props) => {
 
   const actualUser = props.dataFromParent;
-  const [users, setUsers] = useState([]);// Tous les users de la db
-  const [userFound, setUserFound] = useState([]); // Contient l'utilisateur si trouve
-  const {revele, toggle} = LogiqueModale();// Outils affichage users apres recherche
+
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
  
-  /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
-  useEffect(() => {
-    axios.get("http://localhost:3000/users/all", { withCredentials: true }).then((res) => {
-      setUsers(res.data);
-      console.log('find all pour la barre de recherche:', users);
-    });
-  }, [])
- 
-  /* Apres enter dans la barre de recherche users */
-  const displayUser = (event) => {
-    /* Recherche dans le tableau users sil trouve le user cherche */
-   if(event.key === 'Enter'){
-      console.log('===displayUSer()');
-     const res = users.find(element => event.target.value === element.login);
-     if (res)
-       setUserFound(res);
-     else
-        setUserFound('User not found');
-      /* Affiche le profil user */
-      toggle();
-    }
-  }
+  
+
  
   //Ecoute chat pour afficher tout nouveaux messages
   useEffect(() => {
@@ -173,13 +145,6 @@ const Chat = (props) => {
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
     <div style={messageStyle}>
-      {/* Barre de recherche d'un user + affichage de userFound */}
-      <div>
-        <p>Search a user</p>
-        <input type='text' onKeyPress={displayUser} />
-        <Modale revele={revele} toggle={toggle} name={userFound.login} />
-      </div>  
-       
         <div style={chatBox} ><p style={chatTitle}>{currentSalon}</p>
 
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
@@ -196,3 +161,39 @@ const Chat = (props) => {
 }
 
 export default Chat
+
+
+
+
+
+// /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
+  // const [users, setUsers] = useState([]);// Tous les users de la db
+  // const [userFound, setUserFound] = useState([]); // Contient l'utilisateur si trouve
+
+  // useEffect(() => {
+  //   axios.get("http://localhost:3000/users/all", { withCredentials: true }).then((res) => {
+  //     setUsers(res.data);
+  //     console.log('find all pour la barre de recherche:', users);
+  //   });
+  // }, [])
+ 
+  // /* Apres enter dans la barre de recherche users */
+  // const displayUser = (event) => {
+  //   /* Recherche dans le tableau users sil trouve le user cherche */
+  //  if(event.key === 'Enter'){
+  //     console.log('===displayUSer()');
+  //    const res = users.find(element => event.target.value === element.login);
+  //    if (res)
+  //      setUserFound(res);
+  //    else
+  //       setUserFound('User not found');
+  //     /* Affiche le profil user */
+  //     toggle();
+  //   }
+  // }
+{/* Barre de recherche d'un user + affichage de userFound
+      <div>
+        <p>Search a user</p>
+        <input type='text' onKeyPress={displayUser} />
+        <Modale revele={revele} toggle={toggle} name={userFound.login} />
+      </div>*/}
