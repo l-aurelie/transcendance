@@ -3,13 +3,18 @@
 
 import axios from 'axios';
 import React, { useState } from 'react';
-import LogiqueModale from './ModaleWindow/logiqueModale';
-import Modale from './ModaleWindow/modale';
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+import UserForm from './UserForm';
+import UserProfilExtended from './UserProfilExtended';
+
 const UserProfil = (props) => {
     const user = props.dataFromParent;
-    const {revele, toggle} = LogiqueModale();
-    
     const [connected, setConnected] = useState([false]);
+
+    /* Outils d'affichage de la modale */
+    const [revele, setRevele] = useState(false);
+    const toggleModal = () => {setRevele(!revele);} 
+    /*------*/
 
    
   
@@ -25,7 +30,7 @@ const UserProfil = (props) => {
     }
   };
 
-  
+
 
   // return conditionnel selon l'etat de connection de l'utilisateur
   if (connected) {
@@ -33,10 +38,16 @@ const UserProfil = (props) => {
    // <h2>{props.dataFromParent}</h2>
       <div>
     {/* Bonton pour display profilExtended + avatar et login */}
-    <button onClick={toggle}>
+    <button onClick={toggleModal}>
       <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={user.avatar} alt="description yes"/>
     </button>
-    <Modale revele={revele} toggle={toggle} name={user.login} />
+
+    {/* Ce qui est entre les deux modalWindow correspond a children recu en prop de la ft ModalWindow
+    ** et sera affiche conditionnellement selon l'etat de revele */} 
+    <ModalWindow revele={revele} setRevele={toggleModal}>
+      <UserProfilExtended name={user.login}/>
+      <UserForm /> 
+    </ModalWindow>
     
     <div>{user.login}</div>
 

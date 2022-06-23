@@ -10,6 +10,7 @@ import axios from 'axios';
 import {socket} from '../components/Socket';
 import SearchBar from '../components/Searchbar';
 import SideBarChat from '../components/SideBatChat';
+import { Component } from '../components/ModaleWindow/LogiqueModale2';
 // import Socket from './Socket';
 
 /* Style (insere dans la div jsx) */
@@ -69,7 +70,8 @@ const Home = () => {
     
     if (profil.id)
     {
-    return (
+    
+        return (
         <div>
             <div style={headStyle}>
                 {/*<SearchBar></SearchBar>*/}
