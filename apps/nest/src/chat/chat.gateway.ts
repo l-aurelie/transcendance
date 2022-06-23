@@ -235,6 +235,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var bx = infos[1].ballX;
         var sL = infos[1].scoreL;
         var sR = infos[1].scoreR;
+        var newSleep = infos[1].sleep;
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         if (infos[1].ballY + infos[1].deltaY + ballRadius > infos[1].posHL
             && infos[1].ballY + infos[1].deltaY - ballRadius < infos[1].posHL + infos[1].paddleSize
@@ -260,15 +265,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if(infos[1].ballX + infos[1].deltaX > width - ballRadius) {
             sL += 1;
             bx = infos[1].width/2;
-            by = infos[1].height/2;   
+            by = infos[1].height/2;  
+            newSleep = true;
+
         }
         if (bx + dx < ballRadius) {
             sR += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
-        }
+            newSleep = true;
 
-        const ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy}
+        }
+        if (newSleep === true) {
+            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
+            this.server.to(infos[0]).emit("updatedBall", ball);
+            await sleep(500);
+            newSleep = false;
+            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
+            this.server.to(infos[0]).emit("updatedBall", ball);
+            return;
+        }
+        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
         this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
