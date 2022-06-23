@@ -104,7 +104,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
        client.join(infos.room.name);
        /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
        client.emit('joinedsalon', infos.room.name);
-     }
+     } 
+
+    /* Un user quitte la room, on supprime une entre userRoom */
+    @SubscribeMessage('user_leaves_room')
+    async user_leaves_room(client, infos) {
+        console.log(client.id, infos.room, infos.userId);
+    await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room) }).execute();
+      client.leave(infos.room);
+      /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
+    }
 
     /* Recoit un message et unr room dans laquelle re-emit le message */
     @SubscribeMessage('chat')

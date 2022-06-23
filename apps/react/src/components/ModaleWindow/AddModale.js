@@ -40,6 +40,7 @@ const AddModale = ({user, revele, toggle}) => revele ? (
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
             <Logo />
+            {console.log('oh he', user)};
             <AddNav user={user}/>
            
             {/* Bouton pour fermer la fenetre */}

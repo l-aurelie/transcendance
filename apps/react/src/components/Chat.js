@@ -5,11 +5,26 @@ import { useEffect, useState } from "react";
 import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
 import Modale from "./ModaleWindow/modale";
+import MySalons from "./MySalons";
 
 /* Style (insere dans la div jsx) */
 
-
 const chatStyle = {
+  display: 'flex'
+}
+
+const mySalonStyle = {
+  display: 'flex',
+  backgroundColor: 'yellow',
+  flexDirection: 'column',
+  borderStyle: 'solid',
+  borderWidth: '1px',
+  borderColor: 'dark',
+  width: '60px',
+  height: '700px'
+}
+
+const messageStyle = {
   display: 'flex',
   flexDirection: 'column',
   borderStyle: 'solid',
@@ -145,31 +160,25 @@ const Chat = (props) => {
     };
 
 
+    const handleCallback = (childData) =>{
+      setMessage(childData.msg);
+      setCurrentSalon(childData.curSal);
+      console.log('sur sur', childData);
+  }
+
   return (
      
-    <div style={chatStyle}>
+    <div style={chatStyle} >
+      <div style={mySalonStyle}>
+        <MySalons actualUser={actualUser} callBack={handleCallback}/>
+      </div>
+    <div style={messageStyle}>
       {/* Barre de recherche d'un user + affichage de userFound */}
       <div>
         <p>Search a user</p>
         <input type='text' onKeyPress={displayUser} />
         <Modale revele={revele} toggle={toggle} name={userFound.login} />
-      </div>
-      
-      {/* Affichage de l'array Salons par iteration */}
-      {Array.from(joinedSalons.entries()).map((salon) => ( 
-      <button onClick={() => handleClick(salon[0])}>
-
-        {
-          salon[1] ?
-           <div style={notifSalon}>
-            {salon[0]}
-           </div>
-         :
-            <div style={salonName}>
-             {salon[0]}
-            </div>
-       }
-        </button>))}
+      </div>  
        
         <div style={chatBox} ><p style={chatTitle}>{currentSalon}</p>
 
@@ -181,6 +190,7 @@ const Chat = (props) => {
         <input type='text' onKeyPress={sendMessage} />
       
       </div>
+   </div>
    </div>
   );
 }

@@ -1,19 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/FriendProfileModale.js';
+import axios from 'axios';
+import {socket} from './Socket';
 
+const lists = {
+  overflowY: 'scroll'
+}
 
 const AddFriend = (props) => {
 const onChange = (event) => {
     setValue(event.target.value);
   }
 
+  const [friends, setFriends] = useState([]);
   const [value, setValue] = useState([]);
   const {revele, toggle} = LogiqueModale(1);
-/* Recherche d'amis a ajouter */
+  
+  /*get friendlist*/    
+  useEffect(() => {
+  axios.get("http://localhost:3000/users/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+    setFriends(res.data);
+  })
+  }, [])
 
+  const beginChat = (friend) => {
+    console.log('beginchat',props.user);
+    //socket.emit('addsalon', props.user.id, false, friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id);
+    //socket.emit('user_joins_room', {userId: props.user.id, room: friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id});
+
+  };
+
+
+/* Recherche d'amis a ajouter */
     return(
         <div>
+          <div style={lists}>
+            {friends.map(friends => (
+            <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={friends.avatar}/> {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
+            ))}   
+          </div>
+
             <p>Search for friends</p>
             <div className="search bar">
             <input type = "text" value={value} onChange={onChange} />
@@ -26,3 +53,5 @@ const onChange = (event) => {
  };
 
  export default AddFriend;
+ 
+  

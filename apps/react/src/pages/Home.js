@@ -66,7 +66,8 @@ const Home = () => {
         setlogins(res.data); 
       })*/
     }, [])
-    
+
+
     if (profil.id)
     {
     return (
@@ -79,7 +80,7 @@ const Home = () => {
 
             <div style={bodyStyle}>
                 <Game style={gameStyle} dataFromParent={profil}/>
-                <SideBarChat dataFromParent={profil}/>
+                <SideBarChat user={profil}/>
                 <Chat style={chatStyle} dataFromParent={profil}></Chat>
             </div>
         </div>

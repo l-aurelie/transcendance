@@ -25,7 +25,7 @@ const SideBarChatModale = ({revele, toggle, user}) => revele ? (
     <React.Fragment>
         <div style={modale}>
             {/* Composants contenus dans la fenetre */}
-            <SideBarChatNav user={user} />  
+            <SideBarChatNav user={user}/>  
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>
