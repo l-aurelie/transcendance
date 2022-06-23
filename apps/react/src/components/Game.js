@@ -71,6 +71,7 @@ const Game = (props) => {
     var scoreL = 0;
     var scoreR = 0;
     var stop = false;
+    var sleep = false;
     var winner = '';
     var paddleSize = height/6;
     var paddleLarge = width/25;
