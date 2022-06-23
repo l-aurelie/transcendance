@@ -55,9 +55,34 @@ console.log(whichuser);
     }
 
     async handleDisconnect(client) {
+
         // A client has disconnected
         this.users--;
+        console.log(client.id);
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
+        if(whichuser)
+        {
+            const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
+            if (isUser.length === 1)
+            {
+               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
+                for (let entry of room)
+                    this.server.to(entry.id).emit("opponent-leave");
+            }
+        }
+       // console.log(whichuser.idUser);
+       // var stock = whichuser.idUser;
+     /*  if (whichuser)
+       {
+        const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
+        if (isUser.length === 1)
+        {
+            const deco = await this.userRepo.findOne({where: {id: whichuser.idUser}});
+            deco.isConnected = false;
+            deco.isVerified = false; 
+            console.log("jjj", deco.isConnected)
+        }
+    }*/
       //  console.log(whichuser, whichuser.idUser);
       //  const idStock = whichuser.idUser;
         //const user = await this.userService.findUserBySocket(client.id);
@@ -181,7 +206,8 @@ console.log(whichuser);
           {
             console.log ("entre in allGame", entry.finish);
             this.joinRoom(client, entry.id);
-            this.server.to(entry.id).emit("game-start", entry.id);
+            const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight};
+            this.server.to(entry.id).emit("game-start", data);
             return;
           }
       }
@@ -202,7 +228,9 @@ console.log(whichuser);
                 this.joinRoom(gameQueue[0].sock, roomName);
                 this.joinRoom(gameQueue[1].sock, roomName);
              //   this.joinRoom(gameQueue[1].sock, roomName);
-                this.server.to(roomName).emit("game-start",  roomName);  
+             const data = {roomname: roomName, sL: 0, sR:0}
+
+                this.server.to(roomName).emit("game-start",  data);  
                 const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user}, {idUser: gameQueue[1].user}]});
                 for (let entry of allSocketPlayer)
                 {
@@ -281,6 +309,12 @@ console.log(whichuser);
       //  var roster = server.clients(infos[0]);
        // for (let i in roster)
          //   console.log('client = ', roster[i]);
+        //  console.log(infos[1].playerLeft, infos[1].playerRight);
+        // const player1 = await this.userRepo.findOne({id:infos[1].playerLeft});
+        // const player2 = await this.userRepo.findOne({id:infos[1].playerRight});
+        // if (player1.isConnected === false || player2.isConnected === false)
+        //     this.server.to(infos[0]).emit("opponent-leave");
+
         let width = infos[1].width; 
         let height = infos[1].height; 
         var ballRadius = infos[1].ballRadius;
@@ -341,6 +375,13 @@ console.log(whichuser);
             const user = await this.userRepo.findOne({id: idGame.playerRight});
             this.server.to(infos[0]).emit("game-stop", user.login);
         }
-    } 
+    }
+    @SubscribeMessage('updateScore')
+    async updateScore(client, infos)
+    {
+        console.log(infos[1], infos[2]);
+        this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
+
+    }
 }
 

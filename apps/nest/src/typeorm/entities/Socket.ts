@@ -20,7 +20,6 @@ export class Socket implements ISocket {
 interface ISocket {
         name: string;
         user: User;
-   
         idUser : number;
     }
 
