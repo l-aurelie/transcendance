@@ -15,13 +15,14 @@ import { UsersController } from './users/users.controller';
 import { FriendsModule } from './friends/friends.module';
 import { StatsService } from './stats/stats.service';
 import { StatsModule } from './stats/stats.module';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
     /*session refers to cookie session*/
     PassportModule.register({ session: true }), 
     ConfigModule.forRoot({envFilePath: '.env'}),
-    UsersModule, AuthModule,
+    UsersModule, AuthModule, FriendsModule, StatsModule,
     TypeOrmModule.forRoot({
       /*configures TypeOrm to database*/
       type: 'postgres',
@@ -36,12 +37,10 @@ import { StatsModule } from './stats/stats.module';
       autoLoadEntities: true,
       synchronize:true //suppress for production
     }),
-    FriendsModule,
-    StatsModule,
     
   ],
   controllers: [AppController],
-  providers: [AppService, StatsService],
+  providers: [AppService],
 })
 export class AppModule {}
 

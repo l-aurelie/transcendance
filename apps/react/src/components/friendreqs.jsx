@@ -12,7 +12,7 @@ const FriendReqss = () => {
 
 
 useEffect(() => {
-axios.get("http://localhost:3000/users/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
+axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
 setreqs(res.data);
 })
 });

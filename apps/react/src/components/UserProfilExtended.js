@@ -23,12 +23,12 @@ const UserProfilExtended = ({name}) => {
         setUser(res.data);
         })
 
-        axios.get("http://localhost:3000/users/stats/getWins", {withCredentials:true}).then((res) =>{
+        axios.get("http://localhost:3000/stats/getWins", {withCredentials:true}).then((res) =>{
         console.log('User profil extended : ', res.data);
         setWins(res.data);
         })
 
-        axios.get("http://localhost:3000/users/stats/getLosses", {withCredentials:true}).then((res) =>{
+        axios.get("http://localhost:3000/stats/getLosses", {withCredentials:true}).then((res) =>{
         console.log('User profil extended : ', res.data);
         setLosses(res.data);
         })

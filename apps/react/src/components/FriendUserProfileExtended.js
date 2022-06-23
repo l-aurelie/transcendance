@@ -22,11 +22,11 @@ useEffect(() => {
       setThisUser(res.data);
     })
     /*get friends list*/
-    axios.get("http://localhost:3000/users/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+    axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
     setFriends(res.data);
     })
     /*get requests recus par cet utilisateur*/
-    axios.get("http://localhost:3000/users/friendRequest/me/hasSentMe/" + Value, {withCredentials:true}).then((res) =>{
+    axios.get("http://localhost:3000/friends/friendRequest/me/hasSentMe/" + Value, {withCredentials:true}).then((res) =>{
     setInboundReq(res.data);
     
     })
@@ -37,7 +37,7 @@ useEffect(() => {
 /****************************************/
 
     const sendFriendRequest = event => {
-        axios.get("http://localhost:3000/users/FriendRequest/send/" + ThisUser.id, {withCredentials:true}).then((res) => {
+        axios.get("http://localhost:3000/friends/friendRequest/send/" + ThisUser.id, {withCredentials:true}).then((res) => {
         const mess = res.data.error;
         /*Si la fonction send a retourne un erreur ?*/
         if (typeof(mess) === 'string')
@@ -53,13 +53,13 @@ useEffect(() => {
 }
 
 const AcceptRequest = event => {
-    axios.get("http://localhost:3000/users/friendRequest/accept/" + InboundReq.id, {withCredentials:true}).then((res) => {
+    axios.get("http://localhost:3000/friends/friendRequest/accept/" + InboundReq.id, {withCredentials:true}).then((res) => {
     })
     alert("Request accepted");
 }   
 
 const RejectRequest = event => {
-    axios.get("http://localhost:3000/users/friendRequest/reject/" + InboundReq.id, {withCredentials:true}).then((res) => {
+    axios.get("http://localhost:3000/friends/friendRequest/reject/" + InboundReq.id, {withCredentials:true}).then((res) => {
     })
     alert("Request rejected");
 }   
