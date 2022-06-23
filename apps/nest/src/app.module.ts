@@ -12,6 +12,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UsersController } from './users/users.controller';
+import { FriendsModule } from './friends/friends.module';
+import { StatsService } from './stats/stats.service';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -33,10 +36,12 @@ import { UsersController } from './users/users.controller';
       autoLoadEntities: true,
       synchronize:true //suppress for production
     }),
+    FriendsModule,
+    StatsModule,
     
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StatsService],
 })
 export class AppModule {}
 
