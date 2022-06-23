@@ -46,14 +46,23 @@ const Game = (props) => {
          drawWaitingGame(canvasRef.current.getContext('2d'))
          socket.emit('createGame', actualUser.id);
  }
-
+ useEffect(() => {
+   console.log('actu user in emit  init', actualUser.id)
+   socket.emit('initGame', actualUser.id);
+}, [actualUser.id])
 //listen permanently if a game starting
   useEffect(() => {
+    socket.on("joinroom", data => {
+      socket.emit('initGame', actualUser.id);
+    },[]);
+    socket.on("already-ask", data => {
+      drawWaitingGame(canvasRef.current.getContext('2d'))
+    },[]);
     socket.on("game-start", data => {
       setRoomName(data);
       setInGame(true);
     }, []);
-  },)
+  },[actualUser.id])
 
   useEffect(() => {
     const canvas = canvasRef.current;
