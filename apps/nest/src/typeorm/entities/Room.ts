@@ -13,6 +13,10 @@ export class RoomEntity implements IRoom {
 
     @Column({default: false})
     private: boolean;
+
+    @Column({default: false})
+    directMessage: boolean;
+
   //  @Column({nullable:true})
   //  description:string;
 
@@ -38,6 +42,7 @@ export interface IRoom {
     id?: number;
     name? : string;
     private? : boolean;
+    directMessage? : boolean;
     creatorId? : number;
     createdAt?: Date;
     updatedAt? : Date;

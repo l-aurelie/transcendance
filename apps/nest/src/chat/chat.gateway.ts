@@ -99,11 +99,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     /* Un user join la room, on cree une entre userRoom */
      @SubscribeMessage('user_joins_room')
      async user_joins_room(client, infos) {
-       const userRoom = {userId: infos.userId, roomId: infos.room.id};
+       console.log(await this.roomService.getRoomIdFromRoomName(infos.room));
+       const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
        this.roomUserRepo.save(userRoom);
-       client.join(infos.room.name);
+       client.join(infos.room); 
        /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
-       client.emit('joinedsalon', infos.room.name);
+       client.emit('joinedsalon', {salonName: infos.room, dm: infos.dm});
      } 
 
     /* Un user quitte la room, on supprime une entre userRoom */
@@ -123,6 +124,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //const socket = await socks.find(client.id);
         const time = new Date(Date.now()).toLocaleString();
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
+        if (data.isDm)
+            console.log('isDm');
         this.server.to(data.roomToEmit).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
     }
  
@@ -143,9 +146,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('addsalon')
     // event d'ajout de salon
     async addsalon(client, infos) {
-        const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2]);
+        console.log(infos)
+        const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
         this.roomService.associateUserRoom(newRoom, infos[0], infos[1]);
-        this.server.emit('newsalon', infos[2]);
+        if (!infos[1])
+            this.server.emit('newsalon', infos[3]);
     }
 
 

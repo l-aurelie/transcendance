@@ -37,12 +37,12 @@ const AddChannel = ({user}) => {
     };
 
   const handleClick = (salon) => {
-      socket.emit('user_joins_room', {userId: user.id, room: salon});
+      socket.emit('user_joins_room', {userId: user.id, room: salon.name, dm: false});
       //toggle();
     };
 
     const sendNewSalon = (bool, text) => {  
-            socket.emit('addsalon', user.id,bool, text);//, actualUser.id);      
+            socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id);      
 //            toggle();
         };
 

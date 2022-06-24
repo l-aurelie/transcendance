@@ -64,52 +64,13 @@ const Chat = (props) => {
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
- 
-  
-
- 
-  //Ecoute chat pour afficher tout nouveaux messages
-  useEffect(() => {
-    console.log('FIRST USE EFFECT', currentSalon);
-    if (currentSalon.length !== 0) {
-      socket.on('fetchmessage', data => {
-        console.log(typeof data, data);
-        setMessage(data);
-      });
-      socket.emit('fetchmessage', currentSalon);
-    }
-    socket.on("chat", data => {
-        setMessage((message) => {
-          console.log('origin vs currentSalon', data.emittingRoom, currentSalon)
-          if (data.emittingRoom === currentSalon)
-            return ([...message, data.message]);
-          else {
-            setJoinedSalons(map => new Map(map.set(data.emittingRoom, true)));
-            return (message);
-          }
-      //});
-     });
-      });
-    }, [currentSalon])
-
-    //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
-    useEffect(() => {
-      socket.on('joinedsalon', salonName => {
-          console.log('iciii', salonName);
-          setJoinedSalons(map => new Map(map.set(salonName, false)));
-          console.log(joinedSalons);
-          socket.off('chat');
-          socket.off('fetchmessage');
-          setCurrentSalon(salonName);
-       });
-      }, [])
-  
+   
   //Emit le message rentre par l'utilisateur a tout le salon
   const sendMessage = (event) => {
     if(event.key === 'Enter') {
       console.log(currentSalon);
 
-      socket.emit('chat', {roomToEmit: currentSalon, message : event.target.value, whoAmI: actualUser});
+      socket.emit('chat', {roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
       event.target.value = "";
       console.log(joinedSalons);
     }
@@ -118,18 +79,6 @@ const Chat = (props) => {
 
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
-  const handleClick = (salon) => {
-    console.log(salon);
-      if (salon !== currentSalon) {
-        console.log('beforeadd', salon, currentSalon);
-        setJoinedSalons(map => new Map(map.set(salon, false)));
-        console.log(joinedSalons);
-
-        socket.off('chat');
-        socket.off('fetchmessage');
-        setCurrentSalon(salon);
-      }
-    };
 
 
     const handleCallback = (childData) =>{
@@ -145,7 +94,7 @@ const Chat = (props) => {
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
     <div style={messageStyle}>
-        <div style={chatBox} ><p style={chatTitle}>{currentSalon}</p>
+        <div style={chatBox} ><p style={chatTitle}>{currentSalon.name}</p>
 
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
       {message.map((msg) => (

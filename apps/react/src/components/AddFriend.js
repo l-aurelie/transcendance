@@ -19,15 +19,16 @@ const onChange = (event) => {
   
   /*get friendlist*/    
   useEffect(() => {
-  axios.get("http://localhost:3000/users/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+  axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
     setFriends(res.data);
   })
   }, [])
 
   const beginChat = (friend) => {
     console.log('beginchat',props.user);
-    //socket.emit('addsalon', props.user.id, false, friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id);
-    //socket.emit('user_joins_room', {userId: props.user.id, room: friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id});
+    const roomname = friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id;
+    socket.emit('addsalon', props.user.id, true, true, roomname);
+    socket.emit('user_joins_room', {userId: props.user.id, room: roomname, dm: true});
 
   };
 

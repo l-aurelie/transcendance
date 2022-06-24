@@ -19,9 +19,10 @@ export class RoomService {
         private userServ : UsersService
      ) {}
 
-     async createRoom(idUser: number, isPrivate:boolean, nameRoom: string): Promise<IRoom> {
+     async createRoom(idUser: number, isPrivate:boolean, isDm:boolean, nameRoom: string): Promise<IRoom> {
        // const newRoom = await this.addCreatorInRoom(room, creator);
-       const room = {creatorId: idUser, private: isPrivate, name: nameRoom};
+       const room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
+       console.log('roomm', room);
        return this.roomRepo.save(room);
      }
 
