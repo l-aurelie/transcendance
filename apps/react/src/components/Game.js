@@ -99,14 +99,14 @@ const Game = (props) => {
     var ballX = width / 2;
     var ballY = height / 2;
     var ballRadius = height/30;
-    var deltaX = -2;
-    var deltaY = 2;
+    var deltaX = -4;
+    var deltaY = 4;
  //   var scoreL = 0;
  //   var scoreR = 0;
     var stop = false;
     var winner = '';
     var paddleSize = height/6;
-    var paddleLarge = width/25;
+    var paddleLarge = width/50;
     var playerLeft = playerL;
     var playerRight = playerR;
     const allPos = {
@@ -192,7 +192,7 @@ const Game = (props) => {
         context.fillText(allPos.scoreL, width/4, height/10);
         context.fillText(allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'red'
-        context.fillRect(width-(width/25), allPos.posHR, paddleLarge, paddleSize)
+        context.fillRect(width - paddleLarge, allPos.posHR, paddleLarge, paddleSize)
         context.fillStyle = 'red'
         context.fillRect(0, allPos.posHL, paddleLarge, paddleSize)
         context.beginPath()
