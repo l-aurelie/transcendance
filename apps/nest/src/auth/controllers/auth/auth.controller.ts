@@ -139,11 +139,12 @@ export class AuthController {
 //TODO: handle disconnect
 @UseGuards(AuthenticatedGuard)
 @Get('logout')
-async logOut(@Req() request) {
-
+async logOut(@Req() request,@Res() res ) {
 request.user.isConnected = false;
 request.user.isVerified = false;
 request.logOut();
 request.session.cookie.maxAge = 0;
+
+//return res.redirect('http://localhost:3000/auth/login');
 }
 }

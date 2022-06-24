@@ -16,6 +16,7 @@ import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
 import { MessageService } from './service/message.service';
 import { resolve } from 'path';
+import { SerializeOptions } from '@nestjs/common';
 
 export var gameQueue = [];
 
@@ -47,10 +48,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // A client has connected
         this.users++;
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
-console.log(whichuser);
      //   console.log(this.users);
         // Notify connected clients of current users
-        console.log('ICI');
         this.server.emit('users', this.users);
     }
 
@@ -58,7 +57,6 @@ console.log(whichuser);
 
         // A client has disconnected
         this.users--;
-        console.log(client.id);
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
         if(whichuser)
         {
@@ -67,7 +65,54 @@ console.log(whichuser);
             {
                const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
                 for (let entry of room)
+                {
                     this.server.to(entry.id).emit("opponent-leave");
+                    if (whichuser.idUser === entry.playerLeft)
+                    {
+                        const user2 = await this.socketRepo.find({where: {idUser: entry.playerRight}});
+                        if (user2.length === 0)
+                        {
+                            let win = 0;
+                            let loose = 0;
+                            if (entry.scoreLeft > entry.scoreRight)
+                               {
+                                    win = entry.playerLeft;
+                                    loose = entry.playerRight;
+                                }
+                               if (entry.scoreRight > entry.scoreLeft)
+                                {
+                                    win = entry.playerRight;
+                                    loose = entry.playerLeft;
+                                }
+                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true});
+                            this.server.to(entry.id).emit("end-match");
+
+                        }
+                    }
+                    else if (whichuser.idUser === entry.playerRight)
+                    {
+                        const user2 = await this.socketRepo.find({where: {idUser: entry.playerLeft}});
+                        if (user2.length === 0)
+                        {
+                            let win = 0;
+                            let loose = 0;
+                            if (entry.scoreLeft > entry.scoreRight)
+                               {
+                                    win = entry.playerLeft;
+                                    loose = entry.playerRight;
+                                }
+                               if (entry.scoreRight > entry.scoreLeft)
+                                {
+                                    win = entry.playerRight;
+                                    loose = entry.playerLeft;
+                                }
+                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true});
+
+                            this.server.to(entry.id).emit("end-match");
+                        }
+                    }
+                   
+                }
             }
         }
        // console.log(whichuser.idUser);
@@ -147,7 +192,6 @@ console.log(whichuser);
     @SubscribeMessage('chat')
     async onChat(client, data) {
         //any clients listenning  for the chat event on the data.roomToEmit channel would receive the message data instantly
-        console.log('sendMessage', data.whoAmI);
         //const socket = await socks.find(client.id);
         const time = new Date(Date.now()).toLocaleString();
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
@@ -158,7 +202,6 @@ console.log(whichuser);
     @SubscribeMessage('whoAmI')
     async linkUserSocket(client, user) {
       //const leUser =  this.userService.findUserById(user.id);
-      console.log('setToDb');
 
       //console.log(user);
       const sock = this.socketRepo.create();
@@ -206,7 +249,7 @@ console.log(whichuser);
           {
             console.log ("entre in allGame", entry.finish);
             this.joinRoom(client, entry.id);
-            const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight};
+            const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight};
             this.server.to(entry.id).emit("game-start", data);
             return;
           }
@@ -228,7 +271,7 @@ console.log(whichuser);
                 this.joinRoom(gameQueue[0].sock, roomName);
                 this.joinRoom(gameQueue[1].sock, roomName);
              //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0}
+             const data = {roomname: roomName, sL: 0, sR:0, player1:gameQueue[0].user, player2:gameQueue[1].user}
 
                 this.server.to(roomName).emit("game-start",  data);  
                 const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user}, {idUser: gameQueue[1].user}]});
@@ -260,8 +303,10 @@ console.log(whichuser);
    
     @SubscribeMessage('moveDown')
     async  paddleDown(client, infos) { //infos[0]=userId, infos[1]=roomGameId, infos[2]=allPos
-        const idGame = await this.gameRepo.findOne({id:infos[1]});
-        if (idGame.playerLeft === infos[0] )
+        //const idGame = await this.gameRepo.findOne({id:infos[1]});
+        if (infos[0] != infos[2].playerL && infos[0] != infos[2].playerR)
+            return ;
+        if (infos[2].playerL === infos[0] )
         {
             const pos = infos[2].posHL;
             let newPos = pos + 10;
@@ -273,7 +318,7 @@ console.log(whichuser);
                 newPos = infos[2].height - infos[2].paddleSize;
             this.server.to(infos[1]).emit("left-move", newPos);
         }
-        else if (idGame.playerRight === infos[0])
+        else if (infos[2].playerR === infos[0])
         {
             const pos = infos[2].posHR;
             let newPos = pos + 10;
@@ -285,8 +330,8 @@ console.log(whichuser);
 
     @SubscribeMessage('moveUp')
     async  paddleUp(client, infos) { //infos[0] == userId, infos[1] == roomGameId , infos[2] == allPos
-        const idGame = await this.gameRepo.findOne({id:infos[1]});
-        if (idGame.playerLeft === infos[0] )
+       // const idGame = await this.gameRepo.findOne({id:infos[1]});
+        if (infos[2].playerL === infos[0] )
         {
             const pos = infos[2].posHL;
             let newPos = pos - 10;
@@ -294,7 +339,7 @@ console.log(whichuser);
                 newPos = 0;
             this.server.to(infos[1]).emit("left-move", newPos);
         }
-        else if (idGame.playerRight === infos[0])
+        else if (infos[2].playerR === infos[0])
         {
             const pos = infos[2].posHR;
             let newPos = pos - 10;
@@ -303,7 +348,7 @@ console.log(whichuser);
             this.server.to(infos[1]).emit("right-move", newPos);
         }
     }
-
+   
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName , infos[1] = allPos
       //  var roster = server.clients(infos[0]);
@@ -382,6 +427,20 @@ console.log(whichuser);
         console.log(infos[1], infos[2]);
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
 
+    }
+
+
+    @SubscribeMessage('finish-match')
+    async endMatch(client, room)
+    {
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve,ms));
+        }
+        await sleep(1000);
+        const idGame = await this.gameRepo.findOne({id:room});
+
+        this.gameRepo.update( {id : room}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
+        this.server.to(room).emit("restart");
     }
 }
 

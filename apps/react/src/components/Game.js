@@ -59,6 +59,12 @@ const Game = (props) => {
 
 //listen permanently if a game starting
   useEffect(() => {
+    socket.on("end-match", data => {
+      setInGame(false);
+    },[]);
+   socket.on("restart", data => {
+      setInGame(false);
+    },[]);
     socket.on("joinroom", data => {
       socket.emit('initGame', actualUser.id);
     },[]);
@@ -70,17 +76,17 @@ const Game = (props) => {
       setScoreL(data.sL);
       setScoreR(data.sR);
    //   setRoomName(data.roomname);
-   //   setPlayerL(data.player1);
-   //   setPlayerR(data.player2);
+      setPlayerL(data.player1);
+      setPlayerR(data.player2);
       setQuit(false);
       setInGame(true);
     }, []);
     socket.on("opponent-leave", data => {
       setQuit(true);
-      console.log(scoreL, scoreR);
+      console.log('apponent-leave', scoreL, scoreR);
       socket.emit('updateScore', roomName, scoreL, scoreR);
     });
-  },[actualUser.id, roomName, scoreL, scoreR])
+  },[actualUser.id, roomName, scoreL, scoreR, heightExt, widthExt])
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -117,6 +123,8 @@ const Game = (props) => {
        scoreR:scoreR, 
        deltaX:deltaX,
        deltaY:deltaY,
+       playerL:playerLeft,
+       playerR: playerRight
       };
     
 
@@ -204,6 +212,7 @@ const Game = (props) => {
         context.font = "30px Verdana";
         context.fillStyle = "white";
         context.fillText(winner + ' won!', width/3, height/2);
+        socket.emit('finish-match', roomName);
       }
       if (quit === true) {
         context.clearRect(0, 0, width, height);
@@ -212,6 +221,7 @@ const Game = (props) => {
         context.font = "30px Verdana";
         context.fillStyle = "white";
         context.fillText('opponent disconnected...', width/3, height/2);
+
       }
       animationFrameId = window.requestAnimationFrame(render)
     }
@@ -223,7 +233,7 @@ const Game = (props) => {
       document.removeEventListener('keyup', handleKeyUp);
 
     }
-  }, [inGame, quit, actualUser.id, roomName, scoreL, scoreR])
+  }, [inGame, quit, actualUser.id, roomName, scoreL, scoreR, playerL, playerR])
   
   return (
   <div style={divStyle}>
