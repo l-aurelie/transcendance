@@ -3,11 +3,12 @@
 
 const MatchHistory = ( data ) => {
     const history = data.history;
+    console.log("THE HISTORY", history);
     return(
         <div>
         <h1>Match History</h1>
         {history.map(history => (
-        <p>Player ID: {history.playerLeft} {history.scoreLeft} - {history.scoreRight} Player ID: {history.playerRight}</p>
+        <h3><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userLeft.avatar}/>   {history.userLeft.login} {history.scoreLeft} - {history.scoreRight} {history.userRight.login}   <img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userRight.avatar}></img></h3>
         ))}
         </div>
         );

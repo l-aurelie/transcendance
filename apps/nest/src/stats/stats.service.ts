@@ -35,16 +35,16 @@ export class StatsService {
     }
     
     async getMatchHistory(the_user: User) : Promise<Games[]> {
-        /*{ relations: ["playerRight", "playerLeft"],*/
         const list = await this.gamesRepository.find(
         {
+        /*pour exporter aussi les utilisateurs, sinon ca marche pas*/
+        relations: ["userLeft", "userRight"],
         where: [
             { looser: the_user.id },
             { winner: the_user.id },
         ],
     }
-        );
-        console.log("********************************MATHC HISTORY:", list);
+        )
         return list;
     }
 }

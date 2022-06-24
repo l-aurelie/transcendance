@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
+import { User } from "..";
 
 @Entity()
 export class Games implements IGames {
@@ -24,6 +25,13 @@ export class Games implements IGames {
     @Column({nullable:true})
     looser: number;
 
+    /*Plusiers matchs mais chaque fois un jouer gauche/droite donc ManyToOne()*/
+    @ManyToOne(() => User, User => User.userLeft)
+    userLeft: User;
+
+    @ManyToOne(() => User, User => User.userRight)
+    userRight: User;
+
     @Column({default:false})
     finish: boolean;
 
@@ -36,6 +44,9 @@ export interface IGames {
     scoreLeft?: number;
     scoreRight?: number;
     winner?: number;
+    /*ajoute d'users*/
+    userLeft ?: User;
+    userRight ?: User;
 
     looser?: number;
 

@@ -4,6 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, O
 import { RoomEntity } from './Room';
 import { Socket } from './Socket';
 import { FriendRequest } from './friend-request';
+import { Games } from '..';
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -27,6 +28,14 @@ export class User implements IUser { // donne la composition de User, permet de 
 
     @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.receiver)
     RequestsReceived: FriendRequest[]; 
+
+    /*historique de matchs ou on est le jouer a gauche*/
+    @OneToMany(() => Games, Games => Games.userLeft)
+    userLeft: Games[]; 
+
+    /*historique de matchs ou on est le jouer a droite*/
+    @OneToMany(() => Games, Games => Games.userRight)
+    userRight: Games[]; 
 
     @Column({default: undefined, nullable:true})
     authConfirmToken: number;
