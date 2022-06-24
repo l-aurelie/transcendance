@@ -167,8 +167,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
             console.log(gameQueue[0].user)
             const details = {
-               playerLeft: gameQueue[0].user,
-               playerRight: gameQueue[1].user,
+               playerLeft: gameQueue[0].user.id,
+               playerRight: gameQueue[1].user.id,
+               userLeft: gameQueue[0].user,
+               userRight: gameQueue[1].user,
             }
             const newGame = await this.gameRepo.save(details);
             roomName = newGame.id;

@@ -44,7 +44,7 @@ const Game = (props) => {
 //on click, emit to server to ask a matchMaking
  const joinGame = () => {
          drawWaitingGame(canvasRef.current.getContext('2d'))
-         socket.emit('createGame', actualUser.id);
+         socket.emit('createGame', actualUser);
  }
 
 //listen permanently if a game starting
