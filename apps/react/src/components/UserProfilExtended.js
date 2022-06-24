@@ -3,6 +3,9 @@ import axios from "axios";
 import Friends from './friends.jsx'
 import FriendReqs from './friendreqs.jsx'
 import { useEffect, useState } from "react";
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+import MatchHistory from "./MatchHistory.jsx";
+
 
 //TODO: Rendre l'affichage conditionnel (selon si current user) de logout, setProfile
 //TODO: Formulaire de modif / d'intialisation des donnees a l'inscription
@@ -16,6 +19,9 @@ const UserProfilExtended = ({name}) => {
     const [user, setUser] = useState([]);
     const [wins, setWins] = useState([]);
     const [losses, setLosses] = useState([]);
+    const [revele, setRevele] = useState(false);
+    const toggleModal = () => {setRevele(!revele);} 
+    const [history, setHistory] = useState([]);
     
     useEffect(() => {
         axios.get("http://localhost:3000/users/" + name, {withCredentials:true}).then((res) =>{
@@ -33,6 +39,11 @@ const UserProfilExtended = ({name}) => {
         setLosses(res.data);
         })
 
+        axios.get("http://localhost:3000/stats/getMatchHistory", {withCredentials:true}).then((res) =>{
+        console.log('THE DATA : ', res.data);
+        setHistory(res.data);
+        })
+
     }, [])
     
     return(
@@ -46,6 +57,10 @@ const UserProfilExtended = ({name}) => {
             <div>{user.email}</div>
             <Friends></Friends>
             <FriendReqs></FriendReqs>
+            <button onClick={toggleModal}>Match History</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <MatchHistory history={history}></MatchHistory>
+            </ModalWindow>
             <div>2fa</div>
             <button>Logout</button>
         </div>

@@ -35,7 +35,7 @@ export class StatsService {
     }
     
     async getMatchHistory(the_user: User) : Promise<Games[]> {
-    
+        /*{ relations: ["playerRight", "playerLeft"],*/
         const list = await this.gamesRepository.find(
         {
         where: [
@@ -44,6 +44,7 @@ export class StatsService {
         ],
     }
         );
+        console.log("********************************MATHC HISTORY:", list);
         return list;
     }
 }
