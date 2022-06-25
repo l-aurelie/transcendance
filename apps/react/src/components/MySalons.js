@@ -34,6 +34,8 @@ const salonName = {
     const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
     const [message, setMessage] = useState([]);// Message a envoyer au salon
 
+    const [dmMap, setDmMap] = useState(new Map());
+
     useEffect(() => {
         props.callBack({msg: message, curSal: currentSalon});
     }, [message, currentSalon])
@@ -57,12 +59,18 @@ const salonName = {
             socket.emit('fetchmessage', currentSalon.name);
             }
             socket.on("chat", data => {
-                console.log("paricitestests");
+                console.log(dmMap);
                 setMessage((message) => {
                     console.log(currentSalon);
                 console.log('origin vs currentSalon', data.emittingRoom, currentSalon)
                 if (data.emittingRoom === currentSalon.name)
                     return ([...message, data.message]);
+                else if (!joinedSalons.has(data.emittingRoom)) {
+                    setJoinedSalons(map => new Map(map.set(data.emittingRoom, [true,  true])));
+                    dmMap[data.emittingRoom] = data.chatterLogin;
+                    console.log(data.emittingRoom, data.chatterLogin);
+                    return (message);
+                }
                 else {
                     setJoinedSalons(map => new Map(map.set(data.emittingRoom, [true,  map.get(data.emittingRoom)[1]])));
                     return (message);
@@ -77,6 +85,8 @@ const salonName = {
             socket.on('joinedsalon', data => {
                 console.log('iciii', data.salonName);
                 setJoinedSalons(map => new Map(map.set(data.salonName, [false, data.dm])));
+                if (data.dm)
+                    dmMap.set(data.emittingRoom, data.chatterLogin);
                 console.log(joinedSalons);
                 socket.off('chat');
                 socket.off('fetchmessage');
@@ -129,7 +139,7 @@ const salonName = {
             </div>
             :
                 <div style={salonName}>
-                {salon[0]}
+                {salon[1][1] ? dmMap[salon[0]] : salon[0]}
                 </div>
             }
             <button onClick={(event) => {

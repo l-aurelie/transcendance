@@ -104,7 +104,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
        this.roomUserRepo.save(userRoom);
        client.join(infos.room); 
        /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
-       client.emit('joinedsalon', {salonName: infos.room, dm: infos.dm});
+       client.emit('joinedsalon', {salonName: infos.room, dm: infos.dm, chatterLogin: 'bjr'});
      } 
 
     /* Un user quitte la room, on supprime une entre userRoom */
@@ -124,9 +124,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //const socket = await socks.find(client.id);
         const time = new Date(Date.now()).toLocaleString();
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
-        if (data.isDm)
-            console.log('isDm');
-        this.server.to(data.roomToEmit).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
+        if (data.isDm) {
+            const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
+            console.log(otherUserId); 
+            const sockets = await this.socketRepo.find({relations: ['user'], where: {user: {id : otherUserId}}, select:['name']} );
+            for (const socket of sockets) {
+                console.log(socket);
+                this.server.to(socket.name).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, chatterLogin: data.whoAmI.login});
+            }
+            client.emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
+        }
+        else
+            this.server.to(data.roomToEmit).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
     }
  
     //TODO: tjrs pertinent? 
