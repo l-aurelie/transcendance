@@ -10,14 +10,17 @@ export class Socket implements ISocket {
     @Column()
     name: string;
 
+    @Column()
+    idUser : number;
 
     @ManyToOne(() => User, user => user.socket)
     user : User;
 }
 
 interface ISocket {
-        name: string
+        name: string;
         user: User;
+        idUser : number;
     }
 
 export default ISocket;

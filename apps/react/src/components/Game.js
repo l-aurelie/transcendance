@@ -28,6 +28,12 @@ const Game = (props) => {
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
   const [inGame, setInGame] = useState(false);
+  const [quit, setQuit] = useState(false);
+  const [scoreL, setScoreL] = useState(0);
+  const [scoreR, setScoreR] = useState(0);
+  const [playerL, setPlayerL] = useState(0);
+  const [playerR, setPlayerR] = useState(0);
+
   let widthExt = 800;
   let heightExt = 600;
   const actualUser = props.dataFromParent;
@@ -46,14 +52,41 @@ const Game = (props) => {
          drawWaitingGame(canvasRef.current.getContext('2d'))
          socket.emit('createGame', actualUser);
  }
+ useEffect(() => {
+   console.log('actu user in emit  init', actualUser.id)
+   socket.emit('initGame', actualUser.id);
+}, [actualUser.id])
 
 //listen permanently if a game starting
   useEffect(() => {
+    socket.on("end-match", data => {
+      setInGame(false);
+    },[]);
+   socket.on("restart", data => {
+      setInGame(false);
+    },[]);
+    socket.on("joinroom", data => {
+      socket.emit('initGame', actualUser.id);
+    },[]);
+    socket.on("already-ask", data => {
+      drawWaitingGame(canvasRef.current.getContext('2d'))
+    },[]);
     socket.on("game-start", data => {
-      setRoomName(data);
+      setRoomName(data.roomname);
+      setScoreL(data.sL);
+      setScoreR(data.sR);
+   //   setRoomName(data.roomname);
+      setPlayerL(data.player1);
+      setPlayerR(data.player2);
+      setQuit(false);
       setInGame(true);
     }, []);
-  },)
+    socket.on("opponent-leave", data => {
+      setQuit(true);
+      console.log('apponent-leave', scoreL, scoreR);
+      socket.emit('updateScore', roomName, scoreL, scoreR);
+    });
+  },[actualUser.id, roomName, scoreL, scoreR, heightExt, widthExt])
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -66,30 +99,34 @@ const Game = (props) => {
     var ballX = width / 2;
     var ballY = height / 2;
     var ballRadius = height/30;
-    var deltaX = -2;
-    var deltaY = 2;
-    var scoreL = 0;
-    var scoreR = 0;
+    var deltaX = -4;
+    var deltaY = 4;
+ //   var scoreL = 0;
+ //   var scoreR = 0;
     var stop = false;
     var sleep = false;
     var winner = '';
     var paddleSize = height/6;
-    var paddleLarge = width/25;
+    var paddleLarge = width/50;
+    var playerLeft = playerL;
+    var playerRight = playerR;
     const allPos = {
       ballRadius: ballRadius,
-       width:width, 
-       height:height, 
-       paddleLarge:paddleLarge, 
-       paddleSize:paddleSize, 
-       posHL:posHL, 
-       posHR:posHR, 
-       ballX:ballX, 
-       ballY:ballY, 
-       scoreL:scoreL, 
-       scoreR:scoreR, 
-       deltaX:deltaX,
-       deltaY:deltaY,
-       sleep: sleep,
+      width:width, 
+      height:height, 
+      paddleLarge:paddleLarge, 
+      paddleSize:paddleSize, 
+      posHL:posHL, 
+      posHR:posHR, 
+      ballX:ballX, 
+      ballY:ballY, 
+      scoreL:scoreL, 
+      scoreR:scoreR, 
+      deltaX:deltaX,
+      deltaY:deltaY,
+      sleep: sleep,
+      playerL:playerLeft,
+      playerR: playerRight
       };
     
 
@@ -121,6 +158,7 @@ const Game = (props) => {
       stop = true;
       
     });
+  
     socket.on("left-move", data => {
       allPos.posHL = data;
     });
@@ -134,14 +172,16 @@ const Game = (props) => {
       allPos.deltaY = data.dy;
       allPos.scoreL = data.scoreLeft;
       allPos.scoreR = data.scoreRight;
-      allPos.sleep = data.sleep;
+allPos.sleep = data.sleep;
+setScoreR(data.scoreRight);
+      setScoreL(data.scoreLeft);
     });
    
     let animationFrameId;
       
     //Our draw came here
     const render = () => {
-      if (inGame === true && stop === false) {
+      if (inGame === true && stop === false && quit === false) {
         if (key === 38)
           socket.emit('moveUp', actualUser.id, roomName, allPos);
         if (key === 40)
@@ -157,7 +197,7 @@ const Game = (props) => {
         context.fillText(allPos.scoreL, width/4, height/10);
         context.fillText(allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'red'
-        context.fillRect(width-(width/25), allPos.posHR, paddleLarge, paddleSize)
+        context.fillRect(width - paddleLarge, allPos.posHR, paddleLarge, paddleSize)
         context.fillStyle = 'red'
         context.fillRect(0, allPos.posHL, paddleLarge, paddleSize)
         context.beginPath()
@@ -177,6 +217,16 @@ const Game = (props) => {
         context.font = "30px Verdana";
         context.fillStyle = "white";
         context.fillText(winner + ' won!', width/3, height/2);
+        socket.emit('finish-match', roomName);
+      }
+      if (quit === true) {
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = '#000000'
+        context.fillRect(0, 0, width, height);
+        context.font = "30px Verdana";
+        context.fillStyle = "white";
+        context.fillText('opponent disconnected...', width/3, height/2);
+
       }
       animationFrameId = window.requestAnimationFrame(render)
     }
@@ -188,7 +238,7 @@ const Game = (props) => {
       document.removeEventListener('keyup', handleKeyUp);
 
     }
-  }, [inGame, actualUser.id, roomName])
+  }, [inGame, quit, actualUser.id, roomName, scoreL, scoreR, playerL, playerR])
   
   return (
   <div style={divStyle}>
