@@ -257,8 +257,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       {
           console.log ('iin gameQueue entry.user=', entry.user, ' userid=', user)
 
-        if (entry.user === user)
+        if (entry.user.id === user)
         {
+            console.log('already');
           this.server.to(client.id).emit("already-ask");
           break;
         }
@@ -313,7 +314,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
     async createNewGame(socket: Socket, user) {
         this.server.to(socket.id).emit("received");
-        const tab = { sock: socket, user: user };        
+        const tab = { sock: socket, user: user };
         if(!gameQueue.find(element => user.id === element.user.id))
         {
             const allSocketPlayer = await this.socketRepo.find({where:{idUser: user.id}});
