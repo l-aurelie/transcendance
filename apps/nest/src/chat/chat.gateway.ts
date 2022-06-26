@@ -295,10 +295,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 this.joinRoom(gameQueue[0].sock, roomName);
                 this.joinRoom(gameQueue[1].sock, roomName);
              //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0, player1:gameQueue[0].user, player2:gameQueue[1].user}
+             const data = {roomname: roomName, sL: 0, sR:0, player1:gameQueue[0].user.id, player2:gameQueue[1].user.id}
 
                 this.server.to(roomName).emit("game-start",  data);  
-                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user}, {idUser: gameQueue[1].user}]});
+                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user.id}, {idUser: gameQueue[1].user.id}]});
                 for (let entry of allSocketPlayer)
                 {
                     if (entry.name != gameQueue[0].sock.id && entry.name != gameQueue[1].sock.id)
@@ -311,12 +311,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
-    async createNewGame(socket: Socket, userId) {
+    async createNewGame(socket: Socket, user) {
         this.server.to(socket.id).emit("received");
-        const tab = { sock: socket, user: userId };        
-        if(!gameQueue.find(element =>  userId === element.user))
+        const tab = { sock: socket, user: user };        
+        if(!gameQueue.find(element => user.id === element.user.id))
         {
-            const allSocketPlayer = await this.socketRepo.find({where:{idUser: userId}});
+            const allSocketPlayer = await this.socketRepo.find({where:{idUser: user.id}});
             for (let entry of allSocketPlayer)
                     this.server.to(entry.name).emit("joinroom");
             gameQueue.push(tab);
