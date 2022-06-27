@@ -172,9 +172,13 @@ const Game = (props) => {
       allPos.deltaY = data.dy;
       allPos.scoreL = data.scoreLeft;
       allPos.scoreR = data.scoreRight;
-allPos.sleep = data.sleep;
-setScoreR(data.scoreRight);
-      setScoreL(data.scoreLeft);
+      allPos.sleep = data.sleep;
+      // setScoreR(data.scoreRight);
+      // setScoreL(data.scoreLeft);
+
+      // console.log('sleepin socket= ', allPos.sleep);
+      // console.log('DATA sleepin socket= ', data.sleep);
+
     });
    
     let animationFrameId;
@@ -187,6 +191,7 @@ setScoreR(data.scoreRight);
         if (key === 40)
           socket.emit('moveDown', actualUser.id, roomName, allPos);
         if (allPos.sleep === false) {
+          console.log('sleep = ', allPos.sleep);
           socket.emit('ball', roomName,  allPos);
         }
         context.clearRect(0, 0, width, height);

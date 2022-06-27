@@ -263,8 +263,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       {
           console.log ('iin gameQueue entry.user=', entry.user, ' userid=', user)
 
-        if (entry.user === user)
+        if (entry.user.id === user)
         {
+            console.log('already');
           this.server.to(client.id).emit("already-ask");
           break;
         }
@@ -301,10 +302,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 this.joinRoom(gameQueue[0].sock, roomName);
                 this.joinRoom(gameQueue[1].sock, roomName);
              //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0, player1:gameQueue[0].user, player2:gameQueue[1].user}
+             const data = {roomname: roomName, sL: 0, sR:0, player1:gameQueue[0].user.id, player2:gameQueue[1].user.id}
 
                 this.server.to(roomName).emit("game-start",  data);  
-                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user}, {idUser: gameQueue[1].user}]});
+                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user.id}, {idUser: gameQueue[1].user.id}]});
                 for (let entry of allSocketPlayer)
                 {
                     if (entry.name != gameQueue[0].sock.id && entry.name != gameQueue[1].sock.id)
@@ -317,12 +318,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
-    async createNewGame(socket: Socket, userId) {
+    async createNewGame(socket: Socket, user) {
         this.server.to(socket.id).emit("received");
-        const tab = { sock: socket, user: userId };        
-        if(!gameQueue.find(element =>  userId === element.user))
+        const tab = { sock: socket, user: user };
+        if(!gameQueue.find(element => user.id === element.user.id))
         {
-            const allSocketPlayer = await this.socketRepo.find({where:{idUser: userId}});
+            const allSocketPlayer = await this.socketRepo.find({where:{idUser: user.id}});
             for (let entry of allSocketPlayer)
                     this.server.to(entry.name).emit("joinroom");
             gameQueue.push(tab);
@@ -386,8 +387,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // const player1 = await this.userRepo.findOne({id:infos[1].playerLeft});
         // const player2 = await this.userRepo.findOne({id:infos[1].playerRight});
         // if (player1.isConnected === false || player2.isConnected === false)
-        //     this.server.to(infos[0]).emit("opponent-leave");
-
+        //     this.server.to(infos[0]).emit("opponent-leave")
+      
         let width = infos[1].width; 
         let height = infos[1].height; 
         var ballRadius = infos[1].ballRadius;
@@ -398,15 +399,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var sL = infos[1].scoreL;
         var sR = infos[1].scoreR;
         var newSleep = infos[1].sleep;
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }   
         var posL = infos[1].posHL;
         var posR = infos[1].posHR;
         var paddleW = infos[1].paddleLarge;
         var paddleH = infos[1].paddleSize;
 
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }   
 
         /* si la balle est sur les bord haut et bas du board */
         if((by + dy > height ) || (by + dy < 0)) {
@@ -426,19 +426,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         bx = bx + dx;
         by = by + dy;
 
-        if(bx > width ) {
+        if(bx > width) {
             sL += 1;
-            bx = infos[1].width/2;
-            by = infos[1].height/2;  
+            bx = width/2;
+            by = height/2;  
             newSleep = true;
 
         }
         if (bx < 0) {
             sR += 1;
-            bx = infos[1].width/2;
-            by = infos[1].height/2;
+            bx = width/2;
+            by = height/2;
             newSleep = true;
-
         }
         if (newSleep === true) {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
