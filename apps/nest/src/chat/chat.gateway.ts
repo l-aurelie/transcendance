@@ -381,8 +381,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // const player1 = await this.userRepo.findOne({id:infos[1].playerLeft});
         // const player2 = await this.userRepo.findOne({id:infos[1].playerRight});
         // if (player1.isConnected === false || player2.isConnected === false)
-        //     this.server.to(infos[0]).emit("opponent-leave");
-
+        //     this.server.to(infos[0]).emit("opponent-leave")
+      
         let width = infos[1].width; 
         let height = infos[1].height; 
         var ballRadius = infos[1].ballRadius;
@@ -393,15 +393,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var sL = infos[1].scoreL;
         var sR = infos[1].scoreR;
         var newSleep = infos[1].sleep;
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }   
         var posL = infos[1].posHL;
         var posR = infos[1].posHR;
         var paddleW = infos[1].paddleLarge;
         var paddleH = infos[1].paddleSize;
 
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }   
 
         /* si la balle est sur les bord haut et bas du board */
         if((by + dy > height ) || (by + dy < 0)) {
@@ -421,19 +420,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         bx = bx + dx;
         by = by + dy;
 
-        if(bx > width ) {
+        if(bx > width) {
             sL += 1;
-            bx = infos[1].width/2;
-            by = infos[1].height/2;  
+            bx = width/2;
+            by = height/2;  
             newSleep = true;
 
         }
         if (bx < 0) {
             sR += 1;
-            bx = infos[1].width/2;
-            by = infos[1].height/2;
+            bx = width/2;
+            by = height/2;
             newSleep = true;
-
         }
         if (newSleep === true) {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
