@@ -199,6 +199,8 @@ const Game = (props) => {
       allPos.scoreL = data.scoreLeft;
       allPos.scoreR = data.scoreRight;
       allPos.speed = data.speed;
+      allPos.smachX = data.smX;
+      allPos.smachY = data.smY;
 allPos.sleep = data.sleep;
 //setScoreR(data.scoreRight);
    //   setScoreL(data.scoreLeft);
@@ -225,7 +227,7 @@ allPos.sleep = data.sleep;
         context.fillText(allPos.scoreL, width/4, height/10);
         context.fillText(allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'pink';
-        context.fillRect(smachX - (height/30)/2, smachY- (height/30)/2, height/30, height/30);
+        context.fillRect(allPos.smachX - (height/30)/2, allPos.smachY- (height/30)/2, height/30, height/30);
         context.fillStyle = 'red';
         context.fillRect(width - paddleLarge, allPos.posHR, paddleLarge, paddleSize);
         context.fillStyle = 'red';

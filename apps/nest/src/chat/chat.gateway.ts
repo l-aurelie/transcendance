@@ -115,32 +115,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 }
             }
         }
-       // console.log(whichuser.idUser);
-       // var stock = whichuser.idUser;
-     /*  if (whichuser)
-       {
-        const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
-        if (isUser.length === 1)
-        {
-            const deco = await this.userRepo.findOne({where: {id: whichuser.idUser}});
-            deco.isConnected = false;
-            deco.isVerified = false; 
-            console.log("jjj", deco.isConnected)
-        }
-    }*/
-      //  console.log(whichuser, whichuser.idUser);
-      //  const idStock = whichuser.idUser;
-        //const user = await this.userService.findUserBySocket(client.id);
-        //this.userRepo.remove({socket : client.id});
-        // Notify connected clients of current users
+  
         await this.socketRepo.createQueryBuilder().delete().where({ name: client.id }).execute();
-      //  const isUser = await this.socketRepo.findOne({where: {userId: idStock}});
-       // if (!isUser)
-        //    {
-        //        const deco = await this.userRepo.findOne({where: {id: idStock}});
-        //        deco.isConnected = false;
-        //        deco.isVerified = false; 
-        //    }
+      
         this.server.emit('users', this.users);
     }
 
@@ -417,6 +394,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var sL = infos[1].scoreL;
         var sR = infos[1].scoreR;
         var newSleep = infos[1].sleep;
+        var smachX = infos[1].smachX;
+        var smachY = infos[1].smachY;
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -427,13 +406,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var paddleH = infos[1].paddleSize;
         var speed = infos[1].speed;
 
-  /*      if (by >= infos[1].smachY - (height/30)/2 && by <= infos[1].smachY + (height/30)/2
+        if (by >= infos[1].smachY - (height/30)/2 && by <= infos[1].smachY + (height/30)/2
             && bx >= infos[1].smachX - (height/30)/2 && bx <= infos[1].smachX + (height/30)/2)
         {
+            var randomX = Math.floor(Math.random() * width - (width/8)) + width/8;
+            var randomY = Math.floor(Math.random() * height - (height/8)) + height/8;
             speed = 3;
             dx = dx * speed;
             dy = dy * speed;
-        }*/
+            smachX = randomX;
+            smachY = randomY;
+        }
         /* si la balle est sur les bord haut et bas du board */
         if((by + dy > height ) || (by + dy < 0)) {
             dy = -dy;
@@ -442,14 +425,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         /* si la balle touhce les bords du paddle */
         if ((bx < paddleW && posL <= by && posL + paddleH >= by) 
             || (bx > width - paddleW && posR <= by  &&  posR + paddleH >= by)) {
-                dy = -dy //* speed;
-        //        speed = 1;
+                dy = -dy / speed;
+                dx = dx /speed;
+                speed = 1;
             }
         /* si la balle touhce la longueur du paddle */
         else if ((bx === paddleW && posL <= by && posL + paddleH >= by) 
             || ((bx === width - paddleW && posR <= by && posR + paddleH >= by))) {
-                dx = -dx //* speed;
-               // speed = 1;
+                dx = -dx / speed;
+                dy = dy/speed;
+                speed = 1;
         }
         bx = bx + dx;
         by = by + dy;
@@ -458,32 +443,33 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             sL += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
-          //  dx = dx / speed;
-          //  dy = dy / speed;
+            dx = dx / speed;
+            dy = dy / speed;
             speed = 1;            
             newSleep = true;
 
         }
         if (bx < 0) {
+
             sR += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
-         //   dx = dx / speed;
-           // dy = dy/speed;
+            dx = dx / speed;
+            dy = dy/speed;
             speed = 1;
             newSleep = true;
 
         }
         if (newSleep === true) {
-            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
+            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY}
             this.server.to(infos[0]).emit("updatedBall", ball);
             await sleep(500);
             newSleep = false;
-            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
+            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY}
             this.server.to(infos[0]).emit("updatedBall", ball);
             return;
         }
-        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed}
+        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY}
         this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
