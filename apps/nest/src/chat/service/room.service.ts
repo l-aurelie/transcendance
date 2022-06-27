@@ -22,8 +22,9 @@ export class RoomService {
      async createRoom(idUser: number, isPrivate:boolean, isDm:boolean, nameRoom: string): Promise<IRoom> {
        // const newRoom = await this.addCreatorInRoom(room, creator);
        const room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
-       console.log('roomm', room);
-       return this.roomRepo.save(room);
+       const does_exist = await this.roomRepo.findOne( {name: nameRoom} );
+       console.log('roomm', does_exist);
+       return does_exist ? does_exist : this.roomRepo.save(room);
      }
 
  async associateUserRoom(room:IRoom, idUser: number, isPrivate:boolean) {
@@ -52,7 +53,7 @@ export class RoomService {
       console.log(name);
       const retRoom = await this.roomRepo.findOne( {name: name} );
       console.log(retRoom);
-      return retRoom.id;
+      return retRoom ? retRoom.id : null;
     }
      /*async getRoomsForUser(userId: number, options: IPaginationOptions) : Promise<Pagination<IRoom>> {
         const query = this.roomRepo

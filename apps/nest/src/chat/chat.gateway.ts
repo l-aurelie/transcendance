@@ -49,6 +49,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
      //   console.log(this.users);
         // Notify connected clients of current users
+        //client.join('sockets' + whichuser.user.id);
         this.server.emit('users', this.users);
     }
 
@@ -167,6 +168,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
      /* Recupere tous les messages de la table RoomId [room] et les formatte pour l'affichage, les emit au front */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, room) {
+         console.log( await this.roomService.getRoomIdFromRoomName(room), room)
         const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(room) }});
         let tab = [];
         /* Concatene userName et le contenu du message */
@@ -183,17 +185,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
        console.log(await this.roomService.getRoomIdFromRoomName(infos.room));
        const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
        this.roomUserRepo.save(userRoom);
-       client.join(infos.room); 
+       this.server.in('sockets' + infos.userId).socketsJoin(infos.room);
+       const sockets = await this.socketRepo.find({where: {idUser: infos.userId}, select:['name']} );
+       var chatterLogin = infos.room;
+       if (infos.dm) {
+           chatterLogin = 'brjs';
+       }
        /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
-       client.emit('joinedsalon', {salonName: infos.room, dm: infos.dm, chatterLogin: 'bjr'});
+       console.log(sockets);
+       client.emit('joinedsalon', {salonName: infos.room, dm: infos.dm, chatterLogin: chatterLogin});
+       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: infos.dm, chatterLogin: chatterLogin});
      } 
 
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
         console.log(client.id, infos.room, infos.userId);
-    await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room) }).execute();
-      client.leave(infos.room);
+      await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room) }).execute();
+      this.server.in('sockets' + infos.userId).socketsLeave(infos.room);
       /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
     }
 
@@ -208,11 +217,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
             console.log(otherUserId); 
             const sockets = await this.socketRepo.find({relations: ['user'], where: {user: {id : otherUserId}}, select:['name']} );
-            for (const socket of sockets) {
-                console.log(socket);
-                this.server.to(socket.name).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, chatterLogin: data.whoAmI.login});
-            }
-            client.emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
+            this.server.to('sockets' + otherUserId).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, chatterLogin: data.whoAmI.login});
+            this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
         }
         else
             this.server.to(data.roomToEmit).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message});
@@ -229,7 +235,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       sock.user = user;
       sock.idUser = user.id;
       await this.socketRepo.save(sock);
-      
+      client.join('sockets' + user.id);
       //console.log(user.socket); 
      //this.userRepo.update({id : user.id},{socket : client.id});
     }
