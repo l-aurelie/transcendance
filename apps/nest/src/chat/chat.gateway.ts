@@ -18,6 +18,7 @@ import { MessageService } from './service/message.service';
 import { resolve } from 'path';
 
 export var gameQueue = [];
+export var gameQueueSmach = [];
 
 // this decorator will allow us to make use of the socket.io functionnalitu
 @WebSocketGateway({ cors: 'http://localhost:4200' })
@@ -152,7 +153,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async leaveRoom(client, name) {
       client.leave(name);
     }
+    @SubscribeMessage('disco')
+    async disconnect(client) {
+        console.log( 'disco');
+        client.disconnect();
+        console.log( 'disco');
 
+    }
     //--------------------------------------------------------------------------------------------//
     //----------------------------------CHAT------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -167,8 +174,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
      /* Recupere tous les messages de la table RoomId [room] et les formatte pour l'affichage, les emit au front */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, room) {
-        const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(room) }});
         let tab = [];
+        if (!room)
+        {
+            client.emit('fetchmessage', tab);
+            return;
+        }
+        const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(room) }});
         /* Concatene userName et le contenu du message */
         tab = await Promise.all(message.map( async (it) : Promise<string[]> => {
                 var user = await this.userService.findUserById(it.senderId);//TODO: peut etre revoir la structure DB car une requete db pour chaque message!
@@ -252,11 +264,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('initGame')
     async initGame( client, user)
     {
-        console.log('receive init GAAAME');
         for (let entry of gameQueue)
       {
-          console.log ('iin gameQueue entry.user=', entry.user, ' userid=', user)
-
         if (entry.user.id === user)
         {
             console.log('already');
@@ -265,12 +274,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         return ;
     }
+    for (let entry of gameQueueSmach)
+    {
+      if (entry.user.id === user)
+      {
+          console.log('already');
+        this.server.to(client.id).emit("already-ask");
+        break;
+      }
+      return ;
+  }
       const allGame = await this.gameRepo.find( { } );
 
       for (let entry of allGame) {
           if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false)
           {
-            console.log ("entre in allGame", entry.finish);
             this.joinRoom(client, entry.id);
             const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight};
             this.server.to(entry.id).emit("game-start", data);
@@ -279,50 +297,56 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
 
-    async matchMake()
+    async matchMake(tabMatch)
     {
-        console.log("match Make");
-        console.log("gameQueue length", gameQueue.length);
         let roomName;
-        if(gameQueue.length % 2 === 0)//TODO 
+        if(tabMatch.length % 2 === 0)//TODO 
         {       const details = {
-                    playerLeft: gameQueue[0].user.id,
-                    playerRight: gameQueue[1].user.id,
-                    userLeft: gameQueue[0].user,
-                    userRight: gameQueue[1].user,
+                    playerLeft: tabMatch[0].user.id,
+                    playerRight: tabMatch[1].user.id,
+                    userLeft: tabMatch[0].user,
+                    userRight: tabMatch[1].user,
                 }
                 const newGame = await this.gameRepo.save(details);
                 roomName = newGame.id;
-                this.joinRoom(gameQueue[0].sock, roomName);
-                this.joinRoom(gameQueue[1].sock, roomName);
+                this.joinRoom(tabMatch[0].sock, roomName);
+                this.joinRoom(tabMatch[1].sock, roomName);
              //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0, player1:gameQueue[0].user.id, player2:gameQueue[1].user.id}
+             const data = {roomname: roomName, sL: 0, sR:0, player1: tabMatch[0].user.id, player2:tabMatch[1].user.id}
 
                 this.server.to(roomName).emit("game-start",  data);  
-                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: gameQueue[0].user.id}, {idUser: gameQueue[1].user.id}]});
+                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: tabMatch[0].user.id}, {idUser: tabMatch[1].user.id}]});
                 for (let entry of allSocketPlayer)
                 {
-                    if (entry.name != gameQueue[0].sock.id && entry.name != gameQueue[1].sock.id)
+                    if (entry.name != tabMatch[0].sock.id && entry.name != tabMatch[1].sock.id)
                         this.server.to(entry.name).emit("joinroom",  roomName);
                 }
-                gameQueue.splice(0,2);
+                tabMatch.splice(0,2);
         }
     }
 
 
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
-    async createNewGame(socket: Socket, user) {
+    async createNewGame(socket: Socket, infos) {
         this.server.to(socket.id).emit("received");
-        const tab = { sock: socket, user: user };
-        if(!gameQueue.find(element => user.id === element.user.id))
+        const tab = { sock: socket, user: infos[0] };
+        if(!gameQueue.find(element => infos[0].id === element.user.id)
+            && !gameQueueSmach.find(element => infos[0].id === element.user.id))
         {
-            const allSocketPlayer = await this.socketRepo.find({where:{idUser: user.id}});
+            const allSocketPlayer = await this.socketRepo.find({where:{idUser: infos[0].id}});
             for (let entry of allSocketPlayer)
                     this.server.to(entry.name).emit("joinroom");
-            gameQueue.push(tab);
+            if (infos[1] === 1) {
+                gameQueueSmach.push(tab);
+                this.matchMake(gameQueueSmach);
+            }
+            else {
+                gameQueue.push(tab);
+                this.matchMake(gameQueue);
+            }
         }
-        this.matchMake();
+        
     }
 
    
@@ -401,8 +425,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var posR = infos[1].posHR;
         var paddleW = infos[1].paddleLarge;
         var paddleH = infos[1].paddleSize;
+        var speed = infos[1].speed;
 
-
+  /*      if (by >= infos[1].smachY - (height/30)/2 && by <= infos[1].smachY + (height/30)/2
+            && bx >= infos[1].smachX - (height/30)/2 && bx <= infos[1].smachX + (height/30)/2)
+        {
+            speed = 3;
+            dx = dx * speed;
+            dy = dy * speed;
+        }*/
         /* si la balle est sur les bord haut et bas du board */
         if((by + dy > height ) || (by + dy < 0)) {
             dy = -dy;
@@ -411,12 +442,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         /* si la balle touhce les bords du paddle */
         if ((bx < paddleW && posL <= by && posL + paddleH >= by) 
             || (bx > width - paddleW && posR <= by  &&  posR + paddleH >= by)) {
-                dy = -dy;
-        }
+                dy = -dy //* speed;
+        //        speed = 1;
+            }
         /* si la balle touhce la longueur du paddle */
         else if ((bx === paddleW && posL <= by && posL + paddleH >= by) 
             || ((bx === width - paddleW && posR <= by && posR + paddleH >= by))) {
-                dx = -dx;
+                dx = -dx //* speed;
+               // speed = 1;
         }
         bx = bx + dx;
         by = by + dy;
@@ -424,7 +457,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if(bx > width ) {
             sL += 1;
             bx = infos[1].width/2;
-            by = infos[1].height/2;  
+            by = infos[1].height/2;
+          //  dx = dx / speed;
+          //  dy = dy / speed;
+            speed = 1;            
             newSleep = true;
 
         }
@@ -432,6 +468,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             sR += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
+         //   dx = dx / speed;
+           // dy = dy/speed;
+            speed = 1;
             newSleep = true;
 
         }
@@ -444,7 +483,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(infos[0]).emit("updatedBall", ball);
             return;
         }
-        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep}
+        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed}
         this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
@@ -470,6 +509,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
 
     }
+
+    @SubscribeMessage('abort-match')
+    async abortMatch(client, infos)
+    {
+        this.updateScore(client, infos);
+        this.server.to(infos[0]).emit("opponent-quit");
+    }
+
 
     @SubscribeMessage('finish-match')
     async endMatch(client, room)
