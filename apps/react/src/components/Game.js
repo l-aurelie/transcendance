@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState} from 'react'
 import { socket } from "./Socket";
-
+import LogiqueModale from "./ModaleWindow/logiqueModale";
+import WatchModale from "./ModaleWindow/WatchModale";
+import axios from 'axios';
 
 const divStyle = {
   width:"80%",
@@ -23,7 +25,7 @@ const playButton = {
 }
 
 const Game = (props) => {
-
+  const {revele, toggle} = LogiqueModale();
   //variable utilisant useState, qui vont etre update a chaque chanegement d'etat (affichage de depart, attente, jouer, gagnant, opposant deconnecter, abandon de l' opposant)
   //autre variable necessaire et qui ont besoin d' etre update dans le back : scores, winner,...
   const {dataFromParent, ...rest} = props;
@@ -41,11 +43,28 @@ const Game = (props) => {
   const [playerR, setPlayerR] = useState(0);
   const [smach, setSmach] = useState(0);
   const [winner, setWinner] = useState('');
+  const [games, setGames] = useState([]);
+
   let widthExt = 800;
   let heightExt = 600;
   const actualUser = props.dataFromParent;
 
-
+  const watchMatch = () => {
+    axios.get("http://localhost:3000/game/currentGame", {withCredentials:true}).then((res) =>{
+        const tab = [];
+        var det;
+        console.log('axios ret =', res.data)
+        for (let entry of res.data)
+        {
+          console.log('in boucle')
+          det = {value: entry.id, label : entry.userLeft.login + "-" + entry.userRight.login};
+          tab.push(det)
+        }
+        setGames(tab);
+        });
+        toggle();
+        console.log('tab', games)
+  }
 //on click, emit to server to ask a matchMaking
  const joinGame = (version) => {
       setWait(true);
@@ -305,9 +324,9 @@ useEffect(() => {
         context.fillText(allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'pink';
         context.fillRect(allPos.smachX - (height/30)/2, allPos.smachY- (height/30)/2, height/30, height/30);
-        context.fillStyle = 'red';
+        context.fillStyle = '#d6697f';
         context.fillRect(width - paddleLarge, allPos.posHR, paddleLarge, paddleSize);
-        context.fillStyle = 'red';
+        context.fillStyle = '#d6697f';
         context.fillRect(0, allPos.posHL, paddleLarge, paddleSize);
         context.beginPath();
         context.arc(allPos.ballX, allPos.ballY, ballRadius, 0, 2*Math.PI);
@@ -352,6 +371,8 @@ useEffect(() => {
     <canvas style={canvasStyle} ref={canvasRef} width={widthExt} height={heightExt}  {...rest}/>
     {presentation ? <button style={playButton} onClick={() => joinGame(0)}>PLAY PONG</button> : null}
     {presentation ? <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMASH</button> : null}
+    {presentation ? <button style={playButton} onClick={watchMatch}>WATCH MATCH</button> : null}
+    <WatchModale user={actualUser} revele={revele} toggle={toggle} game={games}/>
     {presentation ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
   </div>
   )

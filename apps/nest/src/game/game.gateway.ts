@@ -53,7 +53,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.socketRepo.createQueryBuilder().delete().where({ name: client.id }).execute();
         this.socket.emit('users', this.users);
     }
-
+/*
     // this decorator is used to listenning incomming messages. chat channel
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
@@ -67,5 +67,5 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       //this.socket.emit('initilaisation', 1);
 
     }
- 
+ */
 }

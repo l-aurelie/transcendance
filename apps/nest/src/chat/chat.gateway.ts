@@ -300,32 +300,37 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
 
-    async matchMake(tabMatch, v)
+    async launchMatch(userL, userR, v, socketLeft, socketRight)
     {
         let roomName;
+        const details = {
+            playerLeft: userL.id,
+            playerRight: userR.id,
+            userLeft: userL,
+            userRight: userR,
+            smash : v,
+        }
+        const newGame = await this.gameRepo.save(details);
+        roomName = newGame.id;
+        this.joinRoom(socketLeft, roomName);
+        this.joinRoom(socketRight, roomName);
+     const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
+     
+        this.server.to(roomName).emit("game-start",  data);  
+        const allSocketPlayer = await this.socketRepo.find({where:[{idUser: userL.id}, {idUser: userR.id}]});
+        for (let entry of allSocketPlayer)
+        {
+            if (entry.name != socketLeft.id && entry.name != socketRight.id)
+                this.server.to(entry.name).emit("joinroom",  roomName);
+        }
+    }
+
+    async matchMake(tabMatch, v)
+    {
         if(tabMatch.length % 2 === 0)//TODO 
-        {       const details = {
-                    playerLeft: tabMatch[0].user.id,
-                    playerRight: tabMatch[1].user.id,
-                    userLeft: tabMatch[0].user,
-                    userRight: tabMatch[1].user,
-                    smash : v,
-                }
-                const newGame = await this.gameRepo.save(details);
-                roomName = newGame.id;
-                this.joinRoom(tabMatch[0].sock, roomName);
-                this.joinRoom(tabMatch[1].sock, roomName);
-             //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0, player1: tabMatch[0].user.id, player2:tabMatch[1].user.id, smash: v}
-             
-                this.server.to(roomName).emit("game-start",  data);  
-                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: tabMatch[0].user.id}, {idUser: tabMatch[1].user.id}]});
-                for (let entry of allSocketPlayer)
-                {
-                    if (entry.name != tabMatch[0].sock.id && entry.name != tabMatch[1].sock.id)
-                        this.server.to(entry.name).emit("joinroom",  roomName);
-                }
-                tabMatch.splice(0,2);
+        {      
+            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v, tabMatch[0].sock, tabMatch[1].sock);
+            tabMatch.splice(0,2);
         }
     }
 
