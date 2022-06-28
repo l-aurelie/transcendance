@@ -16,6 +16,8 @@ import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
 import { MessageService } from './service/message.service';
 import { resolve } from 'path';
+import  * as moment from 'moment';
+import 'moment-timezone';
 
 export var gameQueue = [];
 
@@ -54,6 +56,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async handleDisconnect(client) {
+        const the_date = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
 
         // A client has disconnected
         this.users--;
@@ -84,7 +87,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                     win = entry.playerRight;
                                     loose = entry.playerLeft;
                                 }
-                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true});
+                
+                            
+                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
                             this.server.to(entry.id).emit("end-match");
 
                         }
@@ -106,7 +111,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                     win = entry.playerRight;
                                     loose = entry.playerLeft;
                                 }
-                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true});
+                        
+                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true, date:the_date});
 
                             this.server.to(entry.id).emit("end-match");
                         }
@@ -388,6 +394,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // const player2 = await this.userRepo.findOne({id:infos[1].playerRight});
         // if (player1.isConnected === false || player2.isConnected === false)
         //     this.server.to(infos[0]).emit("opponent-leave")
+
+        /*date for game table*/
+        const the_date: string = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
       
         let width = infos[1].width; 
         let height = infos[1].height; 
@@ -452,16 +461,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
-
-            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR});
+            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
 
             const user = await this.userRepo.findOne({id: idGame.playerLeft});
             this.server.to(infos[0]).emit("game-stop", user.login);
         }
         if (sR >= 11 && sL < sR - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
-
-            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR});
+            this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
 
             const user = await this.userRepo.findOne({id: idGame.playerRight});
             this.server.to(infos[0]).emit("game-stop", user.login);
