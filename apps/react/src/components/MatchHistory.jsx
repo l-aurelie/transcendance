@@ -1,22 +1,29 @@
-/*LAURA:*/
-
+import "./css/matchHistory.css"
 
 const MatchHistory = ( data ) => {
     const history = data.history;
-    console.log("THE HISTORY", history);
     return(
-        <div>
+        <div classname="my_table">
         <h1>Match History</h1>
+        <table>
+          <thead>
+            <tr>
+            
+              <th>Player one</th>
+              <th>score</th>
+              <th>Player two</th>
+              <th>Date</th>
+             
+            </tr>
+          </thead>
+          <tbody>
         {history.map(history => (
-        <h3><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userLeft.avatar}/>   {history.userLeft.login} {history.scoreLeft} - {history.scoreRight} {history.userRight.login}   <img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userRight.avatar}></img></h3>
-        ))}
+        <tr>
+        <td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userLeft.avatar}></img>{} {history.userLeft.login}</td><td>{history.scoreLeft} - {history.scoreRight}</td><td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userRight.avatar}></img>{} {history.userRight.login}</td><td>{history.date}</td>
+        </tr>))}
+        </tbody>
+        </table>
         </div>
         );
 };
 export default MatchHistory
-
-/*<div>
-        {history.map(history => (
-        <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.LeftUser.avatar}/>{history.LeftUser.login}{history.scoreLeft} - {history.scoreRight} {history.RightUser.login}<img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.RightUser.avatar}/></p>
-        ))}
-        </div>*/

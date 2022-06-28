@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserForm from './UserForm';
 import UserProfilExtended from './UserProfilExtended';
+import { socket } from "./Socket";
 
 const UserProfil = (props) => {
     const user = props.dataFromParent;
@@ -22,6 +23,7 @@ const UserProfil = (props) => {
   const handleClick = event => {
     if (connected) {
       axios.get("http://localhost:3000/auth/logout", { withCredentials:true })
+      socket.emit('disco');
       setConnected(false);
     }
     else {
