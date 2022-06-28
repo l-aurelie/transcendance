@@ -32,6 +32,9 @@ export class Games implements IGames {
     @ManyToOne(() => User, User => User.userRight)
     userRight: User;
 
+    @Column()
+    smash : number;
+
     @Column({default:false})
     finish: boolean;
 
@@ -47,7 +50,7 @@ export interface IGames {
     /*ajoute d'users*/
     userLeft ?: User;
     userRight ?: User;
-
+    smash: number;
     looser?: number;
 
     finish?: boolean;

@@ -57,14 +57,40 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         // A client has disconnected
         this.users--;
+        this.disconnectGame(client);
+        await this.socketRepo.createQueryBuilder().delete().where({ name: client.id }).execute();
+        this.server.emit('users', this.users);
+    }
+
+    async disconnectGame(client)
+    {
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
         if(whichuser)
         {
             const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
             if (isUser.length === 1)
             {
+                var i = 0;
+               for (let entry of gameQueue)
+               {
+                if (entry.user.id === whichuser.idUser) {
+                    gameQueue.splice(i, i+1);
+                    break;
+                }
+                i++;
+               } 
+               i = 0;
+               for (let entry of gameQueueSmach)
+               {
+                if (entry.user.id === whichuser.idUser) {
+                    gameQueueSmach.splice(i, i+1);
+                    break;
+                }
+                i++;
+               }
                const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
-                for (let entry of room)
+        
+               for (let entry of room)
                 {
                     this.server.to(entry.id).emit("opponent-leave");
                     if (whichuser.idUser === entry.playerLeft)
@@ -85,7 +111,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                     loose = entry.playerLeft;
                                 }
                             this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true});
-                            this.server.to(entry.id).emit("end-match");
+                            this.server.to(entry.id).emit("restart");
 
                         }
                     }
@@ -108,19 +134,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                 }
                             this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true});
 
-                            this.server.to(entry.id).emit("end-match");
+                            this.server.to(entry.id).emit("restart");
                         }
                     }
                    
                 }
             }
         }
-  
-        await this.socketRepo.createQueryBuilder().delete().where({ name: client.id }).execute();
-      
-        this.server.emit('users', this.users);
     }
-
     @SubscribeMessage('join')
     async joinRoom(client, name) {
       client.join(name);
@@ -267,14 +288,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false)
           {
             this.joinRoom(client, entry.id);
-            const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight};
+            const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight, smash :entry.smash};
             this.server.to(entry.id).emit("game-start", data);
             return;
           }
       }
     }
 
-    async matchMake(tabMatch)
+    async matchMake(tabMatch, v)
     {
         let roomName;
         if(tabMatch.length % 2 === 0)//TODO 
@@ -283,14 +304,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     playerRight: tabMatch[1].user.id,
                     userLeft: tabMatch[0].user,
                     userRight: tabMatch[1].user,
+                    smash : v,
                 }
                 const newGame = await this.gameRepo.save(details);
                 roomName = newGame.id;
                 this.joinRoom(tabMatch[0].sock, roomName);
                 this.joinRoom(tabMatch[1].sock, roomName);
              //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0, player1: tabMatch[0].user.id, player2:tabMatch[1].user.id}
-
+             const data = {roomname: roomName, sL: 0, sR:0, player1: tabMatch[0].user.id, player2:tabMatch[1].user.id, smash: v}
+             
                 this.server.to(roomName).emit("game-start",  data);  
                 const allSocketPlayer = await this.socketRepo.find({where:[{idUser: tabMatch[0].user.id}, {idUser: tabMatch[1].user.id}]});
                 for (let entry of allSocketPlayer)
@@ -316,13 +338,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     this.server.to(entry.name).emit("joinroom");
             if (infos[1] === 1) {
                 gameQueueSmach.push(tab);
-                this.matchMake(gameQueueSmach);
+                this.matchMake(gameQueueSmach, infos[1]);
             }
             else {
                 gameQueue.push(tab);
-                this.matchMake(gameQueue);
+                this.matchMake(gameQueue, infos[1]);
             }
         }
+        console.log('gq length', gameQueue.length);
+        console.log('gqS length', gameQueueSmach.length);
         
     }
 
@@ -491,7 +515,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {
-       // console.log(infos[1], infos[2]);
+        console.log(infos[1], infos[2]);
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
 
     }
@@ -499,22 +523,58 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('abort-match')
     async abortMatch(client, infos)
     {
+        if (!infos[0])
+        {
+            var i = 0;
+            for (let entry of gameQueue)
+            {
+                if (entry.user.id === infos[3])
+                {
+                    gameQueue.splice(i, i+ 1);
+                    break;
+                }
+                 i++;
+            }
+            i = 0;
+            for (let entry of gameQueueSmach)
+            {
+                if (entry.user.id === infos[3])
+                {
+                    gameQueue.splice(i, i+ 1);
+                    break;
+                }
+                 i++;
+            }
+            const allSocketPlayer = await this.socketRepo.find({where:{idUser: infos[3]}});
+            for (let entry of allSocketPlayer)
+                    this.server.to(entry.name).emit("opponent-quit");
+            console.log('gqmeQueuLength', gameQueue.length);
+            console.log('gqmeQueuSmachLength', gameQueueSmach.length);
+            return ;
+        }
         this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
     }
 
 
     @SubscribeMessage('finish-match')
-    async endMatch(client, room)
+    async endMatch(client, infos)
     {
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve,ms));
         }
         await sleep(1000);
-        const idGame = await this.gameRepo.findOne({id:room});
+        if (!infos[0])
+        {
+            const allSocketPlayer = await this.socketRepo.find({where:{idUser: infos[1]}});
+            for (let entry of allSocketPlayer)
+                    this.server.to(entry.name).emit("restart");
+            return;
+        }
+        const idGame = await this.gameRepo.findOne({id:infos[0]});
 
-        this.gameRepo.update( {id : room}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
-        this.server.to(room).emit("restart");
+        this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
+        this.server.to(infos[0]).emit("restart");
     }
 }
 

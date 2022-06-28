@@ -24,91 +24,71 @@ const playButton = {
 
 const Game = (props) => {
 
+  //variable utilisant useState, qui vont etre update a chaque chanegement d'etat (affichage de depart, attente, jouer, gagnant, opposant deconnecter, abandon de l' opposant)
+  //autre variable necessaire et qui ont besoin d' etre update dans le back : scores, winner,...
   const {dataFromParent, ...rest} = props;
   const [roomName, setRoomName] = useState(0);
   const canvasRef = useRef(null);
+  const [presentation, setPresentation] = useState(true);
   const [inGame, setInGame] = useState(false);
   const [quit, setQuit] = useState(false);
   const [abort, setAbort] = useState(false);
+  const [stop, setStop] = useState(false);
+  const [wait, setWait] = useState(false);
   const [scoreL, setScoreL] = useState(0);
   const [scoreR, setScoreR] = useState(0);
   const [playerL, setPlayerL] = useState(0);
   const [playerR, setPlayerR] = useState(0);
   const [smach, setSmach] = useState(0);
-
+  const [winner, setWinner] = useState('');
   let widthExt = 800;
   let heightExt = 600;
   const actualUser = props.dataFromParent;
 
-  // draw when 1 player is on the board 
-  const drawWaitingGame = (ctx) => {
-    ctx.fillStyle = '#000000'
-    ctx.fillRect(0, 0, widthExt, heightExt)
-    ctx.font = "30px Verdana";
-    ctx.fillStyle = "white";
-    ctx.fillText("Waiting for an opponent joining the game...", 0, heightExt/2);
-  }
 
 //on click, emit to server to ask a matchMaking
  const joinGame = (version) => {
-  setSmach(version);
-         drawWaitingGame(canvasRef.current.getContext('2d'))
-         socket.emit('createGame', actualUser, version);
- }
- const quitGame = () => {
- // drawWaitingGame(canvasRef.current.getContext('2d'))
-  socket.emit('abort-match', roomName, scoreL, scoreR);
-}
- useEffect(() => {
-   console.log('actu user in emit  init', actualUser.id)
-   socket.emit('initGame', actualUser.id);
-}, [actualUser.id])
-
-//listen permanently if a game starting
-  useEffect(() => {
-    socket.on("end-match", data => {
+      setWait(true);
+      setPresentation(false); 
       setInGame(false);
-    },[]);
-   socket.on("restart", data => {
-      setQuit(false);
       setAbort(false);
+      setQuit(false);
+      setStop(false);
+      socket.emit('createGame', actualUser, version);
+ }
+
+ // ask to quit game or queue
+ const quitGame = () => {
+      setWait(false);
+      setPresentation(false); 
       setInGame(false);
-    },[]);
-    socket.on("joinroom", data => {
+      setAbort(false);
+      setQuit(true);
+      setStop(false);
+      socket.emit('abort-match', roomName, scoreL, scoreR, actualUser.id);
+}
+
+// a l' ouverture de la page, regarde si le joueur etait en pleine partie avant d' etre deconnecte ou non
+ useEffect(() => {
+   socket.emit('initGame', actualUser.id);
+  }, [actualUser.id])
+
+// if a socket of same player is open and is playing, show the same game
+useEffect(() => {
+  socket.on("joinroom", data => {
       socket.emit('initGame', actualUser.id);
     },[]);
-    socket.on("already-ask", data => {
-      drawWaitingGame(canvasRef.current.getContext('2d'))
-    },[]);
-    socket.on("game-start", data => {
-      setRoomName(data.roomname);
-      setScoreL(data.sL);
-      setScoreR(data.sR);
-   //   setRoomName(data.roomname);
-      setPlayerL(data.player1);
-      setPlayerR(data.player2);
-      setQuit(false);
-      setAbort(false);
-      setInGame(true);
-    }, []);
-    socket.on("opponent-leave", data => {
-      setQuit(true);
-     // socket.emit('updateScore', roomName, scoreL, scoreR);
-      console.log('apponent-leave', scoreL, scoreR);
-    });
-    socket.on("opponent-quit", data => {
-      setAbort(true);
-     // socket.emit('updateScore', roomName, scoreL, scoreR);
-    });
-  },[actualUser.id, roomName, scoreL, scoreR, heightExt, widthExt])
+},[actualUser.id])
 
+//principal useEffect qui gere l' affichage dans le canvas
   useEffect(() => {
+
+    //variable necessaire aux cvanvas (position paddle, position ball, taille canvas, score...)
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     var key = 0;
     var height = canvas.height;
     var width = canvas.width;
-    console.log('width = ', width, 'height = ', height)
     var posHL = height/2-((height/6)/2);
     var posHR = height/2-((height/6)/2); 
     var ballX = width / 2;
@@ -116,11 +96,7 @@ const Game = (props) => {
     var ballRadius = height/30;
     var deltaX = -4;
     var deltaY = 4;
- //   var scoreL = 0;
- //   var scoreR = 0;
-    var stop = false;
     var sleep = false;
-    var winner = '';
     var paddleSize = height/6;
     var paddleLarge = width/50;
     var playerLeft = playerL;
@@ -133,7 +109,7 @@ const Game = (props) => {
       var smachX = -(height/60);
       var smachY = -(height/60);
     }
-    const allPos = {
+    const allPos = { //va etre envoye au back a chaque update de la ball et des paddle
       ballRadius: ballRadius,
       width:width, 
       height:height, 
@@ -155,36 +131,72 @@ const Game = (props) => {
       smachY : smachY
     };
     
-
-    if (inGame === false) {
-      context.fillStyle = '#000000'
-      context.fillRect(0, 0, width, height)
-      context.font = "60px Verdana";
-      context.fillStyle = "white";
-      context.fillText("PONG", width/2.5, height/2);
-    }
-
-    const handleKeyDown = event => {
-      if (roomName === 0)
-        return ;
-      else {
-        event.preventDefault();
-        key = event.keyCode;
-      }
-    };
-    const handleKeyUp = event => {
-     event.preventDefault();
-      key = 0;
-    }
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-  
-    socket.on("game-stop", data => {
-      winner = data;
-      stop = true;
+    //ensemble des socket. on, ecoute si un chanegment d' etat du jeu a eu lieu (deconnection, abandon, fin de match)
+    socket.on("restart", data => {
+      setWait(false);
+      setPresentation(true); 
+      setInGame(false);
+      setAbort(false);
+      setQuit(false);
+      setStop(false);
+      },[]);
       
+    socket.on("already-ask", data => {
+        setWait(true);
+        setPresentation(false); 
+        setInGame(false);
+        setAbort(false);
+        setQuit(false);
+        setStop(false);
+      },[]);
+  
+    socket.on("game-start", data => {
+        setRoomName(data.roomname);
+        setScoreL(data.sL);
+        setScoreR(data.sR);
+        setPlayerL(data.player1);
+        setPlayerR(data.player2);
+        setSmach(data.smash);
+        setWait(false);
+        setPresentation(false);
+        setInGame(true);
+        setAbort(false);
+        setQuit(false);
+        setStop(false);
+      }, []);
+  
+    socket.on("opponent-leave", data => {
+        setScoreL(allPos.scoreL);
+        setScoreR(allPos.scoreR);
+        socket.emit('updateScore', roomName, allPos.scoreL, allPos.scoreR);
+        setWait(false);
+        setPresentation(false); 
+        setInGame(false);
+        setAbort(false);
+        setQuit(true);
+        setStop(false);
+      }, []);
+      
+    socket.on("opponent-quit", data => {
+        setAbort(true);
+        setWait(false);
+        setPresentation(false); 
+        setInGame(false);
+        setQuit(false);
+        setStop(false);
+     }, []);
+
+     socket.on("game-stop", data => {
+      setWinner(data);
+      setWait(false);
+      setPresentation(false); 
+      setInGame(false);
+      setAbort(false);
+      setQuit(false);
+      setStop(true);
     });
   
+    //socket.on pour update les positon de ball et paddle
     socket.on("left-move", data => {
       allPos.posHL = data;
     });
@@ -201,17 +213,81 @@ const Game = (props) => {
       allPos.speed = data.speed;
       allPos.smachX = data.smX;
       allPos.smachY = data.smY;
-allPos.sleep = data.sleep;
-//setScoreR(data.scoreRight);
-   //   setScoreL(data.scoreLeft);
-  //    console.log(data.y, data.x);
+      allPos.sleep = data.sleep;
     });
+
+//ensemble des condition g'erant les affichages FIXEs (en dehors du jeu donc)
+    if (presentation === true) {
+      console.log('drawPong');
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height)
+      context.font = "60px Verdana";
+      context.fillStyle = "white";
+      context.fillText("PONG", width/2.5, height/2);
+    }
+    else if (wait === true)
+    {
+      console.log('drawwaiting');
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height)
+      context.font = "30px Verdana";
+      context.fillStyle = "white";
+      context.fillText("Waiting for an opponent joining the game...", 0, height/2);
+    }
+    else if (abort === true)
+    {
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height);
+      context.font = "30px Verdana";
+      context.fillStyle = "white";
+      context.fillText('a player quit the game...', width/3, height/2);
+      socket.emit('finish-match', roomName, actualUser.id);
+    }
+    else if ( quit === true)
+    {
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height);
+      context.font = "30px Verdana";
+      context.fillStyle = "white";
+      context.fillText('opponent disconnected...', width/3, height/2);
+    }
+    else if (stop === true)
+    {
+      console.log('in stop end match');
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height);
+      context.font = "30px Verdana";
+      context.fillStyle = "white";
+      context.fillText(winner + ' won!', width/3, height/2);
+      socket.emit('finish-match', roomName, actualUser.id); 
+    }
+
+    //gestiond des appuie de touche pour bouger les paddles
+    const handleKeyDown = event => {
+      if (roomName === 0)
+        return ;
+      else {
+        event.preventDefault();
+        key = event.keyCode;
+      }
+    };
+    const handleKeyUp = event => {
+     event.preventDefault();
+      key = 0;
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
    
     let animationFrameId;
       
     //Our draw came here
     const render = () => {
-      if (inGame === true && stop === false && quit === false) {
+      //affichage durant le jeu
+      if (inGame === true) {
         if (key === 38)
           socket.emit('moveUp', actualUser.id, roomName, allPos);
         if (key === 40)
@@ -219,6 +295,7 @@ allPos.sleep = data.sleep;
         if (allPos.sleep === false) {
           socket.emit('ball', roomName,  allPos);
         }
+        console.log('drawGame')
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);
@@ -242,35 +319,7 @@ allPos.sleep = data.sleep;
         context.fill();
         context.closePath();
       }
-      if (stop === true) {
-        context.clearRect(0, 0, width, height);
-        context.fillStyle = '#000000'
-        context.fillRect(0, 0, width, height);
-        context.font = "30px Verdana";
-        context.fillStyle = "white";
-        context.fillText(winner + ' won!', width/3, height/2);
-        socket.emit('finish-match', roomName);
-      }
-      if (quit === true) {
-     //   setScoreR(allPos.scoreR);
-     // setScoreL(allPos.scoreL);
-        context.clearRect(0, 0, width, height);
-        context.fillStyle = '#000000'
-        context.fillRect(0, 0, width, height);
-        context.font = "30px Verdana";
-        context.fillStyle = "white";
-        context.fillText('opponent disconnected...', width/3, height/2);
-      socket.emit('updateScore', roomName, allPos.scoreL, allPos.scoreR);
-      }
-      if (abort === true) {
-        context.clearRect(0, 0, width, height);
-        context.fillStyle = '#000000'
-        context.fillRect(0, 0, width, height);
-        context.font = "30px Verdana";
-        context.fillStyle = "white";
-        context.fillText('a player quit the game...', width/3, height/2);
-        socket.emit('finish-match', roomName);
-      }
+  
       animationFrameId = window.requestAnimationFrame(render)
     }
     render()
@@ -281,14 +330,29 @@ allPos.sleep = data.sleep;
       document.removeEventListener('keyup', handleKeyUp);
 
     }
-  }, [inGame, quit, abort, smach, actualUser.id, roomName, scoreL, scoreR, playerL, playerR])
+  }, [
+    inGame, 
+    quit, 
+    abort, 
+    stop, 
+    presentation, 
+    wait, 
+    smach, 
+    actualUser.id, 
+    roomName, 
+    scoreL, 
+    scoreR, 
+    playerL, 
+    playerR, 
+    winner
+  ])
   
   return (
   <div style={divStyle}>
     <canvas style={canvasStyle} ref={canvasRef} width={widthExt} height={heightExt}  {...rest}/>
-    {inGame ? null : <button style={playButton} onClick={() => joinGame(0)}>PLAY PONG</button>}
-    {inGame ? null : <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMACH</button>}
-    {inGame ? <button style={playButton} onClick={quitGame}>QUIT</button> : null}
+    {presentation ? <button style={playButton} onClick={() => joinGame(0)}>PLAY PONG</button> : null}
+    {presentation ? <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMASH</button> : null}
+    {presentation ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
   </div>
   )
 }
