@@ -45,32 +45,31 @@ const salonName = {
         })
 }, [])
 
+
+           useEffect(() => {
+               console.log(joinedSalons);
+           }, [joinedSalons])
   //Ecoute chat pour afficher tout nouveaux messages
         useEffect(() => {
             socket.off('chat');
             console.log('FIRST USE EFFECT', currentSalon);
             if (currentSalon.length !== 0) {
                 console.log('herrerer', currentSalon.length);
-            socket.on('fetchmessage', data => {
-                console.log(typeof data, data);
-                setMessage(data);
-            });
-            socket.emit('fetchmessage', currentSalon.name);
+                socket.on('fetchmessage', data => {
+                    console.log(typeof data, data);
+                    setMessage(data);
+                });
+                socket.emit('fetchmessage', currentSalon.name);
             }
             socket.on("chat", data => {
-                console.log(joinedSalons);
                 setMessage((message) => {
-                    console.log(currentSalon);
-                console.log('origin vs currentSalon', data.emittingRoom, currentSalon)
                 if (data.emittingRoom === currentSalon.name)
                     return ([...message, data.message]);
-                else if (!joinedSalons.has(data.emittingRoom)) {
-                    setJoinedSalons(map => new Map(map.set(data.emittingRoom, {notif: true, dm: true, avatar: data.chatterLogin})));
-                    console.log(data.emittingRoom, data.chatterLogin);
+                else if (data.dontNotif)
                     return (message);
-                }
                 else {
-                    setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), notif: true})));
+                    console.log(data.displayName);
+                    setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName})));
                     return (message);
                 }
             //});
@@ -81,26 +80,27 @@ const salonName = {
             //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
             useEffect(() => {
             socket.on('joinedsalon', data => {
-                console.log('iciii', data.chatterLogin);
-                setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.chatterLogin})));
-                console.log(joinedSalons);
-                socket.off('chat');
-                socket.off('fetchmessage');
-                setCurrentSalon({name: data.salonName, isDm: data.dm});
+                console.log('iciii', data.displayName);
+                //console.log(new Map(joinedSalons.set(data.salonName, {notif: false, dm: data.dm, avatar: data.chatterLogin})))
+                setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName})));
+                //console.log(joinedSalons);
+                //socket.off('chat');
+                //socket.off('fetchmessage');
+                //setCurrentSalon({name: data.salonName, isDm: data.dm, display: data.chatterLogin});
             });
             }, [])
 
             
             const handleClick = (salon) => {
-                console.log(salon);
-                  if (salon !== currentSalon.name) {
-                    console.log('beforeadd', salon, joinedSalons, joinedSalons.get(salon));
-                    setJoinedSalons(map => new Map(map.set(salon, {...map.get(salon), notif: false})));
+                console.log(salon, currentSalon.display);
+                  if (salon[1].avatar !== currentSalon.display) {
+                    console.log('beforeadd', salon[1].avatar, joinedSalons, joinedSalons.get(salon));
+                    setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false})));
                     console.log(joinedSalons);
             
                     socket.off('chat');
                     socket.off('fetchmessage');
-                    setCurrentSalon({name: salon, isDm: joinedSalons.get(salon)[1]});
+                    setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm});
                   }
                 };
 
@@ -125,8 +125,7 @@ const salonName = {
             <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={friends.avatar}/> {friends.login} | Spectate | Defeat |<br></br></p>
             ))}*/}    
           {Array.from(joinedSalons.entries()).map((salon) => ( 
-
-            <button onClick={() => {handleClick(salon[1].avatar)}}>
+            <button onClick={() => {handleClick(salon)}}>
                     
             {
             salon[1].notif ?

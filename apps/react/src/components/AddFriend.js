@@ -28,7 +28,7 @@ const onChange = (event) => {
     console.log('beginchat',props.user);
     const roomname = friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id;
     socket.emit('addsalon', props.user.id, true, true, roomname);
-    socket.emit('user_joins_room', {userId: props.user.id, room: roomname, dm: true});
+    socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
 
   };
 

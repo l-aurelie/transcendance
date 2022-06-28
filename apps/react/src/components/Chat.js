@@ -94,7 +94,7 @@ const Chat = (props) => {
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
     <div style={messageStyle}>
-        <div style={chatBox} ><p style={chatTitle}>{currentSalon.name}</p>
+        <div style={chatBox} ><p style={chatTitle}>{currentSalon.display}</p>
 
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
       {message.map((msg) => (
