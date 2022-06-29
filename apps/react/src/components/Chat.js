@@ -62,6 +62,7 @@ const Chat = (props) => {
   const actualUser = props.dataFromParent;
 
   const [message, setMessage] = useState([]);// Message a envoyer au salon
+  const [string, setString] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
    
@@ -69,8 +70,8 @@ const Chat = (props) => {
   const sendMessage = (event) => {
     if(event.key === 'Enter') {
       console.log(currentSalon);
-
-      socket.emit('chat', {roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
+      if (currentSalon.length !== 0)
+        socket.emit('chat', {roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
       event.target.value = "";
       console.log(joinedSalons);
     }
@@ -101,7 +102,7 @@ const Chat = (props) => {
         <div style={messageSent}>{msg}</div>
       ))}
         {/* Barre d'input pour ajouter un message */}
-        <input type='text' onKeyPress={sendMessage} />
+        <input type='text' value={string} onChange={(e) => setString(e.target.value)} onKeyPress={sendMessage} />
       
       </div>
    </div>

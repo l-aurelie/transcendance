@@ -278,8 +278,10 @@ useEffect(() => {
      event.preventDefault();
       key = 0;
     }
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    if (!presentation) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('keyup', handleKeyUp);
+    }
    
     let animationFrameId;
       
@@ -292,7 +294,6 @@ useEffect(() => {
         if (key === 40)
           socket.emit('moveDown', actualUser.id, roomName, allPos);
         if (allPos.sleep === false) {
-          console.log('sleep = ', allPos.sleep);
           socket.emit('ball', roomName,  allPos);
         }
         console.log('drawGame')

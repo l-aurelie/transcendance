@@ -249,6 +249,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.socketRepo.save(sock);
       console.log('sockets' + user.id, sock);
       client.join('sockets' + user.id);
+      const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
+      console.log(rooms);
+      for (let room of rooms) {
+          console.log('helo, ', room.RoomUser_roomId);
+          var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
+          client.join('salonRoom' + roomName);
+      }
       //console.log(user.socket); 
      //this.userRepo.update({id : user.id},{socket : client.id});
     }
