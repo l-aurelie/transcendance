@@ -46,6 +46,7 @@ const Game = (props) => {
   const [games, setGames] = useState([]);
   const [watch, setWatch] = useState(false);
   const [quitSentence, setQuitSentence] = useState('');
+  const [watchName, setWatchName] = useState('');
 
   let widthExt = 800;
   let heightExt = 600;
@@ -82,7 +83,10 @@ const Game = (props) => {
  // ask to quit game or queue
  const quitGame = () => {
       if (watch === true)
+      {
+        socket.emit('leave', watchName);
         setQuitSentence('end of visualisation...');
+      }
       else
         setQuitSentence('a player quit the game...');
       setWait(false);
@@ -211,11 +215,13 @@ useEffect(() => {
       }, []);
       
     socket.on("opponent-quit", data => {
-        setAbort(true);
-        setWait(false);
-        setPresentation(false); 
-        setInGame(false);
-        setQuit(false);
+    //  if (data)
+      //  socket.emit('leave', data)
+      setAbort(true);
+      setWait(false);
+      setPresentation(false); 
+      setInGame(false);
+      setQuit(false);
       setWatch(false);
       setStop(false);
      }, []);
@@ -230,6 +236,7 @@ useEffect(() => {
       setQuit(false);
       setStop(false);
       setWatch(true);
+      setWatchName(data);
       },[]);
   
     //socket.on pour update les positon de ball et paddle
@@ -289,6 +296,7 @@ useEffect(() => {
       context.fillStyle = "white";
       context.fillText(quitSentence, width/3, height/2);
       socket.emit('finish-match', roomName, actualUser.id);
+      setRoomName(0);
     }
     else if ( quit === true)
     {
@@ -308,7 +316,8 @@ useEffect(() => {
       context.font = "30px Verdana";
       context.fillStyle = "white";
       context.fillText(winner + ' won!', width/3, height/2);
-      socket.emit('finish-match', roomName, actualUser.id); 
+      socket.emit('finish-match', roomName, actualUser.id);
+      setRoomName(0);
     }
 
     //gestiond des appuie de touche pour bouger les paddles
@@ -385,6 +394,7 @@ useEffect(() => {
     presentation, 
     wait,
     watch,
+    watchName,
     quitSentence, 
     smach, 
     actualUser.id, 

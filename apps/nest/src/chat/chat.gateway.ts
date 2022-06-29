@@ -576,8 +576,8 @@ login = user.login;
             return ;
         }
         this.updateScore(client, infos);
-            this.server.to(infos[0]+'-watch').emit("endMatch");
-            this.server.to(infos[0]).emit("opponent-quit");
+        this.server.to(infos[0]+'-watch').emit("endMatch");
+        this.server.to(infos[0]).emit("opponent-quit", infos[0]);
     }
 
 
@@ -608,7 +608,7 @@ login = user.login;
         console.log(infos[0], infos[1]);
         const roomName = infos[0] + '-watch';
         this.joinRoom(client, roomName);
-        this.server.to(roomName).emit('watch');
+        this.server.to(roomName).emit('watch', roomName);
     }
 
 }
