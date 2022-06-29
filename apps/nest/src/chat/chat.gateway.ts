@@ -117,6 +117,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                     loose = entry.playerLeft;
                                 }
                             this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
+                            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+                            this.server.to(entry.id+'-watch').emit("restart");
                             this.server.to(entry.id).emit("restart");
 
                         }
@@ -142,6 +144,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                 }
                         
                             this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true, date:the_date});
+                            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+                            this.server.to(entry.id+'-watch').emit("restart");
 
                             this.server.to(entry.id).emit("restart");
                         }
