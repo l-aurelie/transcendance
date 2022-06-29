@@ -102,7 +102,7 @@ const Chat = (props) => {
         <div style={messageSent}>{msg}</div>
       ))}
         {/* Barre d'input pour ajouter un message */}
-        <input type='text' value={string} onChange={(e) => setString(e.target.value)} onKeyPress={sendMessage} />
+        <input type='text' onKeyPress={sendMessage} />
       
       </div>
    </div>
