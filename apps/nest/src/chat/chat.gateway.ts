@@ -433,6 +433,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var newSleep = infos[1].sleep;
         var smachX = infos[1].smachX;
         var smachY = infos[1].smachY;
+        var login;
+
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -496,32 +498,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             speed = 1;
             newSleep = true;
         }
-        if (newSleep === true) {
-            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY}
-            this.server.to(infos[0]).emit("updatedBall", ball);
-            await sleep(500);
-            newSleep = false;
-            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY}
-            this.server.to(infos[0]).emit("updatedBall", ball);
-            return;
-        }
-        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY}
-        this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
-
             const user = await this.userRepo.findOne({id: idGame.playerLeft});
-            this.server.to(infos[0]).emit("game-stop", user.login);
+            login = user.login;
         }
         if (sR >= 11 && sL < sR - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
-
             const user = await this.userRepo.findOne({id: idGame.playerRight});
-            this.server.to(infos[0]).emit("game-stop", user.login);
+            login = user.login;
+        }
+        if (newSleep === true) {
+            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
+            this.server.to(infos[0]).emit("updatedBall", ball);
+            await sleep(500);
+            newSleep = false;
+            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY, login: login}
+            this.server.to(infos[0]).emit("updatedBall", ball);
+        }
+        else {
+            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY, login: login}
+            this.server.to(infos[0]).emit("updatedBall", ball);
         }
     }
+
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {

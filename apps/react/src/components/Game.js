@@ -116,6 +116,7 @@ useEffect(() => {
     var deltaX = -4;
     var deltaY = 4;
     var sleep = false;
+    var login = '';
     var paddleSize = height/6;
     var paddleLarge = width/50;
     var playerLeft = playerL;
@@ -147,7 +148,8 @@ useEffect(() => {
       playerL:playerLeft,
       playerR: playerRight,
       smachX : smachX,
-      smachY : smachY
+      smachY : smachY,
+      login : login,
     };
     
     //ensemble des socket. on, ecoute si un chanegment d' etat du jeu a eu lieu (deconnection, abandon, fin de match)
@@ -204,16 +206,6 @@ useEffect(() => {
         setQuit(false);
         setStop(false);
      }, []);
-
-     socket.on("game-stop", data => {
-      setWinner(data);
-      setWait(false);
-      setPresentation(false); 
-      setInGame(false);
-      setAbort(false);
-      setQuit(false);
-      setStop(true);
-    });
   
     //socket.on pour update les positon de ball et paddle
     socket.on("left-move", data => {
@@ -233,6 +225,16 @@ useEffect(() => {
       allPos.smachX = data.smX;
       allPos.smachY = data.smY;
       allPos.sleep = data.sleep;
+      if ((allPos.scoreL >= 11 && allPos.scoreR < allPos.scoreL - 1) ||
+        (allPos.scoreR  >= 11 && allPos.scoreL < allPos.scoreR  - 1)) {
+          setStop(true);
+          setWinner(data.login);
+          setWait(false);
+          setPresentation(false); 
+          setInGame(false);
+          setAbort(false);
+          setQuit(false);
+        }
     });
 
 //ensemble des condition g'erant les affichages FIXEs (en dehors du jeu donc)
@@ -311,10 +313,9 @@ useEffect(() => {
         if (key === 40)
           socket.emit('moveDown', actualUser.id, roomName, allPos);
         if (allPos.sleep === false) {
-          console.log('sleep = ', allPos.sleep);
           socket.emit('ball', roomName,  allPos);
         }
-        console.log('drawGame')
+        // console.log('drawGame')
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);
