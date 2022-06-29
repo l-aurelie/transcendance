@@ -96,7 +96,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         
                for (let entry of room)
                 {
+                    console.log('emit opponnent leave');
                     this.server.to(entry.id).emit("opponent-leave");
+                    this.server.to(entry.id+'-watch').emit("opponent-leave");
                     if (whichuser.idUser === entry.playerLeft)
                     {
                         const user2 = await this.socketRepo.find({where: {idUser: entry.playerRight}});
@@ -124,6 +126,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         const user2 = await this.socketRepo.find({where: {idUser: entry.playerLeft}});
                         if (user2.length === 0)
                         {
+                    console.log('emit opponnent leave');
+
                             let win = 0;
                             let loose = 0;
                             if (entry.scoreLeft > entry.scoreRight)
@@ -295,6 +299,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.joinRoom(client, entry.id);
             const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight, smash :entry.smash};
             this.server.to(entry.id).emit("game-start", data);
+            this.server.to(entry.id+'-watch').emit("game-start", data);
             return;
           }
       }
@@ -576,8 +581,10 @@ login = user.login;
             return ;
         }
         this.updateScore(client, infos);
-        this.server.to(infos[0]+'-watch').emit("endMatch");
-        this.server.to(infos[0]).emit("opponent-quit", infos[0]);
+        this.server.to(infos[0]).emit("opponent-quit");
+        this.server.to(infos[0]+'-watch').emit("opponent-quit");
+     //   this.server.to(infos[0]).emit("leaveroom", infos[0]);
+     //   this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch');
     }
 
 
@@ -598,17 +605,29 @@ login = user.login;
         const idGame = await this.gameRepo.findOne({id:infos[0]});
 
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
-        this.server.to(infos[0]).emit("restart");
-        this.server.to(infos[0]+'-watch').emit("restart");
+        this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
+        this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
+        this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch'); //a la fin d' un match, tout les spectateur quittent la room qu'ils ecoutaient
+        this.server.to(infos[0]).emit("leaveroom", infos[0]); //a la fin d' un match, tout les joueurs quittent la room qu'ils ecoutaient
     }
 
     @SubscribeMessage('watch-match')
     async watchMatch(client, infos) {
-        console.log('in watch match');
-        console.log(infos[0], infos[1]);
-        const roomName = infos[0] + '-watch';
-        this.joinRoom(client, roomName);
-        this.server.to(roomName).emit('watch', roomName);
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        const idGame = await this.gameRepo.findOne({id:infos[0]});
+        if (idGame.finish === true)
+        {
+            this.server.to(client.id).emit("end-before-watch");
+            await sleep(1000);
+            this.server.to(client.id).emit("restart");
+            return ;
+        }
+        const watchRoom = infos[0] + '-watch';
+        this.joinRoom(client, watchRoom);
+        const data = {watchRoom: watchRoom, gameRoom: infos[0]}
+        this.server.to(watchRoom).emit('watch', data);
     }
 
 }

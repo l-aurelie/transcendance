@@ -36,6 +36,7 @@ const Game = (props) => {
   const [quit, setQuit] = useState(false);
   const [abort, setAbort] = useState(false);
   const [stop, setStop] = useState(false);
+  const [endWatch, setEndWatch] = useState(false);
   const [wait, setWait] = useState(false);
   const [scoreL, setScoreL] = useState(0);
   const [scoreR, setScoreR] = useState(0);
@@ -45,8 +46,8 @@ const Game = (props) => {
   const [winner, setWinner] = useState('');
   const [games, setGames] = useState([]);
   const [watch, setWatch] = useState(false);
-  const [quitSentence, setQuitSentence] = useState('');
-  const [watchName, setWatchName] = useState('');
+  const [quitSentence, setQuitSentence] = useState('a player quit the game...');
+  const [watchName, setWatchName] = useState(0);
 
   let widthExt = 800;
   let heightExt = 600;
@@ -75,6 +76,7 @@ const Game = (props) => {
       setInGame(false);
       setAbort(false);
       setWatch(false);
+      setEndWatch(false);
       setQuit(false);
       setStop(false);
       socket.emit('createGame', actualUser, version);
@@ -87,13 +89,12 @@ const Game = (props) => {
         socket.emit('leave', watchName);
         setQuitSentence('end of visualisation...');
       }
-      else
-        setQuitSentence('a player quit the game...');
       setWait(false);
       setPresentation(false); 
       setInGame(false);
       setAbort(true);
       setQuit(false);
+      setEndWatch(false);
       setWatch(false);
       setStop(false);
       socket.emit('abort-match', roomName, scoreL, scoreR, actualUser.id);
@@ -108,6 +109,9 @@ const Game = (props) => {
 useEffect(() => {
   socket.on("joinroom", data => {
       socket.emit('initGame', actualUser.id);
+    },[]);
+    socket.on("leaveroom", data => {
+      socket.emit('leave', actualUser.id, data);
     },[]);
 },[actualUser.id])
 
@@ -173,6 +177,10 @@ useEffect(() => {
       setQuit(false);
       setWatch(false);
       setStop(false);
+      setEndWatch(false);
+      setRoomName(0);
+      setWatchName(0);
+      setQuitSentence('a player quit the game...');
       },[]);
       
     socket.on("already-ask", data => {
@@ -180,7 +188,8 @@ useEffect(() => {
         setPresentation(false); 
         setInGame(false);
         setAbort(false);
-        setQuit(false);
+      setEndWatch(false);
+      setQuit(false);
       setWatch(false);
       setStop(false);
       },[]);
@@ -197,6 +206,7 @@ useEffect(() => {
         setInGame(true);
         setAbort(false);
         setQuit(false);
+      setEndWatch(false);
       setWatch(false);
       setStop(false);
       }, []);
@@ -209,24 +219,22 @@ useEffect(() => {
         setPresentation(false); 
         setInGame(false);
         setAbort(false);
-        setQuit(true);
+      setEndWatch(false);
+      setQuit(true);
       setWatch(false);
       setStop(false);
       }, []);
       
     socket.on("opponent-quit", data => {
-    //  if (data)
-      //  socket.emit('leave', data)
       setAbort(true);
       setWait(false);
       setPresentation(false); 
       setInGame(false);
       setQuit(false);
-      setWatch(false);
-      setStop(false);
-     }, []);
-
-  
+        setWatch(false);
+        setEndWatch(false);
+        setStop(false);
+     }, []);  
 
     socket.on("watch", data => {
       setWait(false);
@@ -236,9 +244,20 @@ useEffect(() => {
       setQuit(false);
       setStop(false);
       setWatch(true);
-      setWatchName(data);
+        setEndWatch(false);
+        setWatchName(data.watchRoom);
       },[]);
   
+      socket.on("end-before-watch", data => {
+        setWait(false);
+        setPresentation(false); 
+        setInGame(false);
+        setAbort(false);
+        setQuit(false);
+        setStop(false);
+        setWatch(false);
+        setEndWatch(true);
+        },[]);
     //socket.on pour update les positon de ball et paddle
     socket.on("left-move", data => {
       allPos.posHL = data;
@@ -319,6 +338,15 @@ useEffect(() => {
       socket.emit('finish-match', roomName, actualUser.id);
       setRoomName(0);
     }
+    else if (endWatch === true)
+    {
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = '#000000'
+      context.fillRect(0, 0, width, height);
+      context.font = "30px Verdana";
+      context.fillStyle = "white";
+      context.fillText('match ended during connection...', width/3, height/2);
+    }
 
     //gestiond des appuie de touche pour bouger les paddles
     const handleKeyDown = event => {
@@ -391,7 +419,8 @@ useEffect(() => {
     quit, 
     abort, 
     stop, 
-    presentation, 
+    presentation,
+    endWatch, 
     wait,
     watch,
     watchName,
