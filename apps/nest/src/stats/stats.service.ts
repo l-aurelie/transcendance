@@ -4,11 +4,14 @@ import { Repository } from "typeorm";
 import { User } from "src/typeorm";
 import { Games } from "src/typeorm/entities/Games";
 
+
 @Injectable()
 export class StatsService {
     constructor(
     @InjectRepository(Games)
-    private readonly gamesRepository: Repository<Games>) {}
+    private readonly gamesRepository: Repository<Games>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>) {}
 
     async getWins(the_user: User) : Promise<number> {
 
@@ -46,5 +49,15 @@ export class StatsService {
     }
         )
         return list;
+    }
+
+    async getLeaderboard() : Promise<User[]> {
+        const ordered = await this.userRepository.find(
+        {
+        order: { total_wins: "DESC", },
+        select: ['avatar', 'login', 'total_wins'],
+    });
+    console.log(ordered);
+        return ordered;
     }
 }

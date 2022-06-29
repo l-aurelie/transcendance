@@ -16,13 +16,14 @@ import { FriendsModule } from './friends/friends.module';
 import { StatsService } from './stats/stats.service';
 import { StatsModule } from './stats/stats.module';
 import { UsersService } from './users/users.service';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
     /*session refers to cookie session*/
     PassportModule.register({ session: true }), 
     ConfigModule.forRoot({envFilePath: '.env'}),
-    UsersModule, AuthModule, FriendsModule, StatsModule,
+    UsersModule, AuthModule, FriendsModule, StatsModule, GameModule,
     TypeOrmModule.forRoot({
       /*configures TypeOrm to database*/
       type: 'postgres',

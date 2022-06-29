@@ -3,13 +3,17 @@
     flex-direction: column;
     gap: 10px;
     padding: 1rem;
-    overflow: 'scroll',
   }
   
   table {
+    display: block;
+    height: 400px;
+    overflow-y: scroll;
     border-collapse: collapse;
     width: 100%;
   }
+
+
   
   th,
   td {
