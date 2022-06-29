@@ -238,7 +238,19 @@ useEffect(() => {
         setWatch(false);
         setEndWatch(false);
         setStop(false);
-     }, []);  
+     }, []);
+    socket.on("game-stop", data => {
+
+     setStop(true);
+     setWinner(data);
+     setWait(false);
+     setPresentation(false); 
+     setInGame(false);
+     setAbort(false);
+     setQuit(false);
+     setWatch(false);
+     setEndWatch(false);
+    }, []);  
 
     socket.on("watch", data => {
  //     loginL = data.loginL;
@@ -284,7 +296,7 @@ useEffect(() => {
       allPos.smachX = data.smX;
       allPos.smachY = data.smY;
       allPos.sleep = data.sleep;
-      if ((allPos.scoreL >= 11 && allPos.scoreR < allPos.scoreL - 1) ||
+   /*   if ((allPos.scoreL >= 11 && allPos.scoreR < allPos.scoreL - 1) ||
         (allPos.scoreR  >= 11 && allPos.scoreL < allPos.scoreR  - 1)) {
           setStop(true);
           setWinner(data.login);
@@ -293,7 +305,9 @@ useEffect(() => {
           setInGame(false);
           setAbort(false);
           setQuit(false);
-        }
+          setWatch(false);
+          setEndWatch(false);
+        }*/
     });
 
 //ensemble des condition g'erant les affichages FIXEs (en dehors du jeu donc)
@@ -344,7 +358,7 @@ useEffect(() => {
       context.fillStyle = "white";
       context.fillText(winner + ' won!', width/3, height/2);
       socket.emit('finish-match', roomName, actualUser.id);
-      setRoomName(0);
+    //  setRoomName(0);
     }
     else if (endWatch === true)
     {

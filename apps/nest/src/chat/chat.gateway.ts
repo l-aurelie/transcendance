@@ -527,8 +527,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
             const user = await this.userRepo.findOne({id: idGame.playerLeft});
 login = user.login;
-//this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
-    //        this.server.to(infos[0]).emit("game-stop", user.login);
+this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
+this.server.to(infos[0]).emit("game-stop", user.login);
 // this.server.to(infos[0]).emit("game-stop", user.login);
             //Laura: update total_wins
             const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
@@ -539,7 +539,10 @@ login = user.login;
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
             const user = await this.userRepo.findOne({id: idGame.playerRight});
+
             login = user.login;
+        this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
+          this.server.to(infos[0]).emit("game-stop", user.login);
             const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
             update.total_wins+=1;
             this.userRepo.save(update);
@@ -626,7 +629,7 @@ login = user.login;
             return;
         }
         const idGame = await this.gameRepo.findOne({id:infos[0]});
-
+console.log('finish-match');
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
         this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
