@@ -632,7 +632,7 @@ login = user.login;
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
-        const idGame = await this.gameRepo.findOne({id:infos[0]});
+        const idGame = await this.gameRepo.findOne({relations: ["userLeft", "userRight"], where : {id:infos[0]}});
         if (idGame.finish === true)
         {
             this.server.to(client.id).emit("end-before-watch");
@@ -640,9 +640,11 @@ login = user.login;
             this.server.to(client.id).emit("restart");
             return ;
         }
+        const userL = idGame.userLeft.login;
+        const userR = idGame.userRight.login;
         const watchRoom = infos[0] + '-watch';
         this.joinRoom(client, watchRoom);
-        const data = {watchRoom: watchRoom, gameRoom: infos[0]}
+        const data = {watchRoom: watchRoom, gameRoom: infos[0], loginL:userL, loginR:userR}
         this.server.to(watchRoom).emit('watch', data);
     }
 

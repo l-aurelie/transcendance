@@ -48,6 +48,8 @@ const Game = (props) => {
   const [watch, setWatch] = useState(false);
   const [quitSentence, setQuitSentence] = useState('a player quit the game...');
   const [watchName, setWatchName] = useState(0);
+  const [loginL, setLoginL] = useState('');
+  const [loginR, setLoginR] = useState('');
 
   let widthExt = 800;
   let heightExt = 600;
@@ -181,6 +183,8 @@ useEffect(() => {
       setRoomName(0);
       setWatchName(0);
       setQuitSentence('a player quit the game...');
+      setLoginL('');
+      setLoginR('');
       },[]);
       
     socket.on("already-ask", data => {
@@ -237,6 +241,10 @@ useEffect(() => {
      }, []);  
 
     socket.on("watch", data => {
+ //     loginL = data.loginL;
+  //    loginR = data.loginR;
+  setLoginL(data.loginL);
+  setLoginR(data.loginR);
       setWait(false);
       setPresentation(false); 
       setInGame(false);
@@ -385,8 +393,8 @@ useEffect(() => {
         context.fillRect(0, 0, width, height);
         context.font = "30px Verdana";
         context.fillStyle = "white";
-        context.fillText(allPos.scoreL, width/4, height/10);
-        context.fillText(allPos.scoreR, width/2 + width/4, height/10);
+        context.fillText(loginL + ' ' + allPos.scoreL, width/4, height/10);
+        context.fillText(loginR + ' ' + allPos.scoreR, width/2 + width/4, height/10);
         context.fillStyle = 'pink';
         context.fillRect(allPos.smachX - (height/30)/2, allPos.smachY- (height/30)/2, height/30, height/30);
         context.fillStyle = '#d6697f';
@@ -431,7 +439,9 @@ useEffect(() => {
     scoreL, 
     scoreR, 
     playerL, 
-    playerR, 
+    playerR,
+    loginL,
+    loginR,
     winner
   ])
   
