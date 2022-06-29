@@ -512,6 +512,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             const user = await this.userRepo.findOne({id: idGame.playerLeft});
             this.server.to(infos[0]).emit("game-stop", user.login);
+            //Laura: update total_wins
+            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            update.total_wins+=1;
+            this.userRepo.save(update);
         }
         if (sR >= 11 && sL < sR - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
@@ -519,6 +523,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             const user = await this.userRepo.findOne({id: idGame.playerRight});
             this.server.to(infos[0]).emit("game-stop", user.login);
+            //Laura: update total_wins
+            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            update.total_wins+=1;
+            this.userRepo.save(update);
         }
     }
     @SubscribeMessage('updateScore')

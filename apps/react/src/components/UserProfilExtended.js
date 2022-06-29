@@ -5,6 +5,7 @@ import FriendReqs from './friendreqs.jsx'
 import { useEffect, useState } from "react";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import MatchHistory from "./MatchHistory.jsx";
+import Leaderboard from "./Leaderboard.jsx";
 
 
 //TODO: Rendre l'affichage conditionnel (selon si current user) de logout, setProfile
@@ -57,6 +58,7 @@ const UserProfilExtended = ({name}) => {
             <div>{user.email}</div>
             <Friends></Friends>
             <FriendReqs></FriendReqs>
+            <Leaderboard></Leaderboard>
             <button onClick={toggleModal}>Match History</button>
             <ModalWindow revele={revele} setRevele={toggleModal}>
             <MatchHistory history={history}></MatchHistory>
