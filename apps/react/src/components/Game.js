@@ -44,6 +44,8 @@ const Game = (props) => {
   const [smach, setSmach] = useState(0);
   const [winner, setWinner] = useState('');
   const [games, setGames] = useState([]);
+  const [watch, setWatch] = useState(false);
+  const [quitSentence, setQuitSentence] = useState('');
 
   let widthExt = 800;
   let heightExt = 600;
@@ -71,6 +73,7 @@ const Game = (props) => {
       setPresentation(false); 
       setInGame(false);
       setAbort(false);
+      setWatch(false);
       setQuit(false);
       setStop(false);
       socket.emit('createGame', actualUser, version);
@@ -78,11 +81,16 @@ const Game = (props) => {
 
  // ask to quit game or queue
  const quitGame = () => {
+      if (watch === true)
+        setQuitSentence('end of visualisation...');
+      else
+        setQuitSentence('a player quit the game...');
       setWait(false);
       setPresentation(false); 
       setInGame(false);
-      setAbort(false);
-      setQuit(true);
+      setAbort(true);
+      setQuit(false);
+      setWatch(false);
       setStop(false);
       socket.emit('abort-match', roomName, scoreL, scoreR, actualUser.id);
 }
@@ -159,6 +167,7 @@ useEffect(() => {
       setInGame(false);
       setAbort(false);
       setQuit(false);
+      setWatch(false);
       setStop(false);
       },[]);
       
@@ -168,7 +177,8 @@ useEffect(() => {
         setInGame(false);
         setAbort(false);
         setQuit(false);
-        setStop(false);
+      setWatch(false);
+      setStop(false);
       },[]);
   
     socket.on("game-start", data => {
@@ -183,7 +193,8 @@ useEffect(() => {
         setInGame(true);
         setAbort(false);
         setQuit(false);
-        setStop(false);
+      setWatch(false);
+      setStop(false);
       }, []);
   
     socket.on("opponent-leave", data => {
@@ -195,7 +206,8 @@ useEffect(() => {
         setInGame(false);
         setAbort(false);
         setQuit(true);
-        setStop(false);
+      setWatch(false);
+      setStop(false);
       }, []);
       
     socket.on("opponent-quit", data => {
@@ -204,8 +216,21 @@ useEffect(() => {
         setPresentation(false); 
         setInGame(false);
         setQuit(false);
-        setStop(false);
+      setWatch(false);
+      setStop(false);
      }, []);
+
+  
+
+    socket.on("watch", data => {
+      setWait(false);
+      setPresentation(false); 
+      setInGame(false);
+      setAbort(false);
+      setQuit(false);
+      setStop(false);
+      setWatch(true);
+      },[]);
   
     //socket.on pour update les positon de ball et paddle
     socket.on("left-move", data => {
@@ -262,7 +287,7 @@ useEffect(() => {
       context.fillRect(0, 0, width, height);
       context.font = "30px Verdana";
       context.fillStyle = "white";
-      context.fillText('a player quit the game...', width/3, height/2);
+      context.fillText(quitSentence, width/3, height/2);
       socket.emit('finish-match', roomName, actualUser.id);
     }
     else if ( quit === true)
@@ -315,7 +340,9 @@ useEffect(() => {
         if (allPos.sleep === false) {
           socket.emit('ball', roomName,  allPos);
         }
-        // console.log('drawGame')
+      }
+      if (inGame === true || watch === true) {
+        console.log('drawGame')
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);
@@ -356,7 +383,9 @@ useEffect(() => {
     abort, 
     stop, 
     presentation, 
-    wait, 
+    wait,
+    watch,
+    quitSentence, 
     smach, 
     actualUser.id, 
     roomName, 

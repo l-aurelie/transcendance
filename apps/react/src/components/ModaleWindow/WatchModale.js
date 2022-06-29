@@ -4,6 +4,8 @@ import Logo from '../Logo';
 import CreateSalon from '../AddChannel';
 import AddNav from '../AddNav';
 import Select from 'react-select';
+import { socket } from "../Socket";
+
 const log = {
     position : 'relative',
     top : '5%',
@@ -12,6 +14,11 @@ const log = {
 const bar = {
     position : 'relative',
     top : '20%'
+}
+const watchButton = {
+    position : 'absolute',
+    top : '50%',
+    left : '50%'
 }
 /* Assombri l'arriere plan */
 const background = {
@@ -40,30 +47,49 @@ const button = {
     top: '15px'
 }
 
+  
+const WatchModale = ({user, revele, toggle, game}) => {
+    const [option, setOption] = useState(-1);
+    const handleChange = (e) => {
+        setOption(e.value);
+    }
+    const reset = () => {
+        setOption(-1);
+        toggle();
+    }
 
-const options = [{value:'choco', label: 'cchh'},
-                    {value: 'strwbe', label:'straw'},
-                { value:'valinna', label:'vanilla'}]
-
-/* Affiche la modale d'ajout de Friend/Channels */
-const WatchModale = ({user, revele, toggle, game}) => revele ? (
-    
-    
-    <React.Fragment>
-        <div style={background} />
-        <div style={modale}>
-            {/* Composants contenus dans la fenetre */}
-            <div style={log}>
-            <Logo  />
+    const watch = () => {
+        if (option === -1)
+            return ;
+        else
+        {
+            socket.emit('watch-match', option, user);
+            setOption(-1);
+            toggle();
+        }
+    }
+    if (revele)
+    {
+    return(
+        <div>
+            <div style={background} />
+            <div style={modale}>
+                <div style={log}>
+                    <Logo/>
+                </div>
+                <div style={bar}>
+                    <Select onChange={handleChange} options={game}/>
+                </div>
+                <div style={watchButton}>
+                    <button style={button} type='button' onClick={watch}>watch</button>
+                </div>
+                <button style={button} type='button' onClick={reset}>x</button>
             </div>
-            <div style={bar} >
-           <Select  options={game}/>
-           </div>
-            {/* Bouton pour fermer la fenetre */}
-            <button style={button} type='button' onClick={toggle}>x</button>
         </div>
-    </React.Fragment>
- ) : null;
-
+    )
+}
+else
+    return null;
+};
 
 export default WatchModale;
