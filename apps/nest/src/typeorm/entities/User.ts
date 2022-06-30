@@ -65,12 +65,14 @@ export class User implements IUser { // donne la composition de User, permet de 
 }
 
 interface IUser {
+        id:number;
         login: string;
         intraId: string;
         avatar: string;
         email: string;
         authConfirmToken: number;
         isVerified: boolean;
+        isConnected:boolean;
         createAt: Date;
         twoFA?: boolean;
         total_wins: number;
