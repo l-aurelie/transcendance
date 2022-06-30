@@ -4,6 +4,8 @@ import Error404 from "./pages/Error404";
 import Home from "./pages/Home";
 import Verify from "./pages/Verify";
 import Login from "./pages/Login";
+// import { FC } from "react";
+
 
 
 /*	BrowserRouter englobe toute l'app
