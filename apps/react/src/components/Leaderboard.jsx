@@ -10,7 +10,6 @@ const Leaderboard = () => {
 
     useEffect(() => {
         axios.get("http://localhost:3000/stats/getLeaderboard", {withCredentials:true}).then((res) =>{
-        console.log('THE LEADER : ', res.data);
         setLeader(res.data);
         })
     }, [])
