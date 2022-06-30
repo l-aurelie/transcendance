@@ -10,7 +10,7 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { IntraAuthGuard } from 'src/auth/guards';
-import { Socket, User, RoomEntity, Message, Games, RoomUser } from 'src/typeorm';
+import { Socket, User, RoomEntity, Message, Games, RoomUser, UserBlock } from 'src/typeorm';
 import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
@@ -36,6 +36,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @InjectRepository(Socket) private socketRepo : Repository<Socket>,
         @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
         @InjectRepository(RoomUser) private roomUserRepo: Repository<RoomUser>,
+        @InjectRepository(UserBlock) private userBlockRepo: Repository<UserBlock>,
         @InjectRepository(Message) private messageRepo: Repository<Message>,
         @InjectRepository(Games) private gameRepo: Repository<Games>,
         private messageService: MessageService,
@@ -231,16 +232,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //const socket = await socks.find(client.id);
         const time = new Date(Date.now()).toLocaleString();
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
+        let bannedMe = await this.userBlockRepo.createQueryBuilder().where({ blockedUserId: data.whoAmI.id }).execute();
+        bannedMe.forEach(function(el, id, arr) {
+            arr[id] = 'sockets' + arr[id].UserBlock_blockingUserId;
+        });
+        console.log('BanMe', bannedMe);
         if (data.isDm) {
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
             console.log(otherUserId); 
             console.log("all ohter user sockets", await this.server.in('sockets' + otherUserId).fetchSockets(), "roomname : " + 'sockets' + otherUserId);
-            this.server.to('sockets' + otherUserId).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
+            this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
             this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
         }
         else {
             console.log('notDMM');
-            this.server.to('salonRoom' + data.roomToEmit).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
+            this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
         }
     }
 

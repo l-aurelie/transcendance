@@ -18,6 +18,7 @@ import { ChatGateway } from 'src/chat/chat.gateway';
 import { FriendRequest } from 'src/typeorm/entities/friend-request';
 import { RoomService } from 'src/chat/service/room.service';
 import { RoomUser } from 'src/typeorm/entities/RoomUser';
+import { UserBlock } from 'src/typeorm/entities/UserBlock';
 import { MessageService } from 'src/chat/service/message.service';
 
 
@@ -35,7 +36,7 @@ import { MessageService } from 'src/chat/service/message.service';
 imports: [ UsersModule,
   ConfigModule.forRoot({envFilePath: '.env'}),
 
-  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, Games, RoomEntity, User, RoomUser, Message]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
+  HttpModule, TypeOrmModule.forFeature([Socket, FriendRequest, Games, RoomEntity, User, RoomUser, Message, UserBlock]), //TypeOrmModule.forFeature([User]) permet d'acceder au donne de User dans la db
 
     MailerModule.forRoot({ // donne des information pour l' envoi du mail pour le code de verification
         transport: {
