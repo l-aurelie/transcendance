@@ -12,9 +12,9 @@ const friendProfileStyle = {
 /* Composant affichant le profil detaille d'un utilisateur [login] recu en parametre {value} */
 const FriendUserProfilExtended = ({Value}) => {
     
-    const [ThisUser, setThisUser] = useState([]);
-    const [friends, setFriends] = useState([]);
-    const [InboundReq, setInboundReq] = useState([]);
+    const [ThisUser, setThisUser] = useState([] as any);
+    const [friends, setFriends] = useState([] as any);
+    const [InboundReq, setInboundReq] = useState([] as any);
    
 useEffect(() => {
     /*get user*/

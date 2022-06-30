@@ -1,11 +1,11 @@
 /* aurel */
 import axios from "axios";
-import Friends from './friends.jsx'
-import FriendReqs from './friendreqs.jsx'
+import Friends from './friends.tsx'
+import FriendReqs from './friendreqs.tsx'
 import { useEffect, useState } from "react";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-import MatchHistory from "./MatchHistory.jsx";
-import Leaderboard from "./Leaderboard.jsx";
+import MatchHistory from "./MatchHistory.tsx";
+import Leaderboard from "./Leaderboard.tsx";
 
 
 //TODO: Rendre l'affichage conditionnel (selon si current user) de logout, setProfile

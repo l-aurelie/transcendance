@@ -10,7 +10,6 @@ import Chat from '../components/Chat';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
-import SearchBar from '../components/Searchbar';
 import SideBarChat from '../components/SideBatChat';
 
 

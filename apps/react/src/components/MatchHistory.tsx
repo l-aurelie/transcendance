@@ -3,7 +3,7 @@ import "./css/matchHistory.css"
 const MatchHistory = ( data ) => {
     const history = data.history;
     return(
-        <div classname="my_table">
+        <div className="my_table">
         <h1>Match History</h1>
         <table>
           <thead>

@@ -34,7 +34,7 @@ const button = {
 /* Ternaire, affiche modale si revele recu en parametre est true  */
 const Modale = ({revele, toggle, reqs}) => revele ? (
     <React.Fragment>
-        <div style={background} />
+        <div style={background}/>
         <div style={modale}>
             <h1>Friend Requests</h1>
             {reqs.map(reqs => (

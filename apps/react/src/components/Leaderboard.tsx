@@ -19,7 +19,7 @@ const Leaderboard = () => {
       <div>
             <button onClick={toggleModal}>Leaderboard</button>
             <ModalWindow revele={revele} setRevele={toggleModal}>
-            <div classname="my_table">
+            <div className="my_table">
             <h1>Leaderboard</h1>
             <table>
               <thead>
