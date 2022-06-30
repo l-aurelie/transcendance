@@ -44,7 +44,7 @@ export class UsersController {
       console.log('SetUser===()');
       console.log('BODY1', body);
      // console.log('req.user', req.user);
-      await this.userRepo.update({ id: 1 }, {login: req.body.login, email: req.body.email });
+      await this.userRepo.update({ id: req.body.id }, {login: req.body.login, email: req.body.email, twoFA: req.body.twoFA});
       return ('SetUsers()');
    }
 
