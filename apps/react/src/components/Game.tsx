@@ -4,19 +4,26 @@ import LogiqueModale from "./ModaleWindow/logiqueModale";
 import WatchModale from './ModaleWindow/WatchModale';
 import axios from 'axios';
 
+/* JS to TS
+
+  j'ai remplace   },[]); par   }); 
+  pour tous les socket.on et il n'y avait plus d'erreur. ca a l;air de marcher de la meme facon
+
+*/
+
 const divStyle = {
   width:"80%",
-  objectFit: "contain",
+  // objectFit: "contain",
 }
 const canvasStyle = {
   width:"100%",
-  objectFit: "contain",
+  // objectFit: "contain",
 }
 
 const playButton = {
   
   width: "70%",
-  objectFit: "contain",
+  // objectFit: "contain",
   fontSize: "20px",
   borderRadius: "5px",
   color: "white",
@@ -117,10 +124,10 @@ useEffect(() => {
     socket.emit('leave', watchName);
   }
    socket.emit('initGame', actualUser.id);
-    },[]);
+    });
     socket.on("leaveroom", data => {
       socket.emit('leave', data);
-    },[]);
+    });
 },[actualUser.id, watch, watchName])
 
 //principal useEffect qui gere l' affichage dans le canvas
@@ -191,7 +198,7 @@ useEffect(() => {
       setQuitSentence('a player quit the game...');
       setLoginL('');
       setLoginR('');
-      },[]);
+      });
       
     socket.on("already-ask", data => {
         setWait(true);
@@ -202,7 +209,7 @@ useEffect(() => {
       setQuit(false);
       setWatch(false);
       setStop(false);
-      },[]);
+      });
   
     socket.on("game-start", data => {
         setRoomName(data.roomname);
@@ -219,7 +226,7 @@ useEffect(() => {
       setEndWatch(false);
       setWatch(false);
       setStop(false);
-      }, []);
+      });
   
     socket.on("opponent-leave", data => {
         setScoreL(allPos.scoreL);
@@ -233,7 +240,7 @@ useEffect(() => {
       setQuit(true);
       setWatch(false);
       setStop(false);
-      }, []);
+      });
       
     socket.on("opponent-quit", data => {
       setAbort(true);
@@ -244,7 +251,7 @@ useEffect(() => {
         setWatch(false);
         setEndWatch(false);
         setStop(false);
-     }, []);
+     });
     socket.on("game-stop", data => {
 
      setStop(true);
@@ -256,7 +263,7 @@ useEffect(() => {
      setQuit(false);
      setWatch(false);
      setEndWatch(false);
-    }, []);  
+    });  
 
     socket.on("watch", data => {
  //     loginL = data.loginL;
@@ -272,7 +279,7 @@ useEffect(() => {
       setWatch(true);
         setEndWatch(false);
         setWatchName(data.watchRoom);
-      },[]);
+      });
   
       socket.on("end-before-watch", data => {
         setWait(false);
@@ -283,7 +290,7 @@ useEffect(() => {
         setStop(false);
         setWatch(false);
         setEndWatch(true);
-        },[]);
+        });
     //socket.on pour update les positon de ball et paddle
     socket.on("left-move", data => {
       allPos.posHL = data;
