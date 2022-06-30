@@ -49,7 +49,7 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({default:false})
     twoFA: boolean;
 
-    @Column({default:0})
+    @Column({default: 0})
     total_wins: number;
  
  //   @ManyToMany(() => RoomEntity, room => room.users)
@@ -65,13 +65,16 @@ export class User implements IUser { // donne la composition de User, permet de 
 }
 
 interface IUser {
+        id:number;
         login: string;
         intraId: string;
         avatar: string;
         email: string;
         authConfirmToken: number;
         isVerified: boolean;
+        isConnected:boolean;
         createAt: Date;
         twoFA?: boolean;
+        total_wins: number;
     }
     export default IUser;

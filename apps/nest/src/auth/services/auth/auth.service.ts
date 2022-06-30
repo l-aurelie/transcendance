@@ -32,7 +32,7 @@ export class AuthService implements AuthenticationProvider {
           }
           else
           {
-            details.isConnected = true;
+         //   details.isConnected = true;
             await this.userRepo.update( { intraId }, details); // sinon on update dans le cas ou certaines infos aurai changee
           }
           console.log('updated');

@@ -48,7 +48,7 @@ const UserProfil = (props) => {
     ** et sera affiche conditionnellement selon l'etat de revele */} 
     <ModalWindow revele={revele} setRevele={toggleModal}>
       <UserProfilExtended name={user.login}/>
-      <UserForm /> 
+      <UserForm user={user}/> 
     </ModalWindow>
     
     <div>{user.login}</div>

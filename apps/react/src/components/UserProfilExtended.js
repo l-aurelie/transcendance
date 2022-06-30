@@ -7,13 +7,6 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import MatchHistory from "./MatchHistory.jsx";
 import Leaderboard from "./Leaderboard.jsx";
 
-
-//TODO: Rendre l'affichage conditionnel (selon si current user) de logout, setProfile
-//TODO: Formulaire de modif / d'intialisation des donnees a l'inscription
-//TODO: Profil rechecher : addFriend, ecrire un message, defier
-//TODO: Ajouter logout bouton ici
-//TODO: Ajouter 2fa, victoire, defaire et niveau a la db
-
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
 const UserProfilExtended = ({name}) => {
     
@@ -25,7 +18,7 @@ const UserProfilExtended = ({name}) => {
     const [history, setHistory] = useState([]);
     
     useEffect(() => {
-        axios.get("http://localhost:3000/users/" + name, {withCredentials:true}).then((res) =>{
+        axios.get("http://localhost:3000/users/" + user.name, {withCredentials:true}).then((res) =>{
         console.log('User profil extended : ', res.data);
         setUser(res.data);
         })
@@ -61,10 +54,9 @@ const UserProfilExtended = ({name}) => {
             <Leaderboard></Leaderboard>
             <button onClick={toggleModal}>Match History</button>
             <ModalWindow revele={revele} setRevele={toggleModal}>
-            <MatchHistory history={history}></MatchHistory>
+                <MatchHistory history={history}></MatchHistory>
             </ModalWindow>
             <div>2fa</div>
-            <button>Logout</button>
         </div>
     );
 }

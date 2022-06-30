@@ -23,20 +23,31 @@ export class UsersController {
    /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
-   getUser(@Headers() header, @Req() request: RequestWithUser) {//TODO: async ? 
+   getUser(@Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
-    // console.log('===getUser', user);
+//     console.log('===getUser', user);
      return (user);
      }
 
+  /* @UseGuards(AuthenticatedGuard)
+   @Get('set')
+   setUser(@Req() request: RequestWithUser) {//TODO: async ? 
+      const user = request.user;
+  //     console.log('===getUser', user);
+       return (user);
+   }*/
+
    /* WIP: set le profil avec le formulaire envoye */
-   @Put('set')
-   async setUsers(@Req() req: any, @Body() body: setProfilDto) {
+   //@UseGuards(AuthenticatedGuard)
+   @Post('set')
+   async setUsers(@Req() req: RequestWithUser, @Body() body: setProfilDto) {
+      console.log('SetUser===()');
       console.log('BODY1', body);
-     // await this.userRepo.update({ login: req.body.login }, { email: req.body.email });
-      console.log('SetUsers()');
+     // console.log('req.user', req.user);
+      await this.userRepo.update({ id: req.body.id }, {login: req.body.login, email: req.body.email, twoFA: req.body.twoFA});
       return ('SetUsers()');
-   }     
+   }
+
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')
    async getUsers() {

@@ -8,9 +8,12 @@ class UserForm extends React.Component {
       super(props);
       /* Valeurs par defaut */
       this.state = {
-          login: '',
-          email: '',
-          twoFA: false
+          id: props.user.id,
+          login: props.user.login,
+          email: props.user.email,
+          twoFA: props.user.twoFA,
+          photo: null
+          //photo: props.user.avatar
         };
   
       this.handleChange = this.handleChange.bind(this);
@@ -26,7 +29,12 @@ class UserForm extends React.Component {
           [name]: value
         });
     }
-  
+    handleChangePhoto(e) {
+        console.log(e.target);
+        this.setState({
+          photo: e.target.file[-1]
+        });
+    }
     /* Envoie du formulaire */
     async handleSubmit(e) {
       //alert('Le nom a été soumis : ' + this.state.value);
@@ -37,16 +45,20 @@ class UserForm extends React.Component {
       
       /* Creation de l'obj a envoyer */
       const formUser = {
+          id: this.state.id,
           login: this.state.login,
           email: this.state.email,
           twoFA: this.state.twoFA,
       }
-      try {
-        const ret = await axios.put("http://localhost:3000/users/set", formUser);
-        console.log(ret);
-      } catch(error) {
-        console.log(error);
-      }
+      axios.post("http://localhost:3000/users/set", formUser, {withCredentials:true}).then((res) =>{
+        console.log("form submit");  
+      })
+     // try {
+     //   const ret = await axios.get("http://localhost:3000/users/set");
+     //   console.log(ret);
+     // } catch(error) {
+     //   console.log(error);
+     // }
 
       // try {
       //     axios.post("http://localhost:3000/users/set", 
@@ -57,11 +69,11 @@ class UserForm extends React.Component {
       // }
       console.log("submit form : ", this.state.login, this.state.email, this.state.twoFA);
       
-      this.setState({
+      /*this.setState({
         login: '',
         email: '',
         twoFA: false
-      });
+      });*/
     }
   
     render() {
@@ -81,7 +93,7 @@ class UserForm extends React.Component {
             </div>
             <div>
                 <label>Photo
-                <input type="file" /></label>
+                <input type="file" value={this.state.photo} onChange={this.handleChangePhoto} id="photo" name="photo" /></label>
             </div>
             <input type="submit" value="Envoyer" />
             {JSON.stringify(this.state)}
