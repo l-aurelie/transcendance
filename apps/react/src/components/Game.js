@@ -59,7 +59,7 @@ const Game = (props) => {
     axios.get("http://localhost:3000/game/currentGame", {withCredentials:true}).then((res) =>{
         const tab = [];
         var det;
-        console.log('axios ret =', res.data)
+      //  console.log('axios ret =', res.data)
         for (let entry of res.data)
         {
           console.log('in boucle')
@@ -69,7 +69,7 @@ const Game = (props) => {
         setGames(tab);
         });
         toggle();
-        console.log('tab', games)
+      //  console.log('tab', games)
   }
 //on click, emit to server to ask a matchMaking
  const joinGame = (version) => {
@@ -110,12 +110,18 @@ const Game = (props) => {
 // if a socket of same player is open and is playing, show the same game
 useEffect(() => {
   socket.on("joinroom", data => {
-      socket.emit('initGame', actualUser.id);
+    console.log('laaaa', watchName);
+   if (watch === true) {
+    setLoginL('');
+    setLoginR('');
+    socket.emit('leave', watchName);
+  }
+   socket.emit('initGame', actualUser.id);
     },[]);
     socket.on("leaveroom", data => {
-      socket.emit('leave', actualUser.id, data);
+      socket.emit('leave', data);
     },[]);
-},[actualUser.id])
+},[actualUser.id, watch, watchName])
 
 //principal useEffect qui gere l' affichage dans le canvas
   useEffect(() => {
