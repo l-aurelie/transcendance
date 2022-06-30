@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
-import Modale from './ModaleWindow/FriendProfileModale.js';
+import Modale from './ModaleWindow/FriendProfileModale';
 import axios from 'axios';
 import {socket} from './Socket';
 
