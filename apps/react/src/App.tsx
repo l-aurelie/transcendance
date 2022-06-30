@@ -7,7 +7,6 @@ import Login from "./pages/Login";
 // import { FC } from "react";
 
 
-
 /*	BrowserRouter englobe toute l'app
  	Routes englobe les != routes
 	Route permet d'aller chercher la page et l'auto import */
