@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body } from '@nestjs/common';
 import { AuthenticatedGuard } from 'src/auth/guards';
-import { Games } from 'src/typeorm';
+import { Games, User } from 'src/typeorm';
 import { StatsService } from './stats.service';
 
 
@@ -32,7 +32,17 @@ export class StatsController {
      @Req() request,
     ) : Promise<Games[]>
     {
-      console.log("HERE 2022");
       return this.statsServ.getMatchHistory(request.user);
     }
+
+    @UseGuards(AuthenticatedGuard)
+     @Get('getLeaderboard')
+    async getLeaderboard(
+     @Req() request,
+    ) : Promise<User[]>
+    {
+      return this.statsServ.getLeaderboard();
+    }
 }
+
+

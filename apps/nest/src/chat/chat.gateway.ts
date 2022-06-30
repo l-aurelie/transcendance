@@ -96,7 +96,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         
                for (let entry of room)
                 {
+                    console.log('emit opponnent leave');
                     this.server.to(entry.id).emit("opponent-leave");
+                    this.server.to(entry.id+'-watch').emit("opponent-leave");
                     if (whichuser.idUser === entry.playerLeft)
                     {
                         const user2 = await this.socketRepo.find({where: {idUser: entry.playerRight}});
@@ -115,6 +117,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                     loose = entry.playerLeft;
                                 }
                             this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
+                            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+                            this.server.to(entry.id+'-watch').emit("restart");
                             this.server.to(entry.id).emit("restart");
 
                         }
@@ -124,6 +128,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         const user2 = await this.socketRepo.find({where: {idUser: entry.playerLeft}});
                         if (user2.length === 0)
                         {
+                    console.log('emit opponnent leave');
+
                             let win = 0;
                             let loose = 0;
                             if (entry.scoreLeft > entry.scoreRight)
@@ -138,6 +144,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                 }
                         
                             this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true, date:the_date});
+                            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+                            this.server.to(entry.id+'-watch').emit("restart");
 
                             this.server.to(entry.id).emit("restart");
                         }
@@ -249,6 +257,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       await this.socketRepo.save(sock);
       console.log('sockets' + user.id, sock);
       client.join('sockets' + user.id);
+      const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
+      console.log(rooms);
+      for (let room of rooms) {
+          console.log('helo, ', room.RoomUser_roomId);
+          var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
+          client.join('salonRoom' + roomName);
+      }
       //console.log(user.socket); 
      //this.userRepo.update({id : user.id},{socket : client.id});
     }
@@ -299,37 +314,43 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.joinRoom(client, entry.id);
             const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight, smash :entry.smash};
             this.server.to(entry.id).emit("game-start", data);
+            this.server.to(entry.id+'-watch').emit("game-start", data);
             return;
           }
       }
     }
 
-    async matchMake(tabMatch, v)
+    async launchMatch(userL, userR, v, socketLeft, socketRight)
     {
         let roomName;
+        const details = {
+            playerLeft: userL.id,
+            playerRight: userR.id,
+            userLeft: userL,
+            userRight: userR,
+            smash : v,
+        }
+        const newGame = await this.gameRepo.save(details);
+        roomName = newGame.id;
+        this.joinRoom(socketLeft, roomName);
+        this.joinRoom(socketRight, roomName);
+     const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
+     
+        this.server.to(roomName).emit("game-start",  data);  
+        const allSocketPlayer = await this.socketRepo.find({where:[{idUser: userL.id}, {idUser: userR.id}]});
+        for (let entry of allSocketPlayer)
+        {
+            if (entry.name != socketLeft.id && entry.name != socketRight.id)
+                this.server.to(entry.name).emit("joinroom",  roomName);
+        }
+    }
+
+    async matchMake(tabMatch, v)
+    {
         if(tabMatch.length % 2 === 0)//TODO 
-        {       const details = {
-                    playerLeft: tabMatch[0].user.id,
-                    playerRight: tabMatch[1].user.id,
-                    userLeft: tabMatch[0].user,
-                    userRight: tabMatch[1].user,
-                    smash : v,
-                }
-                const newGame = await this.gameRepo.save(details);
-                roomName = newGame.id;
-                this.joinRoom(tabMatch[0].sock, roomName);
-                this.joinRoom(tabMatch[1].sock, roomName);
-             //   this.joinRoom(gameQueue[1].sock, roomName);
-             const data = {roomname: roomName, sL: 0, sR:0, player1: tabMatch[0].user.id, player2:tabMatch[1].user.id, smash: v}
-             
-                this.server.to(roomName).emit("game-start",  data);  
-                const allSocketPlayer = await this.socketRepo.find({where:[{idUser: tabMatch[0].user.id}, {idUser: tabMatch[1].user.id}]});
-                for (let entry of allSocketPlayer)
-                {
-                    if (entry.name != tabMatch[0].sock.id && entry.name != tabMatch[1].sock.id)
-                        this.server.to(entry.name).emit("joinroom",  roomName);
-                }
-                tabMatch.splice(0,2);
+        {      
+            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v, tabMatch[0].sock, tabMatch[1].sock);
+            tabMatch.splice(0,2);
         }
     }
 
@@ -374,6 +395,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if(newPos + infos[2].paddleSize >= infos[2].height)
                 newPos = infos[2].height - infos[2].paddleSize;
             this.server.to(infos[1]).emit("left-move", newPos);
+            this.server.to(infos[1]+'-watch').emit("left-move", newPos);
         }
         else if (infos[2].playerR === infos[0])
         {
@@ -381,6 +403,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos + 10;
             if(newPos + infos[2].paddleSize >= infos[2].height)
                 newPos = infos[2].height - infos[2].paddleSize;
+            this.server.to(infos[1]+'-watch').emit("right-move", newPos);
             this.server.to(infos[1]).emit("right-move", newPos);
         }
     }
@@ -395,6 +418,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if(newPos <= 0)
                 newPos = 0;
             this.server.to(infos[1]).emit("left-move", newPos);
+            this.server.to(infos[1]+'-watch').emit("left-move", newPos);
         }
         else if (infos[2].playerR === infos[0])
         {
@@ -403,6 +427,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if(newPos <= 0)
                 newPos = 0;
             this.server.to(infos[1]).emit("right-move", newPos);
+            this.server.to(infos[1]+'-watch').emit("right-move", newPos);
         }
     }
 
@@ -432,6 +457,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var newSleep = infos[1].sleep;
         var smachX = infos[1].smachX;
         var smachY = infos[1].smachY;
+        var login;
+
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -495,32 +522,50 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             speed = 1;
             newSleep = true;
         }
-        if (newSleep === true) {
-            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY}
-            this.server.to(infos[0]).emit("updatedBall", ball);
-            await sleep(500);
-            newSleep = false;
-            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY}
-            this.server.to(infos[0]).emit("updatedBall", ball);
-            return;
-        }
-        let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY}
-        this.server.to(infos[0]).emit("updatedBall", ball);
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
-
             const user = await this.userRepo.findOne({id: idGame.playerLeft});
-            this.server.to(infos[0]).emit("game-stop", user.login);
+login = user.login;
+this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
+this.server.to(infos[0]).emit("game-stop", user.login);
+// this.server.to(infos[0]).emit("game-stop", user.login);
+            //Laura: update total_wins
+            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            update.total_wins+=1;
+            this.userRepo.save(update);
         }
         if (sR >= 11 && sL < sR - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
-
             const user = await this.userRepo.findOne({id: idGame.playerRight});
-            this.server.to(infos[0]).emit("game-stop", user.login);
+
+            login = user.login;
+        this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
+          this.server.to(infos[0]).emit("game-stop", user.login);
+            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            update.total_wins+=1;
+            this.userRepo.save(update);
+        }
+        if (newSleep === true) {
+            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
+            this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
+            this.server.to(infos[0]).emit("updatedBall", ball);
+            await sleep(500);
+            newSleep = false;
+            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY, login: login}
+            this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
+            this.server.to(infos[0]).emit("updatedBall", ball);
+        }
+        else {
+            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY, login: login}
+            this.server.to(infos[0]).emit("updatedBall", ball);
+            this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
+         //   this.server.to(infos[0]).emit("game-stop", user.login);
+         //   this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
         }
     }
+
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {
@@ -563,6 +608,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
+        this.server.to(infos[0]+'-watch').emit("opponent-quit");
+     //   this.server.to(infos[0]).emit("leaveroom", infos[0]);
+     //   this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch');
     }
 
 
@@ -581,9 +629,34 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return;
         }
         const idGame = await this.gameRepo.findOne({id:infos[0]});
-
+console.log('finish-match');
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
-        this.server.to(infos[0]).emit("restart");
+        this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
+        this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
+        this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch'); //a la fin d' un match, tout les spectateur quittent la room qu'ils ecoutaient
+        this.server.to(infos[0]).emit("leaveroom", infos[0]); //a la fin d' un match, tout les joueurs quittent la room qu'ils ecoutaient
     }
+
+    @SubscribeMessage('watch-match')
+    async watchMatch(client, infos) {
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        const idGame = await this.gameRepo.findOne({relations: ["userLeft", "userRight"], where : {id:infos[0]}});
+        if (idGame.finish === true)
+        {
+            this.server.to(client.id).emit("end-before-watch");
+            await sleep(1000);
+            this.server.to(client.id).emit("restart");
+            return ;
+        }
+        const userL = idGame.userLeft.login;
+        const userR = idGame.userRight.login;
+        const watchRoom = infos[0] + '-watch';
+        this.joinRoom(client, watchRoom);
+        const data = {watchRoom: watchRoom, gameRoom: infos[0], loginL:userL, loginR:userR}
+        this.server.to(watchRoom).emit('watch', data);
+    }
+
 }
 
