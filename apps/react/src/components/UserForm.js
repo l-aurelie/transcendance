@@ -41,12 +41,15 @@ class UserForm extends React.Component {
           email: this.state.email,
           twoFA: this.state.twoFA,
       }
-      try {
-        const ret = await axios.put("http://localhost:3000/users/set", formUser);
-        console.log(ret);
-      } catch(error) {
-        console.log(error);
-      }
+      axios.post("http://localhost:3000/users/set", formUser, {withCredentials:true}).then((res) =>{
+        console.log("form submit");  
+      })
+     // try {
+     //   const ret = await axios.get("http://localhost:3000/users/set");
+     //   console.log(ret);
+     // } catch(error) {
+     //   console.log(error);
+     // }
 
       // try {
       //     axios.post("http://localhost:3000/users/set", 
