@@ -1,10 +1,11 @@
 /*LAURA: friend requests modal: Base sur le modale de Aurelie mais avec les detailles des requetes "pending" recues + un button accept/reject*/
 import React, { useState } from 'react';
+import CSS from 'csstype';
 import AcceptButton from '../AcceptButton';
 import RejectButton from '../RejectButton';
 
 /* Assombri l'arriere plan */
-const background = {
+const background: CSS.Properties = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
     top: '0',
@@ -13,7 +14,7 @@ const background = {
     bottom: '0',
     zIndex: '9998'
 }
-const modale = {
+const modale: CSS.Properties = {
     height: '500px',
     width: '700px',
     background: 'rgba(214,105,127)',
@@ -25,7 +26,7 @@ const modale = {
     overflowY: 'scroll',
 }
 
-const button = {
+const button: CSS.Properties = {
     position: 'absolute',
     right: '15px',
     top: '15px'
