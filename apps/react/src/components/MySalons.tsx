@@ -140,7 +140,7 @@ const salonName = {
             <button onClick={(event) => {
                 event.stopPropagation();
                 closeSalon(salon[0])}}
-                >x</button>
+                >x</button> 
             </button>))}
             {/* PlaceHolder 
             <div style={{display: 'flex'}}>

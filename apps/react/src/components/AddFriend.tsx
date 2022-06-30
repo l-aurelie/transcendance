@@ -15,7 +15,7 @@ const onChange = (event) => {
 
   const [friends, setFriends] = useState([]);
   const [value, setValue] = useState([]);
-  const {revele, toggle} = LogiqueModale(1);
+  const {revele, toggle} = LogiqueModale();
   
   /*get friendlist*/    
   useEffect(() => {
