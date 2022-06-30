@@ -50,20 +50,56 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // A client has connected
         this.users++;
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
-     //   console.log(this.users);
         // Notify connected clients of current users
-        //client.join('sockets' + whichuser.user.id);
         this.server.emit('users', this.users);
     }
 
     async handleDisconnect(client) {
         const the_date = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
-
+console.log('handleDisconnect');
         // A client has disconnected
         this.users--;
-        this.disconnectGame(client, the_date);
+        await this.disconnectGame(client, the_date);
         await this.socketRepo.createQueryBuilder().delete().where({ name: client.id }).execute();
         this.server.emit('users', this.users);
+    }
+
+
+    async twoPlayerDisconnect(the_date, entry, opponent)
+    {
+        const user2 = await this.socketRepo.find({where: {idUser: opponent}});
+        if (user2.length === 0)
+        {
+            let win = 0;
+            let loose = 0;
+            if (entry.scoreLeft > entry.scoreRight)
+               {
+                    win = entry.playerLeft;
+                    loose = entry.playerRight;
+                }
+               if (entry.scoreRight > entry.scoreLeft)
+                {
+                    win = entry.playerRight;
+                    loose = entry.playerLeft;
+                }
+            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
+            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+            this.server.to(entry.id+'-watch').emit("restart");
+            this.server.to(entry.id).emit("restart");
+
+        }
+    }
+
+    async deleteQueue(tab, userId)
+    {
+        var i = 0;
+        for (let entry of tab) {
+            if (entry.user.id === userId) {
+                tab.splice(i, i+1);
+                break;
+            }
+            i++;
+        }
     }
 
     async disconnectGame(client, the_date)
@@ -74,87 +110,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
             if (isUser.length === 1)
             {
-                var i = 0;
-               for (let entry of gameQueue)
-               {
-                if (entry.user.id === whichuser.idUser) {
-                    gameQueue.splice(i, i+1);
-                    break;
-                }
-                i++;
-               } 
-               i = 0;
-               for (let entry of gameQueueSmach)
-               {
-                if (entry.user.id === whichuser.idUser) {
-                    gameQueueSmach.splice(i, i+1);
-                    break;
-                }
-                i++;
-               }
+                console.log('only one socket');
+                this.deleteQueue(gameQueue, whichuser.idUser);
+                this.deleteQueue(gameQueueSmach, whichuser.idUser);
+       
                const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
         
                for (let entry of room)
                 {
-                    console.log('emit opponnent leave');
                     this.server.to(entry.id).emit("opponent-leave");
                     this.server.to(entry.id+'-watch').emit("opponent-leave");
                     if (whichuser.idUser === entry.playerLeft)
-                    {
-                        const user2 = await this.socketRepo.find({where: {idUser: entry.playerRight}});
-                        if (user2.length === 0)
-                        {
-                            let win = 0;
-                            let loose = 0;
-                            if (entry.scoreLeft > entry.scoreRight)
-                               {
-                                    win = entry.playerLeft;
-                                    loose = entry.playerRight;
-                                }
-                               if (entry.scoreRight > entry.scoreLeft)
-                                {
-                                    win = entry.playerRight;
-                                    loose = entry.playerLeft;
-                                }
-                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
-                            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
-                            this.server.to(entry.id+'-watch').emit("restart");
-                            this.server.to(entry.id).emit("restart");
-
-                        }
-                    }
+                        this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
                     else if (whichuser.idUser === entry.playerRight)
-                    {
-                        const user2 = await this.socketRepo.find({where: {idUser: entry.playerLeft}});
-                        if (user2.length === 0)
-                        {
-                    console.log('emit opponnent leave');
-
-                            let win = 0;
-                            let loose = 0;
-                            if (entry.scoreLeft > entry.scoreRight)
-                               {
-                                    win = entry.playerLeft;
-                                    loose = entry.playerRight;
-                                }
-                               if (entry.scoreRight > entry.scoreLeft)
-                                {
-                                    win = entry.playerRight;
-                                    loose = entry.playerLeft;
-                                }
-                        
-                            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, finish: true, date:the_date});
-                            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
-                            this.server.to(entry.id+'-watch').emit("restart");
-
-                            this.server.to(entry.id).emit("restart");
-                        }
-                    }
-                   
+                        this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);     
                 }
             }
         }
     }
+
     @SubscribeMessage('join')
     async joinRoom(client, name) {
       client.join(name);
@@ -166,9 +140,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     @SubscribeMessage('disco')
     async disconnect(client) {
-        console.log( 'disco');
         client.disconnect();
-        console.log( 'disco');
 
     }
     //--------------------------------------------------------------------------------------------//
@@ -185,7 +157,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
      /* Recupere tous les messages de la table RoomId [room] et les formatte pour l'affichage, les emit au front */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, room) {
-         console.log( await this.roomService.getRoomIdFromRoomName(room), room)
+        // console.log( await this.roomService.getRoomIdFromRoomName(room), room)
         const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(room) }});
         let tab = [];
         /* Concatene userName et le contenu du message */
@@ -199,7 +171,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     /* Un user join la room, on cree une entre userRoom */
      @SubscribeMessage('user_joins_room')
      async user_joins_room(client, infos) {
-       console.log(await this.roomService.getRoomIdFromRoomName(infos.room));
+    //   console.log(await this.roomService.getRoomIdFromRoomName(infos.room));
        const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
        this.roomUserRepo.save(userRoom);
        client.join('salonRoom' + infos.room);
@@ -209,7 +181,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
            displayName = infos.otherLogin;
        }
        /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
-       console.log(!(!infos.otherLogin));
+     //  console.log(!(!infos.otherLogin));
        //this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: !(!infos.otherLogin), displayName: displayName});
        client.emit('joinedsalon', {salonName: infos.room, dm: !(!infos.otherLogin), displayName: displayName});
      } 
@@ -217,7 +189,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
-        console.log(client.id, infos.room, infos.userId);
+     //   console.log(client.id, infos.room, infos.userId);
       await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room) }).execute();
       //this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.room);
       client.leave('salonRoom' + infos.room);
@@ -233,13 +205,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
         if (data.isDm) {
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
-            console.log(otherUserId); 
-            console.log("all ohter user sockets", await this.server.in('sockets' + otherUserId).fetchSockets(), "roomname : " + 'sockets' + otherUserId);
+          //  console.log(otherUserId); 
+          //  console.log("all ohter user sockets", await this.server.in('sockets' + otherUserId).fetchSockets(), "roomname : " + 'sockets' + otherUserId);
             this.server.to('sockets' + otherUserId).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
             this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
         }
         else {
-            console.log('notDMM');
+         //   console.log('notDMM');
             this.server.to('salonRoom' + data.roomToEmit).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
         }
     }
@@ -255,12 +227,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       sock.user = user;
       sock.idUser = user.id;
       await this.socketRepo.save(sock);
-      console.log('sockets' + user.id, sock);
+    //  console.log('sockets' + user.id, sock);
       client.join('sockets' + user.id);
       const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
-      console.log(rooms);
+   //   console.log(rooms);
       for (let room of rooms) {
-          console.log('helo, ', room.RoomUser_roomId);
+     //     console.log('helo, ', room.RoomUser_roomId);
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
           client.join('salonRoom' + roomName);
       }
@@ -271,7 +243,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('addsalon')
     // event d'ajout de salon
     async addsalon(client, infos) {
-        console.log(infos)
+     //   console.log(infos)
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
         this.roomService.associateUserRoom(newRoom, infos[0], infos[1]);
         if (!infos[1])
@@ -286,31 +258,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('initGame')
     async initGame( client, user)
     {
-        for (let entry of gameQueue)
-      {
-        if (entry.user.id === user)
-        {
-            console.log('already');
+        for (let entry of gameQueue) {
+        if (entry.user.id === user) {
           this.server.to(client.id).emit("already-ask");
           break;
         }
         return ;
     }
-    for (let entry of gameQueueSmach)
-    {
-      if (entry.user.id === user)
-      {
-          console.log('already');
+    for (let entry of gameQueueSmach) {
+      if (entry.user.id === user) {
         this.server.to(client.id).emit("already-ask");
         break;
       }
       return ;
-  }
+    }
       const allGame = await this.gameRepo.find( { } );
-
       for (let entry of allGame) {
-          if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false)
-          {
+          if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {
             this.joinRoom(client, entry.id);
             const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight, smash :entry.smash};
             this.server.to(entry.id).emit("game-start", data);
@@ -332,22 +296,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         const newGame = await this.gameRepo.save(details);
         roomName = newGame.id;
-        this.joinRoom(socketLeft, roomName);
-        this.joinRoom(socketRight, roomName);
+        this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("joinroom",  roomName);
      const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
-     
-        this.server.to(roomName).emit("game-start",  data);  
-        const allSocketPlayer = await this.socketRepo.find({where:[{idUser: userL.id}, {idUser: userR.id}]});
-        for (let entry of allSocketPlayer)
-        {
-            if (entry.name != socketLeft.id && entry.name != socketRight.id)
-                this.server.to(entry.name).emit("joinroom",  roomName);
-        }
+     this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("game-start",  data);  
+
     }
 
     async matchMake(tabMatch, v)
     {
-        if(tabMatch.length % 2 === 0)//TODO 
+        if(tabMatch.length % 2 === 0) 
         {      
             this.launchMatch(tabMatch[0].user, tabMatch[1].user, v, tabMatch[0].sock, tabMatch[1].sock);
             tabMatch.splice(0,2);
@@ -358,14 +315,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
     async createNewGame(socket: Socket, infos) {
-        this.server.to(socket.id).emit("received");
         const tab = { sock: socket, user: infos[0] };
         if(!gameQueue.find(element => infos[0].id === element.user.id)
             && !gameQueueSmach.find(element => infos[0].id === element.user.id))
         {
-            const allSocketPlayer = await this.socketRepo.find({where:{idUser: infos[0].id}});
-            for (let entry of allSocketPlayer)
-                    this.server.to(entry.name).emit("joinroom");
+            this.server.to('sockets'+ infos[0].id).emit("joinroom");
             if (infos[1] === 1) {
                 gameQueueSmach.push(tab);
                 this.matchMake(gameQueueSmach, infos[1]);
@@ -375,23 +329,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 this.matchMake(gameQueue, infos[1]);
             }
         }
-        console.log('gq length', gameQueue.length);
-        console.log('gqS length', gameQueueSmach.length);
         
     }
 
-   
     @SubscribeMessage('moveDown')
     async  paddleDown(client, infos) { //infos[0]=userId, infos[1]=roomGameId, infos[2]=allPos
-       // const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (infos[2].playerL === infos[0] )
         {
             const pos = infos[2].posHL;
             let newPos = pos + 10;
-            // console.log("newPos", newPos);
-            // console.log("height", infos[2].height);
-            // console.log("[posHL", infos[2].posHL);
-            // console.log("paddleSize", infos[2].paddleSize);
             if(newPos + infos[2].paddleSize >= infos[2].height)
                 newPos = infos[2].height - infos[2].paddleSize;
             this.server.to(infos[1]).emit("left-move", newPos);
@@ -410,7 +356,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('moveUp')
     async  paddleUp(client, infos) { //infos[0] == userId, infos[1] == roomGameId , infos[2] == allPos
-       // const idGame = await this.gameRepo.findOne({id:infos[1]});
         if (infos[2].playerL === infos[0] )
         {
             const pos = infos[2].posHL;
@@ -433,15 +378,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName , infos[1] = allPos
-      //  var roster = server.clients(infos[0]);
-       // for (let i in roster)
-         //   console.log('client = ', roster[i]);
-        //  console.log(infos[1].playerLeft, infos[1].playerRight);
-        // const player1 = await this.userRepo.findOne({id:infos[1].playerLeft});
-        // const player2 = await this.userRepo.findOne({id:infos[1].playerRight});
-        // if (player1.isConnected === false || player2.isConnected === false)
-        //     this.server.to(infos[0]).emit("opponent-leave")
-
         /*date for game table*/
         const the_date: string = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
       
@@ -529,8 +465,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 login = user.login;
 this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
 this.server.to(infos[0]).emit("game-stop", user.login);
-// this.server.to(infos[0]).emit("game-stop", user.login);
-            //Laura: update total_wins
             const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
             update.total_wins+=1;
             this.userRepo.save(update);
@@ -561,17 +495,13 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY, login: login}
             this.server.to(infos[0]).emit("updatedBall", ball);
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
-         //   this.server.to(infos[0]).emit("game-stop", user.login);
-         //   this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
         }
     }
 
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {
-        console.log(infos[1], infos[2]);
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
-
     }
 
     @SubscribeMessage('abort-match')
@@ -599,18 +529,13 @@ this.server.to(infos[0]).emit("game-stop", user.login);
                 }
                  i++;
             }
-            const allSocketPlayer = await this.socketRepo.find({where:{idUser: infos[3]}});
-            for (let entry of allSocketPlayer)
-                    this.server.to(entry.name).emit("opponent-quit");
-            console.log('gqmeQueuLength', gameQueue.length);
-            console.log('gqmeQueuSmachLength', gameQueueSmach.length);
+            this.server.to('sockets' + infos[3]).emit("opponent-quit");
+     
             return ;
         }
         this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
         this.server.to(infos[0]+'-watch').emit("opponent-quit");
-     //   this.server.to(infos[0]).emit("leaveroom", infos[0]);
-     //   this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch');
     }
 
 
@@ -623,13 +548,10 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         await sleep(1000);
         if (!infos[0])
         {
-            const allSocketPlayer = await this.socketRepo.find({where:{idUser: infos[1]}});
-            for (let entry of allSocketPlayer)
-                    this.server.to(entry.name).emit("restart");
+            this.server.to('sockets'+ infos[1]).emit("restart");
             return;
         }
         const idGame = await this.gameRepo.findOne({id:infos[0]});
-console.log('finish-match');
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
         this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
@@ -654,7 +576,7 @@ console.log('finish-match');
         const userR = idGame.userRight.login;
         const watchRoom = infos[0] + '-watch';
         this.joinRoom(client, watchRoom);
-        const data = {watchRoom: watchRoom, gameRoom: infos[0], loginL:userL, loginR:userR}
+        const data = {watchRoom: watchRoom, loginL:userL, loginR:userR}
         this.server.to(watchRoom).emit('watch', data);
     }
 

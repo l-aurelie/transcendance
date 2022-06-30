@@ -59,18 +59,16 @@ const Game = (props) => {
     axios.get("http://localhost:3000/game/currentGame", {withCredentials:true}).then((res) =>{
         const tab = [];
         var det;
-      //  console.log('axios ret =', res.data)
         for (let entry of res.data)
         {
-          console.log('in boucle')
           det = {value: entry.id, label : entry.userLeft.login + "-" + entry.userRight.login};
           tab.push(det)
         }
         setGames(tab);
         });
         toggle();
-      //  console.log('tab', games)
   }
+
 //on click, emit to server to ask a matchMaking
  const joinGame = (version) => {
       setWait(true);
@@ -86,20 +84,23 @@ const Game = (props) => {
 
  // ask to quit game or queue
  const quitGame = () => {
-      if (watch === true)
-      {
-        socket.emit('leave', watchName);
-        setQuitSentence('end of visualisation...');
-      }
-      setWait(false);
-      setPresentation(false); 
-      setInGame(false);
-      setAbort(true);
-      setQuit(false);
-      setEndWatch(false);
-      setWatch(false);
-      setStop(false);
-      socket.emit('abort-match', roomName, scoreL, scoreR, actualUser.id);
+  setWait(false);
+  setPresentation(false); 
+  setInGame(false);
+  setAbort(true);
+  setQuit(false);
+  setEndWatch(false);
+  setStop(false);
+  if (watch === true) {
+    setRoomName(0);  
+    setWatch(false);
+    socket.emit('leave', watchName);
+    setQuitSentence('end of visualisation...');
+  }
+  else {
+    setWatch(false);
+    socket.emit('abort-match', roomName, scoreL, scoreR, actualUser.id);
+  }
 }
 
 // a l' ouverture de la page, regarde si le joueur etait en pleine partie avant d' etre deconnecte ou non
@@ -110,7 +111,6 @@ const Game = (props) => {
 // if a socket of same player is open and is playing, show the same game
 useEffect(() => {
   socket.on("joinroom", data => {
-    console.log('laaaa', watchName);
    if (watch === true) {
     setLoginL('');
     setLoginR('');
@@ -145,14 +145,13 @@ useEffect(() => {
     var paddleLarge = width/50;
     var playerLeft = playerL;
     var playerRight = playerR;
+    var smachX = -(height/60);
+    var smachY = -(height/60);
     if (smach === 1) {
-      var smachX = width/2;
-      var smachY = height/4;
+      smachX = width/2;
+      smachY = height/4;
     }
-    else {
-      var smachX = -(height/60);
-      var smachY = -(height/60);
-    }
+      
     const allPos = { //va etre envoye au back a chaque update de la ball et des paddle
       ballRadius: ballRadius,
       width:width, 
@@ -200,7 +199,6 @@ useEffect(() => {
         setAbort(false);
       setEndWatch(false);
       setQuit(false);
-      setWatch(false);
       setStop(false);
       },[]);
   
@@ -217,7 +215,6 @@ useEffect(() => {
         setAbort(false);
         setQuit(false);
       setEndWatch(false);
-      setWatch(false);
       setStop(false);
       }, []);
   
@@ -231,7 +228,6 @@ useEffect(() => {
         setAbort(false);
       setEndWatch(false);
       setQuit(true);
-      setWatch(false);
       setStop(false);
       }, []);
       
@@ -241,12 +237,10 @@ useEffect(() => {
       setPresentation(false); 
       setInGame(false);
       setQuit(false);
-        setWatch(false);
         setEndWatch(false);
         setStop(false);
      }, []);
     socket.on("game-stop", data => {
-
      setStop(true);
      setWinner(data);
      setWait(false);
@@ -254,15 +248,12 @@ useEffect(() => {
      setInGame(false);
      setAbort(false);
      setQuit(false);
-     setWatch(false);
      setEndWatch(false);
     }, []);  
 
     socket.on("watch", data => {
- //     loginL = data.loginL;
-  //    loginR = data.loginR;
-  setLoginL(data.loginL);
-  setLoginR(data.loginR);
+      setLoginL(data.loginL);
+      setLoginR(data.loginR);
       setWait(false);
       setPresentation(false); 
       setInGame(false);
@@ -270,8 +261,8 @@ useEffect(() => {
       setQuit(false);
       setStop(false);
       setWatch(true);
-        setEndWatch(false);
-        setWatchName(data.watchRoom);
+      setEndWatch(false);
+      setWatchName(data.watchRoom);
       },[]);
   
       socket.on("end-before-watch", data => {
@@ -281,7 +272,6 @@ useEffect(() => {
         setAbort(false);
         setQuit(false);
         setStop(false);
-        setWatch(false);
         setEndWatch(true);
         },[]);
     //socket.on pour update les positon de ball et paddle
@@ -302,23 +292,10 @@ useEffect(() => {
       allPos.smachX = data.smX;
       allPos.smachY = data.smY;
       allPos.sleep = data.sleep;
-   /*   if ((allPos.scoreL >= 11 && allPos.scoreR < allPos.scoreL - 1) ||
-        (allPos.scoreR  >= 11 && allPos.scoreL < allPos.scoreR  - 1)) {
-          setStop(true);
-          setWinner(data.login);
-          setWait(false);
-          setPresentation(false); 
-          setInGame(false);
-          setAbort(false);
-          setQuit(false);
-          setWatch(false);
-          setEndWatch(false);
-        }*/
     });
 
 //ensemble des condition g'erant les affichages FIXEs (en dehors du jeu donc)
     if (presentation === true) {
-      console.log('drawPong');
       context.fillStyle = '#000000'
       context.fillRect(0, 0, width, height)
       context.font = "60px Verdana";
@@ -327,7 +304,6 @@ useEffect(() => {
     }
     else if (wait === true)
     {
-      console.log('drawwaiting');
       context.fillStyle = '#000000'
       context.fillRect(0, 0, width, height)
       context.font = "30px Verdana";
@@ -356,7 +332,6 @@ useEffect(() => {
     }
     else if (stop === true)
     {
-      console.log('in stop end match');
       context.clearRect(0, 0, width, height);
       context.fillStyle = '#000000'
       context.fillRect(0, 0, width, height);
@@ -364,7 +339,6 @@ useEffect(() => {
       context.fillStyle = "white";
       context.fillText(winner + ' won!', width/3, height/2);
       socket.emit('finish-match', roomName, actualUser.id);
-    //  setRoomName(0);
     }
     else if (endWatch === true)
     {
@@ -408,8 +382,9 @@ useEffect(() => {
           socket.emit('ball', roomName,  allPos);
         }
       }
-      if (inGame === true || watch === true) {
-        console.log('drawGame')
+      if ((inGame === true || watch === true)
+          && stop === false && endWatch === false && quit === false
+          && abort === false && presentation === false && wait === false) {
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#000000'
         context.fillRect(0, 0, width, height);
