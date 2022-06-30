@@ -532,8 +532,11 @@ this.server.to(infos[0]).emit("game-stop", user.login);
 // this.server.to(infos[0]).emit("game-stop", user.login);
             //Laura: update total_wins
             const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            update.total_wins+=1;
-            this.userRepo.save(update);
+            if (update)
+            {
+                update.total_wins = (update.total_wins + 1);
+                this.userRepo.save(update);
+            }
         }
         if (sR >= 11 && sL < sR - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
@@ -544,8 +547,11 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
           this.server.to(infos[0]).emit("game-stop", user.login);
             const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            update.total_wins+=1;
+            if (update)
+            {
+                update.total_wins = (update.total_wins + 1);
             this.userRepo.save(update);
+            }
         }
         if (newSleep === true) {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
