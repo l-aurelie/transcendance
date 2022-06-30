@@ -94,11 +94,11 @@ export class AuthController {
    //  console.log(request.user);
         //on retourne quoi ?
      //   return {login:"yoooooooo"};
-     if (request.user.twoFA === true && request.user.isVerified === false)// && request.user.isConnected === false)
+     if (request.user.twoFA === true && request.user.isVerified === false && request.user.isConnected === false)
         res.redirect('http://localhost:4200/Verify');
       else
         res.redirect('http://localhost:4200/Home');
-   //   await this.userRepo.update( { id:request.user.id }, {isConnected:true});
+      await this.userRepo.update( { id:request.user.id }, {isConnected:true});
     }
 
     /*If we have authentifcated via login we can access this page*/
@@ -141,8 +141,9 @@ export class AuthController {
 @UseGuards(AuthenticatedGuard)
 @Get('logout')
 async logOut(@Req() request,@Res() res ) {
-request.user.isConnected = false;
-request.user.isVerified = false;
+//request.user.isConnected = false;
+await this.userRepo.update( { id:request.user.id }, {isConnected:false, isVerified:false});
+//request.user.isVerified = false;
 request.logOut();
 request.session.cookie.maxAge = 0;
 
