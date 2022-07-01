@@ -12,10 +12,9 @@ class UserForm extends React.Component<any, any, any> {
           login: props.user.login,
           email: props.user.email,
           twoFA: props.user.twoFA,
-          photo: null
-          //photo: props.user.avatar
         };
-  
+ 
+      this.fileInput = React.createRef();
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -42,7 +41,7 @@ class UserForm extends React.Component<any, any, any> {
       //const userFormData = new FormData();
       //userFormData.forEach((value, key) => {
       //  console.log("key %s: value %s", key, value);})
-      
+      console.log('file selected = ', this.fileInput.current.files[0].name);
       /* Creation de l'obj a envoyer */
       const formUser = {
           id: this.state.id,
@@ -93,7 +92,8 @@ class UserForm extends React.Component<any, any, any> {
             </div>
             <div>
                 <label>Photo
-                <input type="file" value={this.state.photo} onChange={this.handleChangePhoto} id="photo" name="photo" /></label>
+                {/*<input type="file" value={this.state.photo} onChange={this.handleChangePhoto} id="photo" name="photo" /></label>*/}
+                <input type="file" ref={this.fileInput} /></label>
             </div>
             <input type="submit" value="Envoyer" />
             {JSON.stringify(this.state)}
