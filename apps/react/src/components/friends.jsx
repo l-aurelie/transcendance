@@ -6,8 +6,14 @@ import LogiqueModale from './ModaleWindow/logiqueModale';
 import Modale from './ModaleWindow/Friendsmodale';
 
 const Friends = () => {
-    const {revele, toggle} = LogiqueModale();
+   // const {revele, toggle} = LogiqueModale();
     const [friends, setFriends] = useState([]);
+    
+    /* Outils d'affichage de la modale */
+    const [revele, setRevele] = useState(false);
+    const toggleModal = () => {setRevele(!revele);} 
+    /*------*/
+    
     /*get friendlist*/
     useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
