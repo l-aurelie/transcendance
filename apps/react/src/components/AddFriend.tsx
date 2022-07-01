@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import LogiqueModale from './ModaleWindow/logiqueModale';
-import Modale from './ModaleWindow/FriendProfileModale.js';
+import Modale from './ModaleWindow/FriendProfileModale';
 import axios from 'axios';
 import {socket} from './Socket';
 
 const lists = {
-  overflowY: 'scroll'
+  // overflowY: 'scroll'
+  overflowY: "scroll" as "scroll"
 }
 
 const AddFriend = (props) => {
@@ -15,7 +16,7 @@ const onChange = (event) => {
 
   const [friends, setFriends] = useState([]);
   const [value, setValue] = useState([]);
-  const {revele, toggle} = LogiqueModale(1);
+  const {revele, toggle} = LogiqueModale();
   
   /*get friendlist*/    
   useEffect(() => {
@@ -38,7 +39,7 @@ const onChange = (event) => {
         <div>
           <div style={lists}>
             {friends.map(friends => (
-            <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={friends.avatar}/> {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
+            <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/> {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
             ))}   
           </div>
 
