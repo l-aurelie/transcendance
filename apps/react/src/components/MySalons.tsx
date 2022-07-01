@@ -29,10 +29,10 @@ const salonName = {
  const MySalons = (props) => {
 
     
-    const [friends, setFriends] = useState([]);
-    const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
+    const [friends, setFriends] = useState([] as any);
+    const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
     const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
-    const [message, setMessage] = useState([]);// Message a envoyer au salon
+    const [message, setMessage] = useState([] as any);// Message a envoyer au salon
 
     useEffect(() => {
         props.callBack({msg: message, curSal: currentSalon});
@@ -49,7 +49,7 @@ const salonName = {
            useEffect(() => {
                console.log(joinedSalons);
            }, [joinedSalons])
-  //Ecoute chat pour afficher tout nouveaux messages
+        //Ecoute chat pour afficher tout nouveaux messages
         useEffect(() => {
             socket.off('chat');
             console.log('FIRST USE EFFECT', currentSalon);
@@ -140,7 +140,7 @@ const salonName = {
             <button onClick={(event) => {
                 event.stopPropagation();
                 closeSalon(salon[0])}}
-                >x</button>
+                >x</button> 
             </button>))}
             {/* PlaceHolder 
             <div style={{display: 'flex'}}>

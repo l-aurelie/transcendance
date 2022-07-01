@@ -1,6 +1,7 @@
 /* aurel */
+import CSS from 'csstype';
 
-const modaleWindow = {
+const modaleWindow: CSS.Properties = {
     height: '500px',
     width: '700px',
     background: 'rgba(214,105,127)',
@@ -11,7 +12,7 @@ const modaleWindow = {
     transform: 'translate(-50%, -50%)'
 }
 
-const modaleSide = {
+const modaleSide: CSS.Properties = {
     display: 'flex',
     flexDirection: 'column',
     borderStyle: 'solid',
@@ -21,7 +22,7 @@ const modaleSide = {
     zIndex: '9999'
   }
 
-const background = {
+const background: CSS.Properties = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
     top: '0',
@@ -30,7 +31,7 @@ const background = {
     bottom: '0',
     zIndex: '9998'
 }
-const button = {
+const button: CSS.Properties = {
     position: 'absolute',
     right: '15px',
     top: '15px'

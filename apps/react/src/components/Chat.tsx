@@ -1,9 +1,9 @@
 /* aurelie John */
-import axios from "axios";
-import React, {Component} from 'react';
-import { useEffect, useState } from "react";
+// import axios from "axios";
+// import React, {Component} from 'react';
+import { useState } from "react";
 import { socket } from "./Socket";
-import LogiqueModale from "./ModaleWindow/logiqueModale";
+// import LogiqueModale from "./ModaleWindow/logiqueModale";
 import MySalons from "./MySalons";
 
 /* Style (insere dans la div jsx) */
@@ -15,7 +15,7 @@ const chatStyle = {
 const mySalonStyle = {
   display: 'flex',
   backgroundColor: 'yellow',
-  flexDirection: 'column',
+  flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
   borderColor: 'dark',
@@ -25,7 +25,7 @@ const mySalonStyle = {
 
 const messageStyle = {
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
   borderColor: 'dark',
@@ -45,7 +45,7 @@ const chatTitle = {
   borderRadius: "2rem",
 }
 const messageSent = {
-  textAlign: 'right',
+  textAlign: 'right' as 'right',
 }
 const salonName = {
   marginTop: "auto", 
@@ -63,7 +63,7 @@ const Chat = (props) => {
 
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [string, setString] = useState([]);// Message a envoyer au salon
-  const [currentSalon, setCurrentSalon] = useState([]);// Salon courant
+  const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
    
   //Emit le message rentre par l'utilisateur a tout le salon
@@ -141,9 +141,9 @@ export default Chat
   //     toggle();
   //   }
   // }
-{/* Barre de recherche d'un user + affichage de userFound
+/* Barre de recherche d'un user + affichage de userFound
       <div>
         <p>Search a user</p>
         <input type='text' onKeyPress={displayUser} />
         <Modale revele={revele} toggle={toggle} name={userFound.login} />
-      </div>*/}
+      </div>*/

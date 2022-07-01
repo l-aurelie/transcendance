@@ -5,23 +5,24 @@ import CreateSalon from '../AddChannel';
 import AddNav from '../AddNav';
 import Select from 'react-select';
 import { socket } from "../Socket";
+import CSS from 'csstype';
 
-const log = {
+const log: CSS.Properties = {
     position : 'relative',
     top : '5%',
    // left: '50%'
 }
-const bar = {
+const bar: CSS.Properties = {
     position : 'relative',
     top : '20%'
 }
-const watchButton = {
+const watchButton: CSS.Properties = {
     position : 'absolute',
     top : '50%',
     left : '50%'
 }
 /* Assombri l'arriere plan */
-const background = {
+const background: CSS.Properties = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
     top: '0',
@@ -30,7 +31,7 @@ const background = {
     bottom: '0',
     zIndex: '9998'
 }
-const modale = {
+const modale: CSS.Properties = {
     height: '500px',
     width: '700px',
     background: 'rgba(214,105,127)',
@@ -41,7 +42,7 @@ const modale = {
     transform: 'translate(-50%, -50%)'
 }
 
-const button = {
+const button: CSS.Properties = {
     position: 'absolute',
     right: '15px',
     top: '15px'

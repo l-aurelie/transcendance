@@ -1,11 +1,9 @@
-/* sam */
-import React from 'react';
-import Logo from '../Logo';
-import CreateSalon from '../AddChannel';
-import AddNav from '../AddNav';
+/* laura */
+import CSS from 'csstype';
+import React, { useState } from 'react';
 
 /* Assombri l'arriere plan */
-const background = {
+const background: CSS.Properties = {
     background: 'rgba(0,0,0,0.5)',
     position: 'absolute',
     top: '0',
@@ -14,7 +12,7 @@ const background = {
     bottom: '0',
     zIndex: '9998'
 }
-const modale = {
+const modale: CSS.Properties = {
     height: '500px',
     width: '700px',
     background: 'rgba(214,105,127)',
@@ -22,27 +20,26 @@ const modale = {
     top: '50%',
     left: '50%',
     zIndex: '9999',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    overflowY: 'scroll',
 }
 
-const button = {
+const button: CSS.Properties = {
     position: 'absolute',
     right: '15px',
     top: '15px'
 }
 
-
-/* Affiche la modale d'ajout de Friend/Channels */
-const AddModale = ({user, revele, toggle}) => revele ? (
-    
+/* Ternaire, affiche modale si revele recu en parametre est true  */
+const Modale = ({revele, toggle, history}) => revele ? (
     <React.Fragment>
         <div style={background} />
         <div style={modale}>
-            {/* Composants contenus dans la fenetre */}
-            <Logo />
-            {console.log('oh he', user)};
-            <AddNav user={user}/>
-           
+            {/* Composants contenus dans la fenetre: src to become friend.avatar */}
+            <h1>My history</h1>
+            {history.map(history => (
+            <p>{history}</p>
+            ))}
             {/* Bouton pour fermer la fenetre */}
             <button style={button} type='button' onClick={toggle}>x</button>
         </div>
@@ -50,4 +47,4 @@ const AddModale = ({user, revele, toggle}) => revele ? (
  ) : null;
 
 
-export default AddModale;
+export default Modale;

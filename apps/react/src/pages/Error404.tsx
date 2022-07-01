@@ -1,13 +1,12 @@
 /* Manon */
 
 import React from 'react';
-import Navigation from '../components/Navigation';
 
 const Error404 = () => {
     return (
         <div>
             {/* <Logo></Logo> */}
-            <Navigation></Navigation>
+
             <h1>404 error: File not found</h1>
         </div>
     );

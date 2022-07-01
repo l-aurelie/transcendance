@@ -6,14 +6,14 @@ import React from "react";
 const logo= {
     display: "flex",
     width:"40%",
-    objectFit: "contain",
+    // objectFit: "contain",
     alignItems: "center",
     margin: "auto", 
 }
 
 const border = {
     display: "flex",
-    objectFit: "contain",
+    // objectFit: "contain",
     // justifyContent: "center",
     margin: "auto", 
     outline: "ridge", "1px": "red",
@@ -25,7 +25,7 @@ const border = {
 
 const img= {
     display: "flex",
-    objectFit: "contain",
+    // objectFit: "contain",
     // justifyContent: "center",
     margin: "auto", 
     width: "10%",
@@ -34,7 +34,7 @@ const img= {
 
 const h3= {
     display: "flex",
-    objectFit: "contain",
+    // objectFit: "contain",
     justifyContent: "center",
     margin: "auto", 
     color: "rgba(237, 55, 102, 0.8)"
