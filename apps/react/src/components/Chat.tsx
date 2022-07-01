@@ -94,17 +94,19 @@ const Chat = (props) => {
       <div style={mySalonStyle}>
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
-      <div style={messageStyle}>
-        <div style={chatBox}><p style={chatTitle}>{currentSalon.display}</p>
-          {/* Affichage de la variable message detenant tout l'historique des messages*/}
-          {message.map((msg) => (
-          <div style={messageSent}>{msg}</div>
-          ))}
-          {/* Barre d'input pour ajouter un message */}
-          <input type='text' onKeyPress={sendMessage} />
-        </div>
+    <div style={messageStyle}>
+        <div style={chatBox} ><p style={chatTitle}>{currentSalon.display}</p>
+
+        {/* Affichage de la variable message detenant tout l'historique des messages*/}
+      {message.map((msg) => (
+        <div style={messageSent}>{msg}</div>
+      ))}
+        {/* Barre d'input pour ajouter un message */}
+        <input type='text' onKeyPress={sendMessage} />
+      
       </div>
-    </div>
+   </div>
+   </div>
   );
 }
 
