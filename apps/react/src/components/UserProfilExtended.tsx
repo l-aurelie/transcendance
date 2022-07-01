@@ -1,16 +1,16 @@
 /* aurel */
 import axios from "axios";
-import Friends from './friends.jsx'
-import FriendReqs from './friendreqs.jsx'
+import Friends from './friends'
+import FriendReqs from './friendreqs'
 import { useEffect, useState } from "react";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-import MatchHistory from "./MatchHistory.jsx";
-import Leaderboard from "./Leaderboard.jsx";
+import MatchHistory from "./MatchHistory";
+import Leaderboard from "./Leaderboard";
 
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
 const UserProfilExtended = ({name}) => {
     
-    const [user, setUser] = useState([]);
+    const [user, setUser] = useState([] as any);
     const [wins, setWins] = useState([]);
     const [losses, setLosses] = useState([]);
     const [revele, setRevele] = useState(false);
@@ -42,7 +42,7 @@ const UserProfilExtended = ({name}) => {
     
     return(
         <div>
-            <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={user.avatar} />
+            <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />
             <button>SetProfil</button>
             <div>{user.login}</div>
             <p>Victoires: {wins} </p>

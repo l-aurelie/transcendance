@@ -10,7 +10,7 @@ import { socket } from "./Socket";
 
 const UserProfil = (props) => {
     const user = props.dataFromParent;
-    const [connected, setConnected] = useState([false]);
+    const [connected, setConnected] = useState([false] as any);
 
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);

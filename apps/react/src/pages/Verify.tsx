@@ -4,8 +4,8 @@ import React from 'react';
 import {Navigate} from "react-router-dom";
 
 
-class Verify extends React.Component {
-    constructor(props) {
+class Verify extends React.Component<any, any, any> {
+    constructor(props: any) {
       super(props);
       this.state = {value: '', message: true, ok: false};
       this.handleChange = this.handleChange.bind(this);

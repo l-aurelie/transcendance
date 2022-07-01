@@ -12,9 +12,9 @@ const friendProfileStyle = {
 /* Composant affichant le profil detaille d'un utilisateur [login] recu en parametre {value} */
 const FriendUserProfilExtended = ({Value}) => {
     
-    const [ThisUser, setThisUser] = useState([]);
-    const [friends, setFriends] = useState([]);
-    const [InboundReq, setInboundReq] = useState([]);
+    const [ThisUser, setThisUser] = useState([] as any);
+    const [friends, setFriends] = useState([] as any);
+    const [InboundReq, setInboundReq] = useState([] as any);
    
 useEffect(() => {
     /*get user*/
@@ -84,7 +84,7 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>
@@ -100,7 +100,7 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>
@@ -116,7 +116,7 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>
@@ -129,7 +129,7 @@ const RejectRequest = event => {
     else 
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>

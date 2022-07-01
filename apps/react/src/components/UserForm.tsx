@@ -3,8 +3,8 @@ import axios from "axios";
 import React from "react";
 
 /* Formulaire de modif de profil */
-class UserForm extends React.Component {
-    constructor(props) {
+class UserForm extends React.Component<any, any, any> {
+    constructor(props: any) {
       super(props);
       /* Valeurs par defaut */
       this.state = {

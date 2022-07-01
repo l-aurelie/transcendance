@@ -1,8 +1,7 @@
-/* aurel john*/
+/* aurel john*/zz
 import React from 'react';
 import Logo from '../Logo';
 import SideBarChatNav from '../SideBarChatNav';
-
 
 const modale = {
     display: 'flex',
