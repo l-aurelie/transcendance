@@ -148,100 +148,101 @@ console.log('handleDisconnect');
     //----------------------------------CHAT------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
 
-    /* Recupere tous les salon public existants dans la db */
+    /* Recupere tous les salon publics existants dans la db */
     @SubscribeMessage('fetchsalon')
     async fetch_salon(client) {
         const salons = await this.roomRepo.find({where: { private : false }});
         client.emit('fetchsalon', salons);
      }
 
-     /* Recupere tous les messages de la table RoomId [room] et les formatte pour l'affichage, les emit au front */
+     /* Recupere tous les messages de la table RoomId [room] sauf ceux des utilisateurs bloqués et les formatte pour l'affichage, les emit au front */
+     /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
      @SubscribeMessage('fetchmessage')
-     async fetch_message(client, room) {
-        // console.log( await this.roomService.getRoomIdFromRoomName(room), room)
-        const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(room) }});
+     async fetch_message(client, data) {
+        const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
+        /* Récupération de l'id des users bloqués par le client dans un tableau*/
+        const blockedUsers = await this.userBlockRepo.find({where: {blockingUserId: data.idUser}});
+        const arrayBlockedUsers = blockedUsers.map((it) => it.blockedUserId);
+        /* Concatene userName et le contenu du message si celui ci n'a pas été envoyé par quelqu'un de bloqué*/
         let tab = [];
-        /* Concatene userName et le contenu du message */
         tab = await Promise.all(message.map( async (it) : Promise<string[]> => {
+                if (arrayBlockedUsers.includes(it.senderId))
+                   return tab;
                 var user = await this.userService.findUserById(it.senderId);//TODO: peut etre revoir la structure DB car une requete db pour chaque message!
                 return [...tab, user.login + ' : ' + it.content];
              }));
         client.emit('fetchmessage', tab);
       }
 
-    /* Un user join la room, on cree une entre userRoom */
+    /* Un user join une room ou crée une conversation privée, on cree une entre userRoom */
+    /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */
      @SubscribeMessage('user_joins_room')
      async user_joins_room(client, infos) {
-    //   console.log(await this.roomService.getRoomIdFromRoomName(infos.room));
        const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
        this.roomUserRepo.save(userRoom);
+    /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
        client.join('salonRoom' + infos.room);
-       //this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.room);
+    /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
        var displayName = infos.room;
        if (infos.otherLogin) {
            displayName = infos.otherLogin;
        }
        /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
-     //  console.log(!(!infos.otherLogin));
-       //this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: !(!infos.otherLogin), displayName: displayName});
        client.emit('joinedsalon', {salonName: infos.room, dm: !(!infos.otherLogin), displayName: displayName});
      } 
 
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
-     //   console.log(client.id, infos.room, infos.userId);
       await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room) }).execute();
-      //this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.room);
       client.leave('salonRoom' + infos.room);
       /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
     }
 
-    /* Recoit un message et unr room dans laquelle re-emit le message */
+    /* Recoit un message et un room dans laquelle re-emit le message */
+    /* {roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm} */
     @SubscribeMessage('chat')
     async onChat(client, data) {
         //any clients listenning  for the chat event on the data.roomToEmit channel would receive the message data instantly
-        //const socket = await socks.find(client.id);
         const time = new Date(Date.now()).toLocaleString();
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
+
+        /* on récupère les infos de block */
+        /* on fait un array constitué de tous les salons de sockets qui nous ont blouqués pour ne pas leur emit grâce à .except */
         let bannedMe = await this.userBlockRepo.createQueryBuilder().where({ blockedUserId: data.whoAmI.id }).execute();
         bannedMe.forEach(function(el, id, arr) {
             arr[id] = 'sockets' + arr[id].UserBlock_blockingUserId;
         });
-        console.log('BanMe', bannedMe);
+        console.log('client Blocked by ;', bannedMe);
+        /* on emit seulement aux sockets des 2 users si c'est un dm, sinon à tout le salon */
         if (data.isDm) {
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
-            console.log(otherUserId); 
             this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
             this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
         }
         else {
+            bannedMe.push('sockets' + data.whoAmI.id);
             this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
+            //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
+            this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
         }
     }
 
-    //TODO: tjrs pertinent? , displayName: data.whoAmI.login
     @SubscribeMessage('whoAmI')
     async linkUserSocket(client, user) {
-      //const leUser =  this.userService.findUserById(user.id);
-
-      //console.log(user);
       const sock = this.socketRepo.create();
       sock.name = client.id;
       sock.user = user;
       sock.idUser = user.id;
       await this.socketRepo.save(sock);
-    //  console.log('sockets' + user.id, sock);
+      /* on join la room avec tous les sockets du user, elle s'appelera par exemple sockets7 pour l'userId 7 */
       client.join('sockets' + user.id);
+      /* on boucle sur les roomUser pour faire rejoindre à ce socket toutes les rooms du user */
       const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
-   //   console.log(rooms);
       for (let room of rooms) {
-     //     console.log('helo, ', room.RoomUser_roomId);
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
           client.join('salonRoom' + roomName);
       }
-      //console.log(user.socket); 
-     //this.userRepo.update({id : user.id},{socket : client.id});
     }
 
     @SubscribeMessage('addsalon')

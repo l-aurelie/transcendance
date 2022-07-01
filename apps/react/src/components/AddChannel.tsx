@@ -53,7 +53,7 @@ const AddChannel = ({user}) => {
     };
 
   const handleClick = (salon) => {
-      socket.emit('user_joins_room', {userId: user.id, room: salon.name, dm: false});
+      socket.emit('user_joins_room', {userId: user.id, room: salon.name});
       //toggle();
     };
 

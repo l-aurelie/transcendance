@@ -54,36 +54,32 @@ const salonName = {
             socket.off('chat');
             console.log('FIRST USE EFFECT', currentSalon);
             if (currentSalon.length !== 0) {
-                console.log('herrerer', currentSalon.length);
                 socket.on('fetchmessage', data => {
-                    console.log(typeof data, data);
                     setMessage(data);
                 });
-                socket.emit('fetchmessage', currentSalon.name);
+                socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id});
             }
             socket.on("chat", data => {
                 setMessage((message) => {
+                    //si l'emittingRoom est le salon courant on update les messages, sinon on met une notif si c'est indiqué par .dontNotif
                 if (data.emittingRoom === currentSalon.name)
                     return ([...message, data.message]);
                 else if (data.dontNotif)
                     return (message);
                 else {
-                    console.log(data.displayName);
                     setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName})));
                     return (message);
                 }
-            //});
             });
             });
             }, [currentSalon])
 
             //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
+            //TODO: est-ce que rejoindre un salon le met en salon courant? (commentaires)
             useEffect(() => {
             socket.on('joinedsalon', data => {
                 console.log('iciii', data.displayName);
-                //console.log(new Map(joinedSalons.set(data.salonName, {notif: false, dm: data.dm, avatar: data.chatterLogin})))
                 setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName})));
-                //console.log(joinedSalons);
                 //socket.off('chat');
                 //socket.off('fetchmessage');
                 //setCurrentSalon({name: data.salonName, isDm: data.dm, display: data.chatterLogin});
@@ -92,12 +88,8 @@ const salonName = {
 
             
             const handleClick = (salon) => {
-                console.log(salon, currentSalon.display);
                   if (salon[1].avatar !== currentSalon.display) {
-                    console.log('beforeadd', salon[1].avatar, joinedSalons, joinedSalons.get(salon));
-                    setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false})));
-                    console.log(joinedSalons);
-            
+                    setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false})));            
                     socket.off('chat');
                     socket.off('fetchmessage');
                     setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm});
