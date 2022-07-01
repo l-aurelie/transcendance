@@ -1,7 +1,6 @@
 /* sam */
 import React from 'react';
 import Logo from '../Logo';
-import CreateSalon from '../AddChannel';
 import AddNav from '../AddNav';
 
 /* Assombri l'arriere plan */
