@@ -84,7 +84,7 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>
@@ -100,7 +100,7 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>
@@ -116,7 +116,7 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>
@@ -129,7 +129,7 @@ const RejectRequest = event => {
     else 
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={ThisUser.avatar} />
+            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
             <p>[] Victoires</p>
             <p>[] Defaites</p>

@@ -19,7 +19,7 @@ const MatchHistory = ( data ) => {
           <tbody>
         {history.map(history => (
         <tr>
-        <td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userLeft.avatar}></img>{} {history.userLeft.login}</td><td>{history.scoreLeft} - {history.scoreRight}</td><td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userRight.avatar}></img>{} {history.userRight.login}</td><td>{history.date}</td>
+        <td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} alt="profil-avatar" src={history.userLeft.avatar}></img>{} {history.userLeft.login}</td><td>{history.scoreLeft} - {history.scoreRight}</td><td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={history.userRight.avatar}></img>{} {history.userRight.login}</td><td>{history.date}</td>
         </tr>))}
         </tbody>
         </table>

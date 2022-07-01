@@ -5,7 +5,8 @@ import axios from 'axios';
 import {socket} from './Socket';
 
 const lists = {
-  overflowY: 'scroll'
+  // overflowY: 'scroll'
+  overflowY: "scroll" as "scroll"
 }
 
 const AddFriend = (props) => {
@@ -38,7 +39,7 @@ const onChange = (event) => {
         <div>
           <div style={lists}>
             {friends.map(friends => (
-            <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} src={friends.avatar}/> {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
+            <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/> {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
             ))}   
           </div>
 

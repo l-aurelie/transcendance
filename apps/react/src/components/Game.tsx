@@ -157,8 +157,8 @@ useEffect(() => {
       var smachY = height/4;
     }
     else {
-      var smachX = -(height/60);
-      var smachY = -(height/60);
+      smachX = -(height/60);
+      smachY = -(height/60);
     }
     const allPos = { //va etre envoye au back a chaque update de la ball et des paddle
       ballRadius: ballRadius,
