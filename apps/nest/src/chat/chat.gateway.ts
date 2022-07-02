@@ -178,25 +178,27 @@ console.log('handleDisconnect');
     /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */
      @SubscribeMessage('user_joins_room')
      async user_joins_room(client, infos) {
-       const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
-       this.roomUserRepo.save(userRoom);
     /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
-       client.join('salonRoom' + infos.room);
+       this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.room);
     /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
-       var displayName = infos.room;
-       if (infos.otherLogin) {
-           displayName = infos.otherLogin;
+       const dm = !(!infos.otherLogin);
+       var displayName = infos.otherLogin;
+       if (!dm) {
+           displayName = infos.room;
+           const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
+           this.roomUserRepo.save(userRoom);
        }
-       /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
-       client.emit('joinedsalon', {salonName: infos.room, dm: !(!infos.otherLogin), displayName: displayName});
-     } 
+       /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
+       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName});
+     }
 
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
       await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room) }).execute();
-      client.leave('salonRoom' + infos.room);
-      /* On emit le nom du salon ajoute pour afficher dans les salon suivi sur le front */
+      this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.room);
+      /* On emit le nom du salon quitté pour en informer tous les fronts */
+      this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
 
     /* Recoit un message et un room dans laquelle re-emit le message */
@@ -237,20 +239,22 @@ console.log('handleDisconnect');
       await this.socketRepo.save(sock);
       /* on join la room avec tous les sockets du user, elle s'appelera par exemple sockets7 pour l'userId 7 */
       client.join('sockets' + user.id);
-      /* on boucle sur les roomUser pour faire rejoindre à ce socket toutes les rooms du user */
+      /* on boucle sur les roomUser pour faire rejoindre à ce socket toutes les rooms du user, hors dm car pas besoin de les rejoindre (communication socket à socket) */
       const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
       for (let room of rooms) {
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
+          /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
+          client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName});
           client.join('salonRoom' + roomName);
       }
     }
 
+    // event d'emit d'ajout de salon pour affichage dynamique dans le menu AddSalon
+    // /!\ Rien n'écoute l'event newsalon pour l'instant, le re-emit est donc inutile
     @SubscribeMessage('addsalon')
-    // event d'ajout de salon
     async addsalon(client, infos) {
-     //   console.log(infos)
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
-        this.roomService.associateUserRoom(newRoom, infos[0], infos[1]);
+        this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2]);
         if (!infos[1])
             this.server.emit('newsalon', infos[3]);
     }

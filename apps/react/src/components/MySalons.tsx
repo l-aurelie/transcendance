@@ -61,12 +61,14 @@ const salonName = {
             }
             socket.on("chat", data => {
                 setMessage((message) => {
+                console.log(data);
                     //si l'emittingRoom est le salon courant on update les messages, sinon on met une notif si c'est indiqué par .dontNotif
                 if (data.emittingRoom === currentSalon.name)
                     return ([...message, data.message]);
                 else if (data.dontNotif)
                     return (message);
                 else {
+                    socket.off('leftsalon');
                     setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName})));
                     return (message);
                 }
@@ -74,11 +76,11 @@ const salonName = {
             });
             }, [currentSalon])
 
-            //Ecoute sur le channel newsalon pour ajouter les salons lorsqu'un utilisateur en cree
+            //Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
             //TODO: est-ce que rejoindre un salon le met en salon courant? (commentaires)
             useEffect(() => {
             socket.on('joinedsalon', data => {
-                console.log('iciii', data.displayName);
+                socket.off('leftsalon');
                 setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName})));
                 //socket.off('chat');
                 //socket.off('fetchmessage');
@@ -86,9 +88,28 @@ const salonName = {
             });
             }, [])
 
+            //Ecoute sur le channel leftsalon pour suivre les sorties de salon dans n'importe quel socket
+            //Le hook étant sur joinedSalon, il faut socket.off 'leftsalon' à chaque modif de joinedSalons
+            useEffect(() => {
+            socket.on('leftsalon', salon => {
+            //On crée un nouvel objet map pour déclencher les hooks lors de l'activation du setter
+                joinedSalons.delete(salon);
+                const map2 = new Map(joinedSalons);
+                socket.off('leftsalon');
+                setJoinedSalons(map2);
+                if (salon === currentSalon.name) {
+                    setMessage([]);
+                    setCurrentSalon([]);
+                    socket.off('chat');
+                    socket.off('fetchmessage');
+                }
+            });
+            }, [joinedSalons])
+
             
             const handleClick = (salon) => {
                   if (salon[1].avatar !== currentSalon.display) {
+                    socket.off('leftsalon');           
                     setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false})));            
                     socket.off('chat');
                     socket.off('fetchmessage');
@@ -97,17 +118,9 @@ const salonName = {
                 };
 
             const closeSalon = (salon) => {
-                console.log('closeSalon');
-                joinedSalons.delete(salon);
-                const map2 = new Map(joinedSalons);
-                setJoinedSalons(map2);
+                //A la fermeture d'un salon, on en informe le back qui va renvoyer
+                // sur le canal leftsalon l'information du leave, pour que tous les sockets soient informés
                 socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon});
-                if (salon === currentSalon.name) {
-                     socket.off('chat');
-                     socket.off('fetchmessage');
-                     setMessage([]);
-                     setCurrentSalon([]);
-                }
             };
 
     return(
