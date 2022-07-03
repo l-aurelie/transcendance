@@ -5,6 +5,7 @@ import { RoomEntity } from './Room';
 import { Socket } from './Socket';
 import { FriendRequest } from './friend-request';
 import { Games } from '..';
+import { Message } from './message';
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -36,6 +37,9 @@ export class User implements IUser { // donne la composition de User, permet de 
     /*historique de matchs ou on est le jouer a droite*/
     @OneToMany(() => Games, Games => Games.userRight)
     userRight: Games[]; 
+
+    @OneToMany(() => Message, Message => Message.sender)
+    sender : Message[];
 
     @Column({default: undefined, nullable:true})
     authConfirmToken: number;

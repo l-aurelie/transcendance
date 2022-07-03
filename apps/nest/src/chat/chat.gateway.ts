@@ -66,69 +66,7 @@ console.log('handleDisconnect');
     }
 
 
-    async twoPlayerDisconnect(the_date, entry, opponent)
-    {
-        const user2 = await this.socketRepo.find({where: {idUser: opponent}});
-        if (user2.length === 0)
-        {
-            let win = 0;
-            let loose = 0;
-            if (entry.scoreLeft > entry.scoreRight)
-               {
-                    win = entry.playerLeft;
-                    loose = entry.playerRight;
-                }
-               if (entry.scoreRight > entry.scoreLeft)
-                {
-                    win = entry.playerRight;
-                    loose = entry.playerLeft;
-                }
-            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
-            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
-            this.server.to(entry.id+'-watch').emit("restart");
-            this.server.to(entry.id).emit("restart");
-
-        }
-    }
-
-    async deleteQueue(tab, userId)
-    {
-        var i = 0;
-        for (let entry of tab) {
-            if (entry.user.id === userId) {
-                tab.splice(i, i+1);
-                break;
-            }
-            i++;
-        }
-    }
-
-    async disconnectGame(client, the_date)
-    {
-        const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
-        if(whichuser)
-        {
-            const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
-            if (isUser.length === 1)
-            {
-                console.log('only one socket');
-                this.deleteQueue(gameQueue, whichuser.idUser);
-                this.deleteQueue(gameQueueSmach, whichuser.idUser);
-       
-               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
-        
-               for (let entry of room)
-                {
-                    this.server.to(entry.id).emit("opponent-leave");
-                    this.server.to(entry.id+'-watch').emit("opponent-leave");
-                    if (whichuser.idUser === entry.playerLeft)
-                        this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
-                    else if (whichuser.idUser === entry.playerRight)
-                        this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);     
-                }
-            }
-        }
-    }
+    
 
     @SubscribeMessage('join')
     async joinRoom(client, name) {
@@ -159,17 +97,17 @@ console.log('handleDisconnect');
      /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, data) {
-        const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
+        const message = await this.messageRepo.find({relations: ["sender"], where: { roomID : await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
         /* Récupération de l'id des users bloqués par le client dans un tableau*/
         const blockedUsers = await this.userBlockRepo.find({where: {blockingUserId: data.idUser}});
         const arrayBlockedUsers = blockedUsers.map((it) => it.blockedUserId);
         /* Concatene userName et le contenu du message si celui ci n'a pas été envoyé par quelqu'un de bloqué*/
         let tab = [];
         tab = await Promise.all(message.map( async (it) : Promise<string[]> => {
-                if (arrayBlockedUsers.includes(it.senderId))
+                if (arrayBlockedUsers.includes(it.sender.id))
                    return tab;
-                var user = await this.userService.findUserById(it.senderId);//TODO: peut etre revoir la structure DB car une requete db pour chaque message!
-                return [...tab, user.login + ' : ' + it.content];
+               // var user = await this.userService.findUserById(it.senderId);//TODO: peut etre revoir la structure DB car une requete db pour chaque message!
+                return [...tab, it.sender.login + ' : ' + it.content];
              }));
         client.emit('fetchmessage', tab);
       }
@@ -595,5 +533,69 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         this.server.to(watchRoom).emit('watch', data);
     }
 
+
+    async twoPlayerDisconnect(the_date, entry, opponent)
+    {
+        const user2 = await this.socketRepo.find({where: {idUser: opponent}});
+        if (user2.length === 0)
+        {
+            let win = 0;
+            let loose = 0;
+            if (entry.scoreLeft > entry.scoreRight)
+               {
+                    win = entry.playerLeft;
+                    loose = entry.playerRight;
+                }
+               if (entry.scoreRight > entry.scoreLeft)
+                {
+                    win = entry.playerRight;
+                    loose = entry.playerLeft;
+                }
+            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
+            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+            this.server.to(entry.id+'-watch').emit("restart");
+            this.server.to(entry.id).emit("restart");
+
+        }
+    }
+
+    async deleteQueue(tab, userId)
+    {
+        var i = 0;
+        for (let entry of tab) {
+            if (entry.user.id === userId) {
+                tab.splice(i, i+1);
+                break;
+            }
+            i++;
+        }
+    }
+
+    async disconnectGame(client, the_date)
+    {
+        const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
+        if(whichuser)
+        {
+            const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
+            if (isUser.length === 1)
+            {
+                console.log('only one socket');
+                this.deleteQueue(gameQueue, whichuser.idUser);
+                this.deleteQueue(gameQueueSmach, whichuser.idUser);
+       
+               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
+        
+               for (let entry of room)
+                {
+                    this.server.to(entry.id).emit("opponent-leave");
+                    this.server.to(entry.id+'-watch').emit("opponent-leave");
+                    if (whichuser.idUser === entry.playerLeft)
+                        this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
+                    else if (whichuser.idUser === entry.playerRight)
+                        this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);     
+                }
+            }
+        }
+    }
 }
 

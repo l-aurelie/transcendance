@@ -58,7 +58,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.5",
     "source-map-loader": "^4.0.0",
-    "typescript": "^2.9.2",
+    "typescript": "^3.9.10",
     "webpack": "^5.73.0"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
