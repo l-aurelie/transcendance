@@ -1,6 +1,6 @@
 /*aurelie, samantha, Laura*/
 
-import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
@@ -9,8 +9,16 @@ import { User } from 'src/typeorm/entities/User';
 import { FriendRequestStatus } from 'src/typeorm/entities/friend-request-interface';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Express } from 'express'
+import { FileInterceptor } from '@nestjs/platform-express';
 
 export class setProfilDto {
+   login: string;
+   email:string;
+   twoFA: boolean;
+}
+
+export class setImgDto {
    login: string;
    email:string;
    twoFA: boolean;
@@ -46,6 +54,16 @@ export class UsersController {
      // console.log('req.user', req.user);
       await this.userRepo.update({ id: req.body.id }, {login: req.body.login, email: req.body.email, twoFA: req.body.twoFA});
       return ('SetUsers()');
+   }
+
+   @Post('setimg')
+   @UseInterceptors(FileInterceptor('file', {dest: './upload'}))
+   async setImg(@UploadedFile() file: Express.Multer.File) {
+      console.log('===setImg()')
+      console.log('file', file);
+     // await this.userRepo.update({ id: 1}, {avatar: file.buffer});
+     // console.log('req.user', req.user);
+      return ('SetImg()');
    }
 
    /* Retourne tous les utilisateurs presents dans la base de donnee */
