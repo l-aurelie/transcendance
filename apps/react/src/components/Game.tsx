@@ -68,7 +68,7 @@ const Game = (props) => {
         var det;
         for (let entry of res.data)
         {
-          det = {value: entry.id, label : entry.userLeft.login + "-" + entry.userRight.login};
+          det = {value: entry.id, label : entry.userLeft.login + " vs " + entry.userRight.login};
           tab.push(det)
         }
         setGames(tab);

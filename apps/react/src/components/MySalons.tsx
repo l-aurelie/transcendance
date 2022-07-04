@@ -56,6 +56,7 @@ const salonName = {
             if (currentSalon.length !== 0) {
                 socket.on('fetchmessage', data => {
                     setMessage(data);
+                  //  console.log('setnessage ', data);
                 });
                 socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id});
             }
@@ -64,7 +65,11 @@ const salonName = {
                 console.log(data);
                     //si l'emittingRoom est le salon courant on update les messages, sinon on met une notif si c'est indiqué par .dontNotif
                 if (data.emittingRoom === currentSalon.name)
-                    return ([...message, data.message]);
+                {
+                    return ([...message, data]);
+                }
+                    //return (message);
+                 //   return ([...message, data.message]);
                 else if (data.dontNotif)
                     return (message);
                 else {
@@ -108,6 +113,7 @@ const salonName = {
 
             
             const handleClick = (salon) => {
+                console.log('handleclick my salon');
                   if (salon[1].avatar !== currentSalon.display) {
                     socket.off('leftsalon');           
                     setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false})));            
