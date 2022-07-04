@@ -30,6 +30,30 @@ export class StatsController {
     }
 
     @UseGuards(AuthenticatedGuard)
+     @Get('getWinsFriend/:friendLogin')
+    async getWinsFriend(
+      @Param('friendLogin') friendLogin: string,
+     @Req() request,
+    ) : Promise<number>
+    {
+      const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
+      });
+       return this.statsServ.getWins(friendUser);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+     @Get('getLossesFriend/:friendLogin')
+    async getLossesFriend(
+      @Param('friendLogin') friendLogin: string,
+     @Req() request,
+    ) : Promise<number>
+    {
+      const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
+      });
+       return this.statsServ.getLosses(friendUser);
+    }
+
+    @UseGuards(AuthenticatedGuard)
      @Get('getMatchHistoryFriend/:friendLogin')
     async getMatchHistoryFriend(
       @Param('friendLogin') friendLogin: string,
@@ -42,8 +66,31 @@ export class StatsController {
     }
 
     @UseGuards(AuthenticatedGuard)
+    @Get('getRankingFriend/:friendLogin')
+    async getRankingFriend(
+      @Param('friendLogin') friendLogin: string,
+      @Req() request,
+    ) : Promise<number>
+    {
+      const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
+      });
+      return this.statsServ.getRankingFriend(friendUser);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get('getRanking')
+    async getRanking(
+      @Req() request,
+    ) : Promise<number>
+    {
+      return this.statsServ.getRankingFriend(request.user);
+    }
+
+    
+    @UseGuards(AuthenticatedGuard)
      @Get('getMatchHistory')
     async getMatchHistory(
+      
      @Req() request,
     ) : Promise<Games[]>
     {
