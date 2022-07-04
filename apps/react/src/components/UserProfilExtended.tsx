@@ -13,9 +13,10 @@ const UserProfilExtended = ({name}) => {
     const [user, setUser] = useState([] as any);
     const [wins, setWins] = useState([]);
     const [losses, setLosses] = useState([]);
+    const [history, setHistory] = useState([]);
+    
     const [revele, setRevele] = useState(false);
     const toggleModal = () => {setRevele(!revele);} 
-    const [history, setHistory] = useState([]);
     
     useEffect(() => {
         axios.get("http://localhost:3000/users/" + user.name, {withCredentials:true}).then((res) =>{

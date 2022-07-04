@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 //-* Formulaire de modif de profil 
 
 
-function UserForm() {
+/*function UserForm() {
 
      const { register, handleSubmit } = useForm();
 
@@ -30,10 +30,10 @@ function UserForm() {
             </form>
         </div>
     );
-}
+}*/
 
 
-/*class UserForm extends React.Component<any, any, any> {
+class UserForm extends React.Component<any, any, any> {
     constructor(props: any) {
       super(props);
       //-* Valeurs par defaut
@@ -68,11 +68,11 @@ function UserForm() {
     async handleSubmit(e) {
       //alert('Le nom a été soumis : ' + this.state.value);
       e.preventDefault();
-      let userFormData = new FormData();
+      //let userFormData = new FormData();
       //userFormData.append("avatar", this.fileInput.current.file[0]);
       //userFormData.forEach((value, key) => {
       //  console.log("key %s: value %s", key, value.name);})
-      console.log('file selected = ', this.fileInput.current.files[0].name);
+     // console.log('file selected = ', this.fileInput.current.files[0].name);
       //-* Creation de l'obj a envoyer
       const formUser = {
           id: this.state.id,
@@ -132,8 +132,6 @@ function UserForm() {
       );
     }
   }
-  */
-
 
   //{/*<input type="file" value={this.state.photo} onChange={this.handleChangePhoto} id="photo" name="photo" /></label>*/}
 export default UserForm
