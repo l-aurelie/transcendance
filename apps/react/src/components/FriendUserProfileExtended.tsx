@@ -2,6 +2,8 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+import MatchHistory from "./MatchHistory";
 
 
 const friendProfileStyle = {
@@ -15,7 +17,10 @@ const FriendUserProfilExtended = ({Value}) => {
     const [ThisUser, setThisUser] = useState([] as any);
     const [friends, setFriends] = useState([] as any);
     const [InboundReq, setInboundReq] = useState([] as any);
-   
+    const [revele, setRevele] = useState(false);
+    const toggleModal = () => {setRevele(!revele);} 
+    const [history, setHistory] = useState([]);
+
 useEffect(() => {
     /*get user*/
     axios.get("http://localhost:3000/users/" + Value, {withCredentials:true}).then((res) => { 
@@ -28,7 +33,9 @@ useEffect(() => {
     /*get requests recus par cet utilisateur*/
     axios.get("http://localhost:3000/friends/friendRequest/me/hasSentMe/" + Value, {withCredentials:true}).then((res) =>{
     setInboundReq(res.data);
-    
+    })
+    axios.get("http://localhost:3000/stats/getMatchHistoryFriend/" + Value, {withCredentials:true}).then((res) =>{
+    setHistory(res.data);
     })
 });
 
@@ -121,6 +128,10 @@ const RejectRequest = event => {
             <p>[] Victoires</p>
             <p>[] Defaites</p>
             <p>Ligue []</p>
+            <button onClick={toggleModal}>Match History</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <MatchHistory history={history}></MatchHistory>
+            </ModalWindow>
             <p>Friend :)</p>
         </div>
     );

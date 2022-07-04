@@ -36,7 +36,7 @@ const Modale = ({revele, toggle, history}) => revele ? (
         <div style={background} />
         <div style={modale}>
             {/* Composants contenus dans la fenetre: src to become friend.avatar */}
-            <h1>My history</h1>
+            <h1>Match history</h1>
             {history.map(history => (
             <p>{history}</p>
             ))}
