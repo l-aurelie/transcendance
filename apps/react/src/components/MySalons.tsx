@@ -35,6 +35,7 @@ const salonName = {
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
 
     useEffect(() => {
+        message.sort((a, b) => (a.id > b.id) ? 1 : -1);
         props.callBack({msg: message, curSal: currentSalon});
     }, [message, currentSalon])
 
