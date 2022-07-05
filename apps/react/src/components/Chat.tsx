@@ -107,6 +107,7 @@ const Chat = (props) => {
   const [userLogClick, setUserLogClick] = useState('');
   const [defeatUser, setDefeatUser] = useState();
   const [version, setVersion] = useState(0);
+  const [same, setSame] = useState(false);
   
   //Emit le message rentre par l'utilisateur a tout le salon
   const sendMessage = (event) => {
@@ -151,6 +152,10 @@ const actionUser = (event, data) => {
   setUserIdClick(data.sender);
   setUserLogClick(data.senderLog);
   setAnchorPoint({x:event.pageX, y: event.pageY});
+  if (data.sender === actualUser.id)
+    setSame(true);
+  else
+    setSame(false);
   setShow(true);
  // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
 
@@ -208,8 +213,8 @@ top:anchorPoint.y,
  left:anchorPoint.x-50
 }}>
 
-  <p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
-  <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p>
+  { same ?  <></> : (<div><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
+  <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
   <p style={overLi} onClick={getUserProfil}>Profil</p>
 </div>): null }
           <p ><b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b> : {data.message}</p>
