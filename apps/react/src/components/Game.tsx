@@ -57,6 +57,7 @@ const Game = (props) => {
   const [watchName, setWatchName] = useState(0);
   const [loginL, setLoginL] = useState('');
   const [loginR, setLoginR] = useState('');
+  const [waitingFor, setWaitingFor] = useState(0);
 
   let widthExt = 800;
   let heightExt = 600;
@@ -91,8 +92,11 @@ const Game = (props) => {
 
  // ask to quit game or queue
  const quitGame = () => {
+  if (waitingFor !== 0)
+    socket.emit('warnOpponent', waitingFor);
   setWait(false);
   setPresentation(false); 
+  setWaitingFor(0); 
   setInGame(false);
   setAbort(true);
   setQuit(false);
@@ -207,12 +211,14 @@ useEffect(() => {
       setWait(true);
       setPresentation(false); 
       setInGame(false);
+      setWaitingFor(data);
       setAbort(false);
       setWatch(false);
       setEndWatch(false);
       setQuit(false);
       setStop(false);
     });
+    
 
     socket.on("already-ask", data => {
         setWait(true);
@@ -262,7 +268,9 @@ useEffect(() => {
         setEndWatch(false);
         setStop(false);
      });
-    socket.on("game-stop", data => {
+  
+
+      socket.on("game-stop", data => {
      setStop(true);
      setWinner(data);
      setWait(false);
@@ -461,7 +469,8 @@ useEffect(() => {
     playerR,
     loginL,
     loginR,
-    winner
+    winner,
+    waitingFor
   ])
   
   return (
@@ -471,7 +480,7 @@ useEffect(() => {
     {presentation ? <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMASH</button> : null}
     {presentation ? <button style={playButton} onClick={watchMatch}>WATCH MATCH</button> : null}
     <WatchModale user={actualUser} revele={revele} toggle={toggle} game={games}/>
-    {presentation ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
+    {presentation  ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
   </div>
   )
 }

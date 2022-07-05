@@ -53,24 +53,20 @@ const salonName = {
         //Ecoute chat pour afficher tout nouveaux messages
         useEffect(() => {
             socket.off('chat');
-            console.log('FIRST USE EFFECT', currentSalon);
             if (currentSalon.length !== 0) {
                 socket.on('fetchmessage', data => {
                     setMessage(data);
-                  //  console.log('setnessage ', data);
                 });
                 socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id});
             }
             socket.on("chat", data => {
                 setMessage((message) => {
-                console.log(data);
                     //si l'emittingRoom est le salon courant on update les messages, sinon on met une notif si c'est indiqué par .dontNotif
                 if (data.emittingRoom === currentSalon.name)
                 {
-                    return ([...message, data]);
-                }
-                    //return (message);
                  //   return ([...message, data.message]);
+                 return ([...message, data]);
+                }
                 else if (data.dontNotif)
                     return (message);
                 else {
