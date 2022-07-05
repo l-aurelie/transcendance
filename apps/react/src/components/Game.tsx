@@ -68,7 +68,7 @@ const Game = (props) => {
         var det;
         for (let entry of res.data)
         {
-          det = {value: entry.id, label : entry.userLeft.login + "-" + entry.userRight.login};
+          det = {value: entry.id, label : entry.userLeft.login + " vs " + entry.userRight.login};
           tab.push(det)
         }
         setGames(tab);
@@ -203,6 +203,17 @@ useEffect(() => {
       setLoginR('');
       });
       
+      socket.on("defeat", data => {
+      setWait(true);
+      setPresentation(false); 
+      setInGame(false);
+      setAbort(false);
+      setWatch(false);
+      setEndWatch(false);
+      setQuit(false);
+      setStop(false);
+    });
+
     socket.on("already-ask", data => {
         setWait(true);
         setPresentation(false); 
