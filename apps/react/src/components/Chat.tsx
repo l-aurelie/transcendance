@@ -1,14 +1,10 @@
-/* aurelie John */
-// import axios from "axios";
-// import React, {Component} from 'react';
+/* aurelie John sam*/
 import { useEffect, useRef, useState } from "react";
 import { socket } from "./Socket";
-// import LogiqueModale from "./ModaleWindow/logiqueModale";
 import MySalons from "./MySalons";
 import { markAsUntransferable } from "worker_threads";
 import { defaultIfEmpty } from "rxjs";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-import MatchHistory from "./MatchHistory";
 import FriendUserProfilExtended from './FriendUserProfileExtended';
 import Defeat from './Defeat';
 /* Style (insere dans la div jsx) */
@@ -51,8 +47,6 @@ const chatTitle = {
   justifyContent: "center",
   marginTop: "auto", 
   outline: "ridge", "1px": "red",
-  //width: "250px",
- // height: "80px",
   borderRadius: "2rem",
 }
 const messageSent = {
@@ -120,7 +114,7 @@ const Chat = (props) => {
     }
   }
 
- 
+//if user that ask to play quit window for accept or reject the request disappear
   useEffect(() => {
     socket.on("noMoreMatch", data => {
       setRevele(false);
@@ -128,39 +122,26 @@ const Chat = (props) => {
       socket.on("ask-defeat", data => {
       setDefeatUser(data.user);
         setVersion(data.version);
-        console.log('ask def version=', data.version);
         toggleModal();
-        console.log(data.user.login, "ask to defeat you, ", actualUser.login);
     });
 },[actualUser])
+
+//open user profil when clic on profil on menu
 const getUserProfil = () => {
   toggleModal2();
   closeMenu();
 }
 
+//set version of game whern defeat someone and send the request to other user
 const defeat = (smash) => {
   setShow(false);
   socket.emit('defeat', actualUser, userIdClick, smash);
   closeMenu();
   console.log('smash=', smash);
 }
-  // const handleClick = (event) => {
-  //   console.log('ev tar x',event.pageX);
-  //   console.log('ev tar y',event.pageY);
-  //   console.log('anch x',anchorPoint.x);
-  //   console.log('anch y',anchorPoint.y);
-  //   if (event.pageX === anchorPoint.x
-  //     && event.pageY == anchorPoint.y)
-  //     return ;
-  //   setShow(false);
-  // }
-  //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
-  //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
-//  useEffect(() => {
-//    document.addEventListener("click", handleClick);
-//  })
-const actionUser = (event, data) => {
 
+//open menu on 1fst click  on name on chat
+const actionUser = (event, data) => {
   setUserIdClick(data.sender);
   setUserLogClick(data.senderLog);
   setAnchorPoint({x:event.pageX, y: event.pageY});
@@ -169,19 +150,13 @@ const actionUser = (event, data) => {
   else
     setSame(false);
   setShow(true);
- // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
-
 }
+
+//close menu on 2nd click  on name on chat
 const closeMenu = () => {
   setShow(false);
 }
-const actionMenu = (event, data) => {
-  //setAnchorPoint({x:event.pageX, y: event.pageY});
-  setShow(true);
- // console.log(data.sender);
- // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
 
-}
     const handleCallback = (childData) =>{
       setMessage(childData.msg);
       console.log('childata.msg = ', childData.msg);
@@ -189,17 +164,19 @@ const actionMenu = (event, data) => {
       console.log('sur sur', childData);
   }
 
+  //permet de scroll en bas lors de nouveaux msg
   const messagsEndRef = useRef(null);
   const scrollToBottom = () => {
     messagsEndRef.current.scrollIntoView({behavior:"smooth"});
   }
   useEffect(scrollToBottom, [message]);
-  return (
-     
+  
+  return (   
     <div style={chatStyle} >
       <div style={mySalonStyle}>
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
+      {/*modale qui apparaissent seulement si elle sont demande: userProfil et lorsque l' utilisateur est defie par un autre */}
       <ModalWindow revele={revele} setRevele={toggleModal}>
         <Defeat toggle={toggleModal} opponent={defeatUser} actual={actualUser} version={version}></Defeat>
       </ModalWindow>
@@ -207,38 +184,31 @@ const actionMenu = (event, data) => {
         <FriendUserProfilExtended Value={userLogClick}/>
       </ModalWindow>
     <div style={messageStyle}>
-
     <div><p style={chatTitle}>{currentSalon.display}</p></div>
         <div style={chatBox} >
-      
-
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
         {message.map((data) => (
         <div style={messageSent} key={data.id}>
-{show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
-  fontSize: '14px',
-backgroundColor:'#D7677E',
-borderRadius:'2px',
-padding: '0',
-width : '100px',
-height:'auto',
- position:'absolute' as 'absolute',
-listStyle: 'none',
-top:anchorPoint.y+5,
- left:anchorPoint.x-90
-}}>
-<b style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
-  <p style={overLi} onClick={getUserProfil}>Profil</p>
-  { same ?  <></> : (<div><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
-  <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
-  
-</div>): null }
-<p > { show ? <b style={over} onClick={closeMenu} >{data.senderLog}</b>: <b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
-        </div>
+          {/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
+          {show ? (<div style={{
+            fontSize: '14px', backgroundColor:'#D7677E', width : '100px', height:'auto',
+            position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
+              <b style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
+              <p style={overLi} onClick={getUserProfil}>Profil</p>
+              { same ?  <></> : (<div><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
+              <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
+            </div>): null }
+            {/*affiche les message sous forme nom: message */}
+            <p > { show ? <b style={over} onClick={closeMenu} >{data.senderLog}</b>: <b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
+          </div>
+
       ))}
-      <div ref={messagsEndRef}></div>
+      {/*permet de scroll au dernier message*/}
+      <div ref={messagsEndRef}></div> 
         {/* Barre d'input pour ajouter un message */}
         </div>
+            
+
         <input type='text' onKeyPress={sendMessage} />
       
       
@@ -246,42 +216,7 @@ top:anchorPoint.y+5,
    </div>
   );
 }
-//<p  onClick={() => actionUser(data)}>
 export default Chat
-// {show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
-//   fontSize: '14px',
-// backgroundColor:'#D6697F',
-// borderRadius:'2px',
-// padding: '0',
-// width : '100px',
-// height:'auto',
-//  position:'absolute' as 'absolute',
-// listStyle: 'none',
-// top:anchorPoint.y,
-//  left:anchorPoint.x-50
-// }}>
-
-//   <p style={overLi} onClick={() => defeat(data.sender)}>{actualUser.id} {data.sender} Defeat pong</p>
-//   <p style={overLi} onClick={() => defeat(data.sender)}>Defeat smash</p>
-//   <p style={overLi} >Profil</p>
-// </div>): null }
-
-// {show ? (<ul onMouseOut={handleLeave} onMouseEnter={event => actionMenu(event, sender)} className="menu" style={{
-//   fontSize: '14px',
-// backgroundColor:'#D6697F',
-// borderRadius:'2px',
-// padding: '5px 0 5px 0',
-// width : '100px',
-// height:'auto',
-// margin:'0',
-// position:'absolute' as 'absolute',
-// listStyle: 'none',
-// top:anchorPoint.y, left:anchorPoint.x}}>
-
-// <li onMouseEnter={event => actionMenu(event, sender)} style={{marginTop: '5px',paddingRight: '90px'}}>Defeat</li>
-// <li onMouseEnter={event => actionMenu(event, sender)} style={{marginTop: '5px',paddingRight: '90px'}} >Profil</li>
-// </ul>): null }
-
 
 // /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
   // const [users, setUsers] = useState([]);// Tous les users de la db

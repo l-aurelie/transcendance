@@ -1,3 +1,5 @@
+/*sam*/
+
 import {socket} from './Socket';
 
 const chatTitle1 = {
@@ -21,6 +23,7 @@ const chatTitle1 = {
     top:"70%", 
     left: "52%",
    } as React.CSSProperties;
+
 const Defeat = ( {toggle, opponent, actual, version} ) => {
     console.log('version =', version);
     let v = '';
