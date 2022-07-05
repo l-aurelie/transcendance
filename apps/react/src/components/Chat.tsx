@@ -6,6 +6,7 @@ import { socket } from "./Socket";
 // import LogiqueModale from "./ModaleWindow/logiqueModale";
 import MySalons from "./MySalons";
 import { markAsUntransferable } from "worker_threads";
+import { defaultIfEmpty } from "rxjs";
 
 /* Style (insere dans la div jsx) */
 
@@ -65,6 +66,10 @@ const notifSalon = {
 const over = {
   cursor: 'pointer',
 }
+const overLi = {
+  cursor: 'pointer',
+  paddingRight: '90px',
+}
 const menu = {
   fontSize: '14px',
   backgroundColor:'#fff',
@@ -101,7 +106,11 @@ const Chat = (props) => {
     }
   }
 
+const defeat = (id) => {
+  setShow(false);
 
+  socket.emit('defeat', actualUser, id)
+}
   const handleLeave = () => {
     setShow(false);
   }
@@ -113,10 +122,14 @@ const Chat = (props) => {
 const actionUser = (event, data) => {
   setAnchorPoint({x:event.pageX, y: event.pageY});
   setShow(true);
+ // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
+
 }
 const actionMenu = (event, data) => {
   //setAnchorPoint({x:event.pageX, y: event.pageY});
   setShow(true);
+ // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
+
 }
     const handleCallback = (childData) =>{
       setMessage(childData.msg);
@@ -144,23 +157,24 @@ const actionMenu = (event, data) => {
       
 
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
-        {message.sort((a, b) => (a.id > b.id) ? 1 : -1).map((data) => (
+        {message.map((data) => (
         <div style={messageSent} key={data.id}>
-          {show ? (<ul onMouseOut={handleLeave} onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
+          {show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
   fontSize: '14px',
 backgroundColor:'#D6697F',
 borderRadius:'2px',
 padding: '5px 0 5px 0',
 width : '100px',
 height:'auto',
-margin:'0',
-position:'absolute' as 'absolute',
+ position:'absolute' as 'absolute',
 listStyle: 'none',
-top:anchorPoint.y, left:anchorPoint.x}}>
+top:anchorPoint.y,
+ left:anchorPoint.x-50
+}}>
 
-<li onMouseEnter={event => actionMenu(event, data)} style={{marginTop: '5px',paddingRight: '90px'}}>Defeat</li>
-<li onMouseEnter={event => actionMenu(event, data)} style={{marginTop: '5px',paddingRight: '90px'}} >Profil</li>
-</ul>): null }
+  <li style={overLi} onClick={() => defeat(data.sender)}>Defeat</li>
+  <li style={overLi} >Profil</li>
+</div>): null }
           <p ><b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b> : {data.message}</p></div>
       ))}
       <div ref={messagsEndRef}></div>

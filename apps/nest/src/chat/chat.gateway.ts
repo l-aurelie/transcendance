@@ -114,7 +114,9 @@ console.log('handleDisconnect');
                    return tab;
                 return [...tab, it.sender.login + ' : ' + it.content];
              }));*/
-
+console.log(tab);
+tab = tab.sort((a,b) => a.id- b.id);
+console.log(tab);
         client.emit('fetchmessage', tab);
       }
 
@@ -241,7 +243,7 @@ console.log('handleDisconnect');
       }
     }
 
-    async launchMatch(userL, userR, v, socketLeft, socketRight)
+    async launchMatch(userL, userR, v)
     {
         let roomName;
         const details = {
@@ -263,7 +265,7 @@ console.log('handleDisconnect');
     {
         if(tabMatch.length % 2 === 0) 
         {      
-            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v, tabMatch[0].sock, tabMatch[1].sock);
+            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v);
             tabMatch.splice(0,2);
         }
     }
@@ -542,7 +544,11 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         const data = {watchRoom: watchRoom, loginL:userL, loginR:userR}
         this.server.to(watchRoom).emit('watch', data);
     }
-
+    @SubscribeMessage('defeat')
+    async defeat(client, infos) {
+        this.server.to('sockets'+infos[0].id).emit('defeat');
+        this.server.to('sockets'+infos[1]).emit('ask-defeat', infos[0]);
+    }
 
     async twoPlayerDisconnect(the_date, entry, opponent)
     {

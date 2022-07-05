@@ -203,6 +203,17 @@ useEffect(() => {
       setLoginR('');
       });
       
+      socket.on("defeat", data => {
+      setWait(true);
+      setPresentation(false); 
+      setInGame(false);
+      setAbort(false);
+      setWatch(false);
+      setEndWatch(false);
+      setQuit(false);
+      setStop(false);
+    });
+
     socket.on("already-ask", data => {
         setWait(true);
         setPresentation(false); 
