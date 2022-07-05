@@ -132,21 +132,30 @@ const Chat = (props) => {
 },[actualUser])
 const getUserProfil = () => {
   toggleModal2();
+  closeMenu();
 }
 
 const defeat = (smash) => {
   setShow(false);
   socket.emit('defeat', actualUser, userIdClick, smash);
+  closeMenu();
   console.log('smash=', smash);
 }
-  const handleLeave = () => {
-    setShow(false);
-  }
+  // const handleClick = (event) => {
+  //   console.log('ev tar x',event.pageX);
+  //   console.log('ev tar y',event.pageY);
+  //   console.log('anch x',anchorPoint.x);
+  //   console.log('anch y',anchorPoint.y);
+  //   if (event.pageX === anchorPoint.x
+  //     && event.pageY == anchorPoint.y)
+  //     return ;
+  //   setShow(false);
+  // }
   //handle l'evenement changement de salon quand l'utilisateur clique pour changer de salon
   //ferme connection sur le channel de l'ancier salon, le setCurrentSalon trigger le useEffect qui va faire ecouter l'utilisateur sur le nouveau salon
-// useEffect(() => {
-//   document.addEventListener("click", handleClick);
-// })
+//  useEffect(() => {
+//    document.addEventListener("click", handleClick);
+//  })
 const actionUser = (event, data) => {
 
   setUserIdClick(data.sender);
@@ -159,6 +168,9 @@ const actionUser = (event, data) => {
   setShow(true);
  // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
 
+}
+const closeMenu = () => {
+  setShow(false);
 }
 const actionMenu = (event, data) => {
   //setAnchorPoint({x:event.pageX, y: event.pageY});
@@ -202,22 +214,23 @@ const actionMenu = (event, data) => {
         <div style={messageSent} key={data.id}>
 {show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
   fontSize: '14px',
-backgroundColor:'#D6697F',
+backgroundColor:'#D7677E',
 borderRadius:'2px',
 padding: '0',
 width : '100px',
 height:'auto',
  position:'absolute' as 'absolute',
 listStyle: 'none',
-top:anchorPoint.y,
- left:anchorPoint.x-50
+top:anchorPoint.y+5,
+ left:anchorPoint.x-90
 }}>
-
+<b style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
+  <p style={overLi} onClick={getUserProfil}>Profil</p>
   { same ?  <></> : (<div><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
   <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
-  <p style={overLi} onClick={getUserProfil}>Profil</p>
+  
 </div>): null }
-          <p ><b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b> : {data.message}</p>
+<p > { show ? <b style={over} onClick={closeMenu} >{data.senderLog}</b>: <b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
         </div>
       ))}
       <div ref={messagsEndRef}></div>
