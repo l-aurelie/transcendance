@@ -122,7 +122,10 @@ const Chat = (props) => {
 
  
   useEffect(() => {
-    socket.on("ask-defeat", data => {
+    socket.on("noMoreMatch", data => {
+      setRevele(false);
+    });
+      socket.on("ask-defeat", data => {
       setDefeatUser(data.user);
         setVersion(data.version);
         console.log('ask def version=', data.version);

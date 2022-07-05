@@ -272,9 +272,12 @@ console.log(tab);
 
     @SubscribeMessage('acceptMatch')
     async acceptMatch(client, infos) {
-        console.log('arrive dans accept');
-
         this.launchMatch(infos[0], infos[1], infos[2]);
+    }
+
+    @SubscribeMessage('warnOpponent')
+    async warnOpponent(client, infos) {
+        this.server.to('sockets' + infos).emit("noMoreMatch");
     }
 
     @SubscribeMessage('rejectMatch')
@@ -558,7 +561,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     }
     @SubscribeMessage('defeat')
     async defeat(client, infos) {
-        this.server.to('sockets'+infos[0].id).emit('defeat');
+        this.server.to('sockets'+infos[0].id).emit('defeat', infos[1]);
         const data = {user:infos[0], version:infos[2] };
         console.log('smash = ', infos[2])
         this.server.to('sockets'+infos[1]).emit('ask-defeat', data);
