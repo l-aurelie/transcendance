@@ -7,7 +7,10 @@ import { socket } from "./Socket";
 import MySalons from "./MySalons";
 import { markAsUntransferable } from "worker_threads";
 import { defaultIfEmpty } from "rxjs";
-
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+import MatchHistory from "./MatchHistory";
+import FriendUserProfilExtended from './FriendUserProfileExtended';
+import Defeat from './Defeat';
 /* Style (insere dans la div jsx) */
 
 const chatStyle = {
@@ -68,7 +71,8 @@ const over = {
 }
 const overLi = {
   cursor: 'pointer',
-  paddingRight: '90px',
+  padding: '0',
+  textAlign: 'left' as 'left',
 }
 const menu = {
   fontSize: '14px',
@@ -95,6 +99,15 @@ const Chat = (props) => {
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
   const [anchorPoint, setAnchorPoint] = useState({x:0, y:0});
   const [show, setShow] = useState(false);
+  const [revele, setRevele] = useState(false);
+  const [revele2, setRevele2] = useState(false);
+  const toggleModal = () => {setRevele(!revele);}
+  const toggleModal2 = () => {setRevele2(!revele2);}
+  const [userIdClick, setUserIdClick] = useState(0);
+  const [userLogClick, setUserLogClick] = useState('');
+  const [defeatUser, setDefeatUser] = useState();
+  const [version, setVersion] = useState(0);
+  
   //Emit le message rentre par l'utilisateur a tout le salon
   const sendMessage = (event) => {
     if(event.key === 'Enter') {
@@ -106,10 +119,24 @@ const Chat = (props) => {
     }
   }
 
-const defeat = (id) => {
-  setShow(false);
+ 
+  useEffect(() => {
+    socket.on("ask-defeat", data => {
+      setDefeatUser(data.user);
+        setVersion(data.version);
+        console.log('ask def version=', data.version);
+        toggleModal();
+        console.log(data.user.login, "ask to defeat you, ", actualUser.login);
+    });
+},[actualUser])
+const getUserProfil = () => {
+  toggleModal2();
+}
 
-  socket.emit('defeat', actualUser, id)
+const defeat = (smash) => {
+  setShow(false);
+  socket.emit('defeat', actualUser, userIdClick, smash);
+  console.log('smash=', smash);
 }
   const handleLeave = () => {
     setShow(false);
@@ -120,6 +147,9 @@ const defeat = (id) => {
 //   document.addEventListener("click", handleClick);
 // })
 const actionUser = (event, data) => {
+
+  setUserIdClick(data.sender);
+  setUserLogClick(data.senderLog);
   setAnchorPoint({x:event.pageX, y: event.pageY});
   setShow(true);
  // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
@@ -128,6 +158,7 @@ const actionUser = (event, data) => {
 const actionMenu = (event, data) => {
   //setAnchorPoint({x:event.pageX, y: event.pageY});
   setShow(true);
+ // console.log(data.sender);
  // setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
 
 }
@@ -149,7 +180,12 @@ const actionMenu = (event, data) => {
       <div style={mySalonStyle}>
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
-      
+      <ModalWindow revele={revele} setRevele={toggleModal}>
+        <Defeat toggle={toggleModal} opponent={defeatUser} actual={actualUser} version={version}></Defeat>
+      </ModalWindow>
+      <ModalWindow revele={revele2} setRevele={toggleModal2}>
+        <FriendUserProfilExtended Value={userLogClick}/>
+      </ModalWindow>
     <div style={messageStyle}>
 
     <div><p style={chatTitle}>{currentSalon.display}</p></div>
@@ -159,11 +195,11 @@ const actionMenu = (event, data) => {
         {/* Affichage de la variable message detenant tout l'historique des messages*/}
         {message.map((data) => (
         <div style={messageSent} key={data.id}>
-          {show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
+{show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
   fontSize: '14px',
 backgroundColor:'#D6697F',
 borderRadius:'2px',
-padding: '5px 0 5px 0',
+padding: '0',
 width : '100px',
 height:'auto',
  position:'absolute' as 'absolute',
@@ -172,10 +208,12 @@ top:anchorPoint.y,
  left:anchorPoint.x-50
 }}>
 
-  <li style={overLi} onClick={() => defeat(data.sender)}>Defeat</li>
-  <li style={overLi} >Profil</li>
+  <p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
+  <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p>
+  <p style={overLi} onClick={getUserProfil}>Profil</p>
 </div>): null }
-          <p ><b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b> : {data.message}</p></div>
+          <p ><b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b> : {data.message}</p>
+        </div>
       ))}
       <div ref={messagsEndRef}></div>
         {/* Barre d'input pour ajouter un message */}
@@ -189,7 +227,23 @@ top:anchorPoint.y,
 }
 //<p  onClick={() => actionUser(data)}>
 export default Chat
+// {show ? (<div onMouseEnter={event => actionMenu(event, data)} className="menu" style={{
+//   fontSize: '14px',
+// backgroundColor:'#D6697F',
+// borderRadius:'2px',
+// padding: '0',
+// width : '100px',
+// height:'auto',
+//  position:'absolute' as 'absolute',
+// listStyle: 'none',
+// top:anchorPoint.y,
+//  left:anchorPoint.x-50
+// }}>
 
+//   <p style={overLi} onClick={() => defeat(data.sender)}>{actualUser.id} {data.sender} Defeat pong</p>
+//   <p style={overLi} onClick={() => defeat(data.sender)}>Defeat smash</p>
+//   <p style={overLi} >Profil</p>
+// </div>): null }
 
 // {show ? (<ul onMouseOut={handleLeave} onMouseEnter={event => actionMenu(event, sender)} className="menu" style={{
 //   fontSize: '14px',

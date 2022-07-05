@@ -270,6 +270,18 @@ console.log(tab);
         }
     }
 
+    @SubscribeMessage('acceptMatch')
+    async acceptMatch(client, infos) {
+        console.log('arrive dans accept');
+
+        this.launchMatch(infos[0], infos[1], infos[2]);
+    }
+
+    @SubscribeMessage('rejectMatch')
+    async rejectMatch(client, infos) {
+        console.log('arrive dans reject');
+        this.server.to('sockets' + infos[0].id).emit("opponent-quit");
+    }
 
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
@@ -547,7 +559,9 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     @SubscribeMessage('defeat')
     async defeat(client, infos) {
         this.server.to('sockets'+infos[0].id).emit('defeat');
-        this.server.to('sockets'+infos[1]).emit('ask-defeat', infos[0]);
+        const data = {user:infos[0], version:infos[2] };
+        console.log('smash = ', infos[2])
+        this.server.to('sockets'+infos[1]).emit('ask-defeat', data);
     }
 
     async twoPlayerDisconnect(the_date, entry, opponent)

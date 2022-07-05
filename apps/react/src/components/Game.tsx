@@ -213,6 +213,7 @@ useEffect(() => {
       setQuit(false);
       setStop(false);
     });
+    
 
     socket.on("already-ask", data => {
         setWait(true);
@@ -471,7 +472,7 @@ useEffect(() => {
     {presentation ? <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMASH</button> : null}
     {presentation ? <button style={playButton} onClick={watchMatch}>WATCH MATCH</button> : null}
     <WatchModale user={actualUser} revele={revele} toggle={toggle} game={games}/>
-    {presentation ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
+    {presentation  ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
   </div>
   )
 }
