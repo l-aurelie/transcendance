@@ -74,15 +74,20 @@ const Home = () => {
    
     const [profil, setProfil/*, setlogins*/] = useState([] as any);
     useEffect(() => {        
-        axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-       console.log('in home: ', res.data);
+       axios.get("http://localhost:3000/users", { withCredentials:true })
+       .then((res) =>{ 
         setProfil(res.data); 
         socket.emit('whoAmI', res.data);
     })
+        .catch(error => {
+            if (error.response && error.response.status == 403)
+                window.location.href = "http://localhost:4200/";
+            })
+    }, [])
   /*      axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
         setlogins(res.data); 
       })*/
-    }, [])
+
     if (profil.id)
     {
         return (
