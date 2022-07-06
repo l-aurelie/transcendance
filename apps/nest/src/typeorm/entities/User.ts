@@ -50,6 +50,9 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({default: true})
     isConnected: boolean;
 
+    @Column({default: false})
+    isPlaying: boolean;
+
     @Column({default:false})
     twoFA: boolean;
 
@@ -77,6 +80,7 @@ interface IUser {
         authConfirmToken: number;
         isVerified: boolean;
         isConnected:boolean;
+        isPlaying?: boolean;
         createAt: Date;
         twoFA?: boolean;
         total_wins: number;

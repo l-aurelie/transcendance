@@ -245,11 +245,17 @@ useEffect(() => {
       setEndWatch(false);
       setStop(false);
       });
-  
+
+      // socket.on("getScore", data => {
+      //   console.log('in get score');
+      //   setScoreL(allPos.scoreL);
+      //   setScoreR(allPos.scoreR); 
+      //   socket.emit('updateScore', roomName, allPos.scoreL, allPos.scoreR);
+      // });
+
     socket.on("opponent-leave", data => {
         setScoreL(allPos.scoreL);
-        setScoreR(allPos.scoreR);
-        socket.emit('updateScore', roomName, allPos.scoreL, allPos.scoreR);
+        setScoreR(allPos.scoreR);  
         setWait(false);
         setPresentation(false); 
         setInGame(false);

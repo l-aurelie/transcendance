@@ -420,10 +420,9 @@ console.log(tab);
             dy = dy / speed;
             speed = 1;            
             newSleep = true;
-
+            await this.gameRepo.update( {id : infos[0]}, {scoreLeft:sL});
         }
         if (bx < 0) {
-
             sR += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
@@ -431,6 +430,7 @@ console.log(tab);
             dy = dy/speed;
             speed = 1;
             newSleep = true;
+            await this.gameRepo.update( {id : infos[0]}, {scoreRight:sR});
         }
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
@@ -439,14 +439,17 @@ console.log(tab);
 login = user.login;
 this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
 this.server.to(infos[0]).emit("game-stop", user.login);
-            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            if (update)
-            {
-                update.total_wins = (update.total_wins + 1);
-                this.userRepo.save(update);
-            }
+           // const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            const win = (await this.gameRepo.find({where: {winner:idGame.playerLeft}})).length;
+            await this.userRepo.update({id: idGame.playerLeft}, {total_wins:win});
+            // if (update)
+            // {
+            // update.total_wins = (update.total_wins + 1);
+            //     this.userRepo.save(update);
+            // }
         }
         if (sR >= 11 && sL < sR - 1) {
+
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
             const user = await this.userRepo.findOne({id: idGame.playerRight});
@@ -454,12 +457,15 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             login = user.login;
         this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
           this.server.to(infos[0]).emit("game-stop", user.login);
-            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            if (update)
-            {
-                update.total_wins = (update.total_wins + 1);
-            this.userRepo.save(update);
-            }
+          const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
+            await this.userRepo.update({id: idGame.playerRight}, {total_wins:win});
+            // const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            // if (update)
+            // {
+            //     update.total_wins = (update.total_wins + 1);
+            // this.userRepo.save(update);
+
+            // }
         }
         if (newSleep === true) {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
@@ -481,7 +487,8 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {
-        this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
+        console.log('update score', infos);
+        await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
     }
 
     @SubscribeMessage('abort-match')
@@ -513,7 +520,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
      
             return ;
         }
-        this.updateScore(client, infos);
+        await this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
         this.server.to(infos[0]+'-watch').emit("opponent-quit");
     }
@@ -584,7 +591,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
                     win = entry.playerRight;
                     loose = entry.playerLeft;
                 }
-            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
+            await this.gameRepo.update( {id : entry.id}, {/*winner: win, looser:loose,*/ date: the_date, finish: true});
             this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
             this.server.to(entry.id+'-watch').emit("restart");
             this.server.to(entry.id).emit("restart");
@@ -616,16 +623,15 @@ this.server.to(infos[0]).emit("game-stop", user.login);
                 this.deleteQueue(gameQueue, whichuser.idUser);
                 this.deleteQueue(gameQueueSmach, whichuser.idUser);
        
-               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
-        
+               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false}]});
                for (let entry of room)
                 {
                     this.server.to(entry.id).emit("opponent-leave");
                     this.server.to(entry.id+'-watch').emit("opponent-leave");
                     if (whichuser.idUser === entry.playerLeft)
-                        this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
+                        await this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
                     else if (whichuser.idUser === entry.playerRight)
-                        this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);     
+                        await this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);
                 }
             }
         }
