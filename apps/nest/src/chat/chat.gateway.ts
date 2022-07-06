@@ -254,6 +254,8 @@ console.log(tab);
             smash : v,
         }
         const newGame = await this.gameRepo.save(details);
+        await this.userRepo.update({id:userL.id}, {isPlaying:true});
+        await this.userRepo.update({id:userR.id}, {isPlaying:true});
         roomName = newGame.id;
         this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("joinroom",  roomName);
      const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
@@ -520,7 +522,8 @@ this.server.to(infos[0]).emit("game-stop", user.login);
      
             return ;
         }
-        await this.updateScore(client, infos);
+        await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2], abort:true});
+      //  await this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
         this.server.to(infos[0]+'-watch').emit("opponent-quit");
     }
@@ -540,6 +543,8 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         }
         const idGame = await this.gameRepo.findOne({id:infos[0]});
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
+        this.userRepo.update({id: idGame.playerLeft}, {isPlaying:false});
+        this.userRepo.update({id: idGame.playerRight}, {isPlaying:false});
         this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch'); //a la fin d' un match, tout les spectateur quittent la room qu'ils ecoutaient
@@ -591,7 +596,9 @@ this.server.to(infos[0]).emit("game-stop", user.login);
                     win = entry.playerRight;
                     loose = entry.playerLeft;
                 }
-            await this.gameRepo.update( {id : entry.id}, {/*winner: win, looser:loose,*/ date: the_date, finish: true});
+            await this.gameRepo.update( {id : entry.id}, {/*winner: win, looser:loose,*/ date: the_date, finish: true, abort:true});
+            await this.userRepo.update({id:entry.playerLeft}, {isPlaying:false});
+            await this.userRepo.update({id:entry.playerRight}, {isPlaying:false});
             this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
             this.server.to(entry.id+'-watch').emit("restart");
             this.server.to(entry.id).emit("restart");
