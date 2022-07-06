@@ -69,10 +69,12 @@ export class UsersController {
     return new StreamableFile(stream);
    }*/
 
-   //-* UPLOAD l'image et la place dans la basede donnee
+   //-* UPLOAD l'image et la place dans la base de donnee
+   //@UseGuards(AuthenticatedGuard)
    @Post('setimg')
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
-   async setImg(@UploadedFile() file: Express.Multer.File) {
+   async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser) {
+   //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
       console.log('===setImg()')
       console.log('file', file);
       const ActualUser = await this.userRepo.findOne({id : 1})
