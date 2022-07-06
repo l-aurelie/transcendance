@@ -1,11 +1,12 @@
 /*samantha laura*/
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 import { RoomEntity } from './Room';
 import { Socket } from './Socket';
 import { FriendRequest } from './friend-request';
 import { Games } from '..';
 import { Message } from './message';
+import { Avatar } from './Avatar';
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -23,6 +24,9 @@ export class User implements IUser { // donne la composition de User, permet de 
 
     @Column({unique: true, nullable: true})
     email: string;
+
+    @OneToOne(() => Avatar, Avatar => Avatar.user)
+    Avatar2 : Avatar;
 
     @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.sender)
     RequestsSent: FriendRequest[]; 
@@ -74,6 +78,7 @@ interface IUser {
         intraId: string;
         avatar: string;
         email: string;
+        Avatar2 : Avatar;
         authConfirmToken: number;
         isVerified: boolean;
         isConnected:boolean;

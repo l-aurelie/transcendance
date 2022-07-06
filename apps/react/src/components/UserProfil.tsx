@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserForm from './UserForm';
 import UserProfilExtended from './UserProfilExtended';
+import UserFormAvatar from './UserFormAvatar';
 import { socket } from "./Socket";
 
 const UserProfil = (props) => {
@@ -48,7 +49,8 @@ const UserProfil = (props) => {
     ** et sera affiche conditionnellement selon l'etat de revele */} 
     <ModalWindow revele={revele} setRevele={toggleModal}>
       <UserProfilExtended name={user.login}/>
-      <UserForm user={user}/> 
+      <UserForm user={user}/>
+      <UserFormAvatar />
     </ModalWindow>
     
     <div>{user.login}</div>

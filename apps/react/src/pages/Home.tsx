@@ -73,9 +73,33 @@ const gameStyle = {
 const Home = () => {
    
     const [profil, setProfil/*, setlogins*/] = useState([] as any);
+    
+    //DECOMMENTER POUR AFFICHER L'AVATAR + deccomment ligne 114
+    /*
+    const [avatar, setAvatar] = useState([] as any);
+    useEffect(() => {        
+        axios.get("http://localhost:3000/users/getImg", { withCredentials:true, responseType: "blob" }).then((res) =>{ 
+            console.log('getImg()');
+            //console.log("type = ", typeof res.data);
+            //setAvatar(res.data);
+            const blob = res.data;
+            const image = URL.createObjectURL(blob);
+            setAvatar(image);
+            //const imageStream = res.data;
+            //const imageBlob =  res.blob();
+            //const reader = new FileReader();
+            //reader.readAsDataURL(imageBlob);
+            //reader.onloadend = () => {
+            //const base64data = reader.result;
+            //setAvatar(base64data);
+            //};
+        })
+    }, [])*/ 
+    
+    
     useEffect(() => {        
         axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
-       console.log('in home: ', res.data);
+        console.log('in home: ', res.data);
         setProfil(res.data); 
         socket.emit('whoAmI', res.data);
     })
@@ -87,6 +111,8 @@ const Home = () => {
     {
         return (
         <div>
+           {/* <div><img src={avatar} alt="rien" /></div> */} 
+           
             <div style={headStyle}>
                 <Logo></Logo>
                 <UserProfil dataFromParent={profil}></UserProfil>

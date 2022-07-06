@@ -1,16 +1,16 @@
 /*aurelie, samantha, Laura*/
 
-import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body, UseInterceptors, UploadedFile, Res, StreamableFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
-import { FriendRequest } from 'src/typeorm/entities/friend-request';
 import { User } from 'src/typeorm/entities/User';
-import { FriendRequestStatus } from 'src/typeorm/entities/friend-request-interface';
+import { Avatar } from 'src/typeorm/entities/Avatar';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Readable } from 'typeorm/platform/PlatformTools';
 
 export class setProfilDto {
    login: string;
@@ -27,7 +27,7 @@ export class setImgDto {
 /* localhost:3000/users */
 @Controller('users')
 export class UsersController {
-   constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>) {}
+   constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>,  @InjectRepository(Avatar) private avatarRepo:Repository<Avatar>) {}
    /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
@@ -56,13 +56,63 @@ export class UsersController {
       return ('SetUsers()');
    }
 
+   //-* A DECOMMENTER pour obtenir l'img
+   //-* Renvoie l'image sous un format affichable
+  /* @Get('getimg')
+   async getImg(@Res({ passthrough: true }) res: any) {
+      const imgRaw = await this.avatarRepo.findOne( {id: 1} );
+      const stream = Readable.from(imgRaw.data);
+      res.set({
+        'Content-Disposition': `inline; filename="${imgRaw.name}"`,
+        'Content-Type': 'image'
+    })
+    return new StreamableFile(stream);
+   }*/
+
+   //-* UPLOAD l'image et la place dans la basede donnee
    @Post('setimg')
-   @UseInterceptors(FileInterceptor('file', {dest: './upload'}))
+   @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File) {
       console.log('===setImg()')
       console.log('file', file);
-     // await this.userRepo.update({ id: 1}, {avatar: file.buffer});
-     // console.log('req.user', req.user);
+      const ActualUser = await this.userRepo.findOne({id : 1})
+      //-* Enregistre l'avatar en format bytea dans Avatar2 une relation one avec le user
+      if(!ActualUser.Avatar2)
+      {
+         console.log("if--");
+         const avatar = this.avatarRepo.create();
+         avatar.name = file.fieldname;
+         avatar.data = file.buffer;
+         avatar.mimeType = file.mimetype;
+         //avatar.user = ActualUser;
+         await this.avatarRepo.save(avatar);
+         //let avatar : Avatar  = { id: null, name: file.fieldname, data : file.buffer, mimeType : file.mimetype , user: ActualUser};
+         //this.avatarRepo.save(avatar); 
+         this.userRepo.update({id: 1}, {Avatar2: avatar})   
+      }
+      else
+      {
+         console.log('else--');//Condition a faire
+         const avatar = this.avatarRepo.create();
+         avatar.name = file.fieldname;
+         avatar.data = file.buffer;
+         avatar.mimeType = file.mimetype;
+         //avatar.user = ActualUser;
+         await this.avatarRepo.save(avatar);
+         this.userRepo.update({id: 1}, {Avatar2: avatar})   
+      }
+      
+      //const thisUser = await this.userRepo.find({ relations: ["Avatar2"]});
+      //console.log("this USER ====== ", thisUser);
+      
+      //const thisUser = this.avatarRepo.findOne({where: {user.id: 1}});
+      //const thisUser = await this.avatarRepo.find({ relations: ["user"], where: [ {user.id: 1}],});
+      //const thisUser = await this.avatarRepo.find({ relations: ["user"]});
+      //console.log("this USER ====== ", thisUser);
+
+      //await this.userRepo.update({ id: 1}, {avatar: './upload/' + file.filename});
+      //await this.userRepo.update({ id: 1}, {avatar: './upload/' + file.filename});
+      //console.log('req.user', req.user);
       return ('SetImg()');
    }
 
@@ -70,7 +120,7 @@ export class UsersController {
    @Get('all')
    async getUsers() {
       const users = await this.userServ.findAll();
-    //  console.log('GetUsers()');
+      //console.log('GetUsers()');
       return (users);
    }
 

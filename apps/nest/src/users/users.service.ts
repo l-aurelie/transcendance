@@ -7,7 +7,6 @@ import { User } from "src/typeorm";
 import { Socket } from "src/typeorm";
 import { FriendRequest } from "src/typeorm/entities/friend-request";
 import { Games } from "src/typeorm/entities/Games";
-import { FriendRequestStatus } from "src/typeorm/entities/friend-request-interface";
 
 @Injectable()
 export class UsersService {
