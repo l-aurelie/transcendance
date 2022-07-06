@@ -1,7 +1,6 @@
 /*laura samantha*/
-import { Body, Controller, Get, Post, Response ,Header, Res, Param, Req } from '@nestjs/common';
-
-import { IntraAuthGuard, AuthenticatedGuard } from 'src/auth/guards';
+import { Body, Controller, Get, Post, Response ,Header, Res, Param, Req, UseFilters, Render } from '@nestjs/common';
+import { IntraAuthGuard, AuthenticatedGuard, redirToLogin } from 'src/auth/guards';
 import { UseGuards } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../../../typeorm';
@@ -103,17 +102,15 @@ export class AuthController {
 
     /*If we have authentifcated via login we can access this page*/
     /*check if user is logged in*/
-    @UseGuards(AuthenticatedGuard)
     @Get('status')
+    @UseGuards(AuthenticatedGuard)
+    @UseFilters(redirToLogin)
     status() {
-        /*should have an error page if not logged in*/
         return 'HELLLOOOO';
     }
 
     @Get('/verify')
     @UseGuards(IntraAuthGuard)
-   // @Render('verify')
-   //@Redirect('http://localhost:4200/') //apres avoir fait localhost:3000/auth/login la class IntraAuthGard appele dans le decorateur nous amene ici, pour l' instant il redirige simplement vers la page home de react situe a localhost:4200, le but plus tard est de renvoyer l'accessToken a react ?
     VerifyEmail() {
      console.log ('coucou');
      }
@@ -150,3 +147,6 @@ request.session.cookie.maxAge = 0;
 //return res.redirect('http://localhost:3000/auth/login');
 }
 }
+
+
+

@@ -1,5 +1,7 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
+import { Response } from 'express';
 
 /*laura*/
 @Injectable()
@@ -28,4 +30,13 @@ export class AuthenticatedGuard implements CanActivate {
     /*returns boolean if authenticated or not*/
     return req.isAuthenticated();
     }
+}
+
+@Catch(ForbiddenException)
+export class redirToLogin implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const context = host.switchToHttp();
+    const response = context.getResponse<Response>();
+    response.redirect('http://localhost:4200');
+  }
 }
