@@ -50,7 +50,7 @@ const UserProfil = (props) => {
     <ModalWindow revele={revele} setRevele={toggleModal}>
       <UserProfilExtended name={user.login}/>
       <UserForm user={user}/>
-      <UserFormAvatar />
+      <UserFormAvatar user={user} />
     </ModalWindow>
     
     <div>{user.login}</div>

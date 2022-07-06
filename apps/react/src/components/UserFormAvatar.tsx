@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 //-* Formulaire de modif de profil 
 
 //-* Je n'ai pas reussi a faire le formulaire pour la photo, cest un code copie colle quil faut que jadapte avec UserForm, a moins de laisser deux form separes
-function UserFormAvatar() {
+function UserFormAvatar({user}) {
 
      const { register, handleSubmit } = useForm();
 
@@ -27,7 +27,7 @@ function UserFormAvatar() {
         const formData = new FormData();
         formData.append("file", data.file[0]);
 
-        const res = await fetch("http://localhost:3000/users/setimg", {
+        const res = await fetch("http://localhost:3000/users/setimg/" + user.id, {
             method: "POST",
             body: formData,
         }).then((res) => res.json());

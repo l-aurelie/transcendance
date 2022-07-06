@@ -71,13 +71,22 @@ export class UsersController {
 
    //-* UPLOAD l'image et la place dans la base de donnee
    //@UseGuards(AuthenticatedGuard)
-   @Post('setimg')
+   @Post('setimg/:userId')
+   
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
-   async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser) {
+   async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
       console.log('===setImg()')
       console.log('file', file);
-      const ActualUser = await this.userRepo.findOne({id : 1})
+      const ActualUser = await this.userRepo.findOne({id : 1});
+      const buf64 = (file.buffer).toString('base64');
+      let newUrl;
+      if (file.mimetype === 'image/jpeg')
+         newUrl = "data:image/jpeg;base64,"+buf64;
+      else if (file.mimetype === 'image/png')
+         newUrl = "data:image/png;base64,"+buf64;
+      await this.userRepo.update({id:userId}, {avatar:newUrl});
+    /*  const ActualUser = await this.userRepo.findOne({id : 1})
       //-* Enregistre l'avatar en format bytea dans Avatar2 une relation one avec le user
       if(!ActualUser.Avatar2)
       {
@@ -103,7 +112,7 @@ export class UsersController {
          await this.avatarRepo.save(avatar);
          this.userRepo.update({id: 1}, {Avatar2: avatar})   
       }
-      
+      */
       //const thisUser = await this.userRepo.find({ relations: ["Avatar2"]});
       //console.log("this USER ====== ", thisUser);
       
@@ -115,7 +124,7 @@ export class UsersController {
       //await this.userRepo.update({ id: 1}, {avatar: './upload/' + file.filename});
       //await this.userRepo.update({ id: 1}, {avatar: './upload/' + file.filename});
       //console.log('req.user', req.user);
-      return ('SetImg()');
+    //  return ('SetImg()');
    }
 
    /* Retourne tous les utilisateurs presents dans la base de donnee */
