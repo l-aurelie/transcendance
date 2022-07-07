@@ -59,7 +59,7 @@ const AddChannel = ({user}) => {
 
     const sendNewSalon = (bool, text) => {  
             socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id);      
-//            toggle();
+            //           toggle();
         };
 
     return(

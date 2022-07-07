@@ -194,7 +194,7 @@ const MySalons = (props) => {
         var def;
     
         for (let entry of res.data) {
-            def= {value:entry.userId, label: entry.login}
+            def= {value:entry.room.id, label: entry.user.login}
             tab.push(def);
         }
         setUsersRoom(tab);
@@ -225,19 +225,19 @@ const MySalons = (props) => {
                 //event.label -> login to add as admin
                 //room on va avoir besoin de salon.......
     }
-    // const muteUser = (event) => {
-    //     console.log('mute this guy'   + event.label);
-    //     //sokcet emit('addAdmin') with 
-    //         //event.label -> login to mute
-    //         //room on va avoir besoin de salon.......
-    // }
+    const muteUser = (event) => {
+        console.log('mute this guy'   + event.label);
+        //sokcet emit('addAdmin') with 
+            //event.label -> login to mute
+            //room on va avoir besoin de salon.......
+    }
 
-    // const banUser = (event) => {
-    //     console.log('Ban this guy'   + event.label);
-    //     //sokcet emit('addAdmin') with 
-    //         //event.label -> login to ban
-    //         //room on va avoir besoin de salon.......
-    // }
+    const banUser = (event) => {
+        console.log('Ban this guy'   + event.label);
+        //sokcet emit('addAdmin') with 
+            //event.label -> login to ban
+            //room on va avoir besoin de salon.......
+    }
 
     return(
         <div>   
@@ -281,12 +281,12 @@ const MySalons = (props) => {
                         <h3>MUTE User</h3>
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
-                            {/* <Select onChange={muteUser} options={usersRoom}/> */}
+                            <Select onChange={muteUser} options={usersRoom}/>
                             </div>   
                             <h3>BAN User</h3>
                             <div style={containerSetting}>
                             <div style={bar}>
-                            {/* <Select onChange={banUser} options={usersRoom}/> */}
+                            <Select onChange={banUser} options={usersRoom}/>
                             </div> 
                             </div>
                         {/* </div> */}
