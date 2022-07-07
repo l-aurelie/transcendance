@@ -71,21 +71,6 @@ export class UsersController {
     return new StreamableFile(stream);
    }*/
 
-   @Get('testing/test')
-   async getUsersInChannel(
-      @Req() request,
-      ) {
-         console.log('IN USERSINCHANNEL');
-         const users = await this.roomUser.find({
-            relations: ["user", "room"],
-         });
-         console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
-         console.log(users[0].user.login);
-         console.log(users[0].user.avatar);
-         console.log(users[0].room.creatorId);
-         console.log(users[0].room.password);
-   }
-
    //-* UPLOAD l'image et la place dans la base de donnee
    //@UseGuards(AuthenticatedGuard)
    @Post('setimg/:userId')
@@ -206,6 +191,43 @@ export class UsersController {
       const user = await this.userServ.findUserById(userId);
       return (user);
    }
+
+   /* Retourne la liste des utilisateurs presents dans un salon */
+   @Get('test/:currentSalon')
+   async getUsersInChannel(
+      @Param('currentSalon') currentSalon: string
+      // @Req() request,
+      ) : Promise<RoomUser[]> {
+         console.log('IN USERSINCHANNEL');
+         // const currentSal = parseInt(currentSalon);
+         // console.log('Current Sal INT is ==> ' + currentSal);
+
+         const users = await this.roomUser.find({
+            relations: ["user", "room"],
+            where : {roomId: currentSalon}});
+            console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
+            console.log(users[0].user.login);
+            console.log(users[0].user.avatar);
+            console.log(users[0].room.creatorId);
+            console.log(users[0].room.password);
+         return (users);
+   }
+
+   //  @Get('testing/test')
+   // async getUsersInChannel(
+   //    @Req() request,
+   //    ) {
+   //       console.log('IN USERSINCHANNEL');
+   //       const users = await this.roomUser.find({
+   //          relations: ["user", "room"],
+   //       });
+   //       console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
+   //       console.log(users[0].user.login);
+   //       console.log(users[0].user.avatar);
+   //       console.log(users[0].room.creatorId);
+   //       console.log(users[0].room.password);
+   // }
+
 
 /*
     @Get()

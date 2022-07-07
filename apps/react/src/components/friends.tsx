@@ -33,7 +33,7 @@ const Friends = () => {
                 <h1>My friends</h1>
                 {friends.map(friends => (
                     <div>
-                    <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={friends.avatar}/><br></br></p>
+                    <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={friends.avatar}/><br></br></p>
                      <button onClick={toggler}>{friends.login}</button>
                      <ModalWindow revele={reveller} setRevele={toggler}>
                      <FriendUserProfilExtended Value={friends.login}/>

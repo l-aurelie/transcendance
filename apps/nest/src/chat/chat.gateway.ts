@@ -65,9 +65,6 @@ console.log('handleDisconnect');
         this.server.emit('users', this.users);
     }
 
-
-    
-
     @SubscribeMessage('join')
     async joinRoom(client, name) {
       client.join(name);
@@ -141,8 +138,9 @@ console.log(tab);
            this.roomUserRepo.save(myUserRoom);
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
-       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName});
-     }
+       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, owner: false, roomId:infos.roomId});
+       
+    }
 
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
@@ -173,16 +171,16 @@ console.log(tab);
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
           //  this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
           //  this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit,sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
-          this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.whoAmI.login});
-          this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, dontNotif: true});
+            this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.whoAmI.login, roomId:data.roomId});
+            this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, dontNotif: true, roomId:data.roomId});
         }
         else {
             bannedMe.push('sockets' + data.whoAmI.id);
          //   this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
             //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
          //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
-         this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit});
-         this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, dontNotif: true});
+         this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, roomId:data.roomId});
+         this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, dontNotif: true, roomId:data.roomId});
         }
     }
 
@@ -200,7 +198,7 @@ console.log(tab);
       for (let room of rooms) {
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
           /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
-          client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName});
+          client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName, owner: false, roomId:room.RoomUser_roomId});
           client.join('salonRoom' + roomName);
       }
     }
@@ -211,10 +209,11 @@ console.log(tab);
     async addsalon(client, infos) {
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
         this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2]);
-        if (!infos[1])
+        if (!infos[1]) {
             this.server.emit('newsalon', infos[3]);
+            this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: infos[3], owner: true, roomId:newRoom.id}); // add owner = true;
+        }
     }
-
 
     //--------------------------------------------------------------------------------------------//
     //----------------------------------GAME------------------------------------------------------//

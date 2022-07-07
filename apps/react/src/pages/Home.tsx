@@ -37,7 +37,7 @@ const background = {
 const bodyStyle = {
     display: 'flex',
     width:"100%",
-    height: "85vh",
+    height: "100vh",
     // objectFit: "contain",
     justifyContent: 'center',
     //justifyContent: 'flex-end',
@@ -104,7 +104,7 @@ const Home = () => {
         socket.emit('whoAmI', res.data);
     })
         .catch(error => {
-            if (error.response && error.response.status == 403)
+            if (error.response && error.response.status === 403)
                 window.location.href = "http://localhost:4200/";
             })
     }, [])
