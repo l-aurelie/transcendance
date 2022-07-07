@@ -6,9 +6,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Socket, User, Games, Avatar } from "src/typeorm";
 import { FriendRequest } from "src/typeorm/entities/friend-request";
 import { RoomUser } from '../typeorm/entities/RoomUser';
+import { RoomEntity } from '../typeorm/entities/Room';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User, Socket, FriendRequest, Games, Avatar, RoomUser])],
+    imports: [TypeOrmModule.forFeature([User, Socket, FriendRequest, Games, Avatar, RoomUser, RoomEntity])],
     exports: [],
     controllers: [UsersController],
     providers: [UsersService, SocketService],

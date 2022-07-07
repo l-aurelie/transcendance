@@ -131,12 +131,13 @@ console.log(tab);
        var displayName = infos.otherLogin;
        if (!dm) {
            displayName = infos.room;
+           const theRoom = await this.roomRepo.findOne({ name : infos.room });
            const theUser = await this.userService.findUserById(infos.userId);
            const joinedRoomId = await this.roomService.getRoomIdFromRoomName(infos.room);
            let myUserRoom = await this.roomUserRepo.findOne({userId: infos.userId, user: theUser, roomId: joinedRoomId});
            if (!myUserRoom)
-               myUserRoom = {id: null, userId: infos.userId, user: theUser, roomId: joinedRoomId, mute: false,
-                   ban: false, expireBan: null, expiredMute: null};
+               myUserRoom = {id: null, userId: infos.userId, user: theUser, room: theRoom, roomId: joinedRoomId, mute: false,
+                   ban: false, isAdmin: false, expireBan: null, expiredMute: null};
            this.roomUserRepo.save(myUserRoom);
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */

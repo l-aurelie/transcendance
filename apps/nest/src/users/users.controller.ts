@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Readable } from 'typeorm/platform/PlatformTools';
-import { RoomUser } from 'src/typeorm';
+import { RoomEntity, RoomUser } from 'src/typeorm';
 
 export class setProfilDto {
    login: string;
@@ -29,6 +29,7 @@ export class setImgDto {
 @Controller('users')
 export class UsersController {
    constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>, 
+   @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
    @InjectRepository(RoomUser) private readonly  roomUser : Repository<RoomUser>) {}   /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
@@ -76,11 +77,13 @@ export class UsersController {
       ) {
          console.log('IN USERSINCHANNEL');
          const users = await this.roomUser.find({
-            relations: ["user"],
+            relations: ["user", "room"],
          });
          console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
          console.log(users[0].user.login);
          console.log(users[0].user.avatar);
+         console.log(users[0].room.creatorId);
+         console.log(users[0].room.password);
    }
 
    //-* UPLOAD l'image et la place dans la base de donnee
@@ -139,6 +142,46 @@ export class UsersController {
       //console.log('req.user', req.user);
     //  return ('SetImg()');
    }
+
+  @Post('changemdp/:currentSalonId/:newmdp')
+   async changeMdp(
+   @Param('newmdp') new_password: string, 
+   @Param('currentSalonId') salonId: string) {
+      const currentSal = parseInt(salonId);
+      const room_user = await this.roomUser.findOne(
+         { relations: ["room"],
+            where : {roomId: currentSal}
+         });
+      console.log(room_user);
+      room_user.room.password = new_password;
+      console.log(room_user);
+      const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: new_password});
+   }
+
+  @Post('/setAdminTrue/:currentSalonId')
+   async setAminTrue(@Param('currentSalonId') salonId: string) {
+      const currentSal = parseInt(salonId);
+      const room_user = await this.roomUser.findOne(
+         {
+            where : {roomId: currentSal}
+         });
+      console.log(room_user);
+      room_user.isAdmin = true;
+      const ret = await this.roomUser.save(room_user);
+   }
+
+   @Post('/setAdminFalse/:currentSalonId')
+   async setAminFalse(@Param('currentSalonId') salonId: string) {
+      const currentSal = parseInt(salonId);
+      const room_user = await this.roomUser.findOne(
+         {
+            where : {roomId: currentSal}
+         });
+      console.log(room_user);
+      room_user.isAdmin = false;
+      const ret = await this.roomUser.save(room_user);
+   }
+
 
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')

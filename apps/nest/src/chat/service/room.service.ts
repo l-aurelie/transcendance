@@ -36,7 +36,7 @@ export class RoomService {
       {
         console.log('entre dans add creator');
         const theUser = await this.userServ.findUserById(idUser);
-        const userRoom = {userId: idUser, user: theUser, roomId: room.id};
+        const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: false};
         this.roomUserRepo.save(userRoom);
       }
     }
@@ -46,7 +46,7 @@ export class RoomService {
       const allUser = await this.userServ.findAll();
       for (let entry of allUser) {
         const theUser = await this.userServ.findUserById(entry.id);
-        let userRoom = {userId: entry.id, user: theUser, roomId: room.id};
+        let userRoom = {userId: entry.id, user: theUser, room: room, roomId: room.id};
         this.roomUserRepo.save(userRoom)
       }
     }

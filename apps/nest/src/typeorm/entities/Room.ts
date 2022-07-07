@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn, ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn, ManyToMany, JoinTable, OneToOne, OneToMany } from "typeorm";
 import { User } from "src/typeorm";
 import IUser from "src/typeorm/entities/User";
+import { RoomUser } from './RoomUser';
 
 @Entity()
 export class RoomEntity implements IRoom {
@@ -16,6 +17,9 @@ export class RoomEntity implements IRoom {
 
     @Column({default: false})
     directMessage: boolean;
+
+    @OneToMany(() => RoomUser, RoomUser => RoomUser.user)
+    room_user: RoomUser[];
 
   //  @Column({nullable:true})
   //  description:string;
@@ -43,6 +47,8 @@ export interface IRoom {
     name? : string;
     private? : boolean;
     directMessage? : boolean;
+    room_user?: RoomUser[];
+    password?: string;
     creatorId? : number;
     createdAt?: Date;
     updatedAt? : Date;
