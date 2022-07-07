@@ -76,9 +76,9 @@ export class UsersController {
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
-      console.log('===setImg()')
-      console.log('file', file);
-      const ActualUser = await this.userRepo.findOne({id : 1});
+   //   console.log('===setImg()')
+    //  console.log('file', file);
+      //const ActualUser = await this.userRepo.findOne({id : 1});
       const buf64 = (file.buffer).toString('base64');
       let newUrl;
       if (file.mimetype === 'image/jpeg')

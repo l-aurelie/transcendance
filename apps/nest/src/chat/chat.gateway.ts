@@ -626,6 +626,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
             if (isUser.length === 1)
             {
+                this.userRepo.update({id:whichuser.idUser}, {isConnected:false});
                 console.log('only one socket');
                 this.deleteQueue(gameQueue, whichuser.idUser);
                 this.deleteQueue(gameQueueSmach, whichuser.idUser);

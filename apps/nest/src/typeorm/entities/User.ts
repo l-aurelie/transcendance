@@ -60,6 +60,9 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({default:false})
     twoFA: boolean;
 
+    @Column({default:"rgba(0,255,0, 0.9)"})
+    color: string;
+
     @Column({default: 0})
     total_wins: number;
  
@@ -89,5 +92,6 @@ interface IUser {
         createAt: Date;
         twoFA?: boolean;
         total_wins: number;
+        color?:string;
     }
     export default IUser;
