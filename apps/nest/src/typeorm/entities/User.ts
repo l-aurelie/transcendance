@@ -7,6 +7,8 @@ import { FriendRequest } from './friend-request';
 import { Games } from '..';
 import { Message } from './message';
 import { Avatar } from './Avatar';
+import { RoomUser } from './RoomUser';
+
 
 @Entity({ name: 'users' })
 export class User implements IUser { // donne la composition de User, permet de creer de nouvelles colonnes pour de nouvelles donnees concernant l'utilisateur, 
@@ -33,6 +35,9 @@ export class User implements IUser { // donne la composition de User, permet de 
 
     @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.receiver)
     RequestsReceived: FriendRequest[]; 
+
+    @OneToMany(() => RoomUser, RoomUser => RoomUser.user)
+    Rooms: RoomUser[];
 
     /*historique de matchs ou on est le jouer a gauche*/
     @OneToMany(() => Games, Games => Games.userLeft)

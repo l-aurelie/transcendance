@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
+import { User } from './User';
 
 @Entity()
 export class RoomUser implements IRoomUser {
@@ -8,6 +9,9 @@ export class RoomUser implements IRoomUser {
 
     @Column()
     userId : number;
+
+    @ManyToOne(() => User, User => User.RequestsSent)
+    user : User;
     
     @Column()
     roomId: number;
@@ -28,6 +32,7 @@ export class RoomUser implements IRoomUser {
 export interface IRoomUser {
     id?: number;
     userId? : number;
+    user? : User;
     roomId? : number;
     mute?: boolean;
     ban?: boolean;

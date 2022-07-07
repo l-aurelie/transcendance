@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Readable } from 'typeorm/platform/PlatformTools';
+import { RoomUser } from 'src/typeorm';
 
 export class setProfilDto {
    login: string;
@@ -27,8 +28,8 @@ export class setImgDto {
 /* localhost:3000/users */
 @Controller('users')
 export class UsersController {
-   constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>,  @InjectRepository(Avatar) private avatarRepo:Repository<Avatar>) {}
-   /* Retourne le profil de l'utilisateur courant */
+   constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>, 
+   @InjectRepository(RoomUser) private readonly  roomUser : Repository<RoomUser>) {}   /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
    getUser(@Req() request: RequestWithUser) {//TODO: async ? 
@@ -69,10 +70,22 @@ export class UsersController {
     return new StreamableFile(stream);
    }*/
 
+   @Get('testing/test')
+   async getUsersInChannel(
+      @Req() request,
+      ) {
+         console.log('IN USERSINCHANNEL');
+         const users = await this.roomUser.find({
+            relations: ["user"],
+         });
+         console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
+         console.log(users[0].user.login);
+         console.log(users[0].user.avatar);
+   }
+
    //-* UPLOAD l'image et la place dans la base de donnee
    //@UseGuards(AuthenticatedGuard)
    @Post('setimg/:userId')
-   
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
