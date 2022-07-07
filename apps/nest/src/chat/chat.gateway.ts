@@ -185,8 +185,12 @@ console.log('handleDisconnect');
        var displayName = infos.otherLogin;
        if (!dm) {
            displayName = infos.room;
-           const userRoom = {userId: infos.userId, roomId: await this.roomService.getRoomIdFromRoomName(infos.room)};
-           this.roomUserRepo.save(userRoom);
+           const joinedRoomId = await this.roomService.getRoomIdFromRoomName(infos.room);
+           let myUserRoom = await this.roomUserRepo.findOne({userId: infos.userId, roomId: joinedRoomId});
+           if (!myUserRoom)
+               myUserRoom = {id: null, userId: infos.userId, roomId: joinedRoomId, mute: false,
+                   ban: false, expireBan: null, expiredMute: null};
+           this.roomUserRepo.save(myUserRoom);
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
        this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName});
