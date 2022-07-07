@@ -57,6 +57,7 @@ const Game = (props) => {
   const [watchName, setWatchName] = useState(0);
   const [loginL, setLoginL] = useState('');
   const [loginR, setLoginR] = useState('');
+  const [waitingFor, setWaitingFor] = useState(0);
 
   let widthExt = 800;
   let heightExt = 600;
@@ -68,7 +69,7 @@ const Game = (props) => {
         var det;
         for (let entry of res.data)
         {
-          det = {value: entry.id, label : entry.userLeft.login + "-" + entry.userRight.login};
+          det = {value: entry.id, label : entry.userLeft.login + " vs " + entry.userRight.login};
           tab.push(det)
         }
         setGames(tab);
@@ -91,8 +92,11 @@ const Game = (props) => {
 
  // ask to quit game or queue
  const quitGame = () => {
+  if (waitingFor !== 0)
+    socket.emit('warnOpponent', waitingFor);
   setWait(false);
   setPresentation(false); 
+  setWaitingFor(0); 
   setInGame(false);
   setAbort(true);
   setQuit(false);
@@ -203,6 +207,19 @@ useEffect(() => {
       setLoginR('');
       });
       
+      socket.on("defeat", data => {
+      setWait(true);
+      setPresentation(false); 
+      setInGame(false);
+      setWaitingFor(data);
+      setAbort(false);
+      setWatch(false);
+      setEndWatch(false);
+      setQuit(false);
+      setStop(false);
+    });
+    
+
     socket.on("already-ask", data => {
         setWait(true);
         setPresentation(false); 
@@ -228,11 +245,17 @@ useEffect(() => {
       setEndWatch(false);
       setStop(false);
       });
-  
+
+      // socket.on("getScore", data => {
+      //   console.log('in get score');
+      //   setScoreL(allPos.scoreL);
+      //   setScoreR(allPos.scoreR); 
+      //   socket.emit('updateScore', roomName, allPos.scoreL, allPos.scoreR);
+      // });
+
     socket.on("opponent-leave", data => {
         setScoreL(allPos.scoreL);
-        setScoreR(allPos.scoreR);
-        socket.emit('updateScore', roomName, allPos.scoreL, allPos.scoreR);
+        setScoreR(allPos.scoreR);  
         setWait(false);
         setPresentation(false); 
         setInGame(false);
@@ -251,7 +274,9 @@ useEffect(() => {
         setEndWatch(false);
         setStop(false);
      });
-    socket.on("game-stop", data => {
+  
+
+      socket.on("game-stop", data => {
      setStop(true);
      setWinner(data);
      setWait(false);
@@ -450,7 +475,8 @@ useEffect(() => {
     playerR,
     loginL,
     loginR,
-    winner
+    winner,
+    waitingFor
   ])
   
   return (
@@ -460,7 +486,7 @@ useEffect(() => {
     {presentation ? <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMASH</button> : null}
     {presentation ? <button style={playButton} onClick={watchMatch}>WATCH MATCH</button> : null}
     <WatchModale user={actualUser} revele={revele} toggle={toggle} game={games}/>
-    {presentation ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
+    {presentation  ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
   </div>
   )
 }

@@ -66,69 +66,7 @@ console.log('handleDisconnect');
     }
 
 
-    async twoPlayerDisconnect(the_date, entry, opponent)
-    {
-        const user2 = await this.socketRepo.find({where: {idUser: opponent}});
-        if (user2.length === 0)
-        {
-            let win = 0;
-            let loose = 0;
-            if (entry.scoreLeft > entry.scoreRight)
-               {
-                    win = entry.playerLeft;
-                    loose = entry.playerRight;
-                }
-               if (entry.scoreRight > entry.scoreLeft)
-                {
-                    win = entry.playerRight;
-                    loose = entry.playerLeft;
-                }
-            this.gameRepo.update( {id : entry.id}, {winner: win, looser:loose, date: the_date, finish: true});
-            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
-            this.server.to(entry.id+'-watch').emit("restart");
-            this.server.to(entry.id).emit("restart");
-
-        }
-    }
-
-    async deleteQueue(tab, userId)
-    {
-        var i = 0;
-        for (let entry of tab) {
-            if (entry.user.id === userId) {
-                tab.splice(i, i+1);
-                break;
-            }
-            i++;
-        }
-    }
-
-    async disconnectGame(client, the_date)
-    {
-        const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
-        if(whichuser)
-        {
-            const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
-            if (isUser.length === 1)
-            {
-                console.log('only one socket');
-                this.deleteQueue(gameQueue, whichuser.idUser);
-                this.deleteQueue(gameQueueSmach, whichuser.idUser);
-       
-               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false},]});
-        
-               for (let entry of room)
-                {
-                    this.server.to(entry.id).emit("opponent-leave");
-                    this.server.to(entry.id+'-watch').emit("opponent-leave");
-                    if (whichuser.idUser === entry.playerLeft)
-                        this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
-                    else if (whichuser.idUser === entry.playerRight)
-                        this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);     
-                }
-            }
-        }
-    }
+    
 
     @SubscribeMessage('join')
     async joinRoom(client, name) {
@@ -159,18 +97,26 @@ console.log('handleDisconnect');
      /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, data) {
-        const message = await this.messageRepo.find({where: { roomID : await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
+        const message = await this.messageRepo.find({relations: ["sender"], where: { roomID : await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
         /* Récupération de l'id des users bloqués par le client dans un tableau*/
         const blockedUsers = await this.userBlockRepo.find({where: {blockingUserId: data.idUser}});
         const arrayBlockedUsers = blockedUsers.map((it) => it.blockedUserId);
         /* Concatene userName et le contenu du message si celui ci n'a pas été envoyé par quelqu'un de bloqué*/
         let tab = [];
-        tab = await Promise.all(message.map( async (it) : Promise<string[]> => {
-                if (arrayBlockedUsers.includes(it.senderId))
+        for (let entry of message)
+        {
+                if (arrayBlockedUsers.includes(entry.sender.id))
+                   break;
+                tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
+        }
+        /*tab = await Promise.all(message.map( async (it) : Promise<any[]> => {
+                if (arrayBlockedUsers.includes(it.sender.id))
                    return tab;
-                var user = await this.userService.findUserById(it.senderId);//TODO: peut etre revoir la structure DB car une requete db pour chaque message!
-                return [...tab, user.login + ' : ' + it.content];
-             }));
+                return [...tab, it.sender.login + ' : ' + it.content];
+             }));*/
+console.log(tab);
+tab = tab.sort((a,b) => a.id- b.id);
+console.log(tab);
         client.emit('fetchmessage', tab);
       }
 
@@ -223,14 +169,18 @@ console.log('handleDisconnect');
         /* on emit seulement aux sockets des 2 users si c'est un dm, sinon à tout le salon */
         if (data.isDm) {
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
-            this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
-            this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
+          //  this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
+          //  this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit,sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
+          this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.whoAmI.login});
+          this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, dontNotif: true});
         }
         else {
             bannedMe.push('sockets' + data.whoAmI.id);
-            this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
+         //   this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
             //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
-            this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
+         //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
+         this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit});
+         this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, dontNotif: true});
         }
     }
 
@@ -297,7 +247,7 @@ console.log('handleDisconnect');
       }
     }
 
-    async launchMatch(userL, userR, v, socketLeft, socketRight)
+    async launchMatch(userL, userR, v)
     {
         let roomName;
         const details = {
@@ -308,6 +258,8 @@ console.log('handleDisconnect');
             smash : v,
         }
         const newGame = await this.gameRepo.save(details);
+        await this.userRepo.update({id:userL.id}, {isPlaying:true});
+        await this.userRepo.update({id:userR.id}, {isPlaying:true});
         roomName = newGame.id;
         this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("joinroom",  roomName);
      const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
@@ -319,11 +271,26 @@ console.log('handleDisconnect');
     {
         if(tabMatch.length % 2 === 0) 
         {      
-            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v, tabMatch[0].sock, tabMatch[1].sock);
+            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v);
             tabMatch.splice(0,2);
         }
     }
 
+    @SubscribeMessage('acceptMatch')
+    async acceptMatch(client, infos) {
+        this.launchMatch(infos[0], infos[1], infos[2]);
+    }
+
+    @SubscribeMessage('warnOpponent')
+    async warnOpponent(client, infos) {
+        this.server.to('sockets' + infos).emit("noMoreMatch");
+    }
+
+    @SubscribeMessage('rejectMatch')
+    async rejectMatch(client, infos) {
+        console.log('arrive dans reject');
+        this.server.to('sockets' + infos[0].id).emit("opponent-quit");
+    }
 
     @SubscribeMessage('createGame')
     // param 'client' will be a reference to the socket instance, param 'data.p1' is the room where to emit, data.p2 is the message
@@ -459,10 +426,9 @@ console.log('handleDisconnect');
             dy = dy / speed;
             speed = 1;            
             newSleep = true;
-
+            await this.gameRepo.update( {id : infos[0]}, {scoreLeft:sL});
         }
         if (bx < 0) {
-
             sR += 1;
             bx = infos[1].width/2;
             by = infos[1].height/2;
@@ -470,6 +436,7 @@ console.log('handleDisconnect');
             dy = dy/speed;
             speed = 1;
             newSleep = true;
+            await this.gameRepo.update( {id : infos[0]}, {scoreRight:sR});
         }
         if (sL >= 11 && sR < sL - 1) {
             const idGame = await this.gameRepo.findOne({id:infos[0]});
@@ -478,14 +445,17 @@ console.log('handleDisconnect');
 login = user.login;
 this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
 this.server.to(infos[0]).emit("game-stop", user.login);
-            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            if (update)
-            {
-                update.total_wins = (update.total_wins + 1);
-                this.userRepo.save(update);
-            }
+           // const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            const win = (await this.gameRepo.find({where: {winner:idGame.playerLeft}})).length;
+            await this.userRepo.update({id: idGame.playerLeft}, {total_wins:win});
+            // if (update)
+            // {
+            // update.total_wins = (update.total_wins + 1);
+            //     this.userRepo.save(update);
+            // }
         }
         if (sR >= 11 && sL < sR - 1) {
+
             const idGame = await this.gameRepo.findOne({id:infos[0]});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
             const user = await this.userRepo.findOne({id: idGame.playerRight});
@@ -493,12 +463,15 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             login = user.login;
         this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
           this.server.to(infos[0]).emit("game-stop", user.login);
-            const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            if (update)
-            {
-                update.total_wins = (update.total_wins + 1);
-            this.userRepo.save(update);
-            }
+          const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
+            await this.userRepo.update({id: idGame.playerRight}, {total_wins:win});
+            // const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            // if (update)
+            // {
+            //     update.total_wins = (update.total_wins + 1);
+            // this.userRepo.save(update);
+
+            // }
         }
         if (newSleep === true) {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
@@ -520,7 +493,8 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {
-        this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
+        console.log('update score', infos);
+        await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
     }
 
     @SubscribeMessage('abort-match')
@@ -552,7 +526,8 @@ this.server.to(infos[0]).emit("game-stop", user.login);
      
             return ;
         }
-        this.updateScore(client, infos);
+        await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2], abort:true});
+      //  await this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
         this.server.to(infos[0]+'-watch').emit("opponent-quit");
     }
@@ -572,6 +547,8 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         }
         const idGame = await this.gameRepo.findOne({id:infos[0]});
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
+        this.userRepo.update({id: idGame.playerLeft}, {isPlaying:false});
+        this.userRepo.update({id: idGame.playerRight}, {isPlaying:false});
         this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch'); //a la fin d' un match, tout les spectateur quittent la room qu'ils ecoutaient
@@ -598,6 +575,77 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         const data = {watchRoom: watchRoom, loginL:userL, loginR:userR}
         this.server.to(watchRoom).emit('watch', data);
     }
+    @SubscribeMessage('defeat')
+    async defeat(client, infos) {
+        this.server.to('sockets'+infos[0].id).emit('defeat', infos[1]);
+        const data = {user:infos[0], version:infos[2] };
+        console.log('smash = ', infos[2])
+        this.server.to('sockets'+infos[1]).emit('ask-defeat', data);
+    }
 
+    async twoPlayerDisconnect(the_date, entry, opponent)
+    {
+        const user2 = await this.socketRepo.find({where: {idUser: opponent}});
+        if (user2.length === 0)
+        {
+            let win = 0;
+            let loose = 0;
+            if (entry.scoreLeft > entry.scoreRight)
+               {
+                    win = entry.playerLeft;
+                    loose = entry.playerRight;
+                }
+               if (entry.scoreRight > entry.scoreLeft)
+                {
+                    win = entry.playerRight;
+                    loose = entry.playerLeft;
+                }
+            await this.gameRepo.update( {id : entry.id}, {/*winner: win, looser:loose,*/ date: the_date, finish: true, abort:true});
+            await this.userRepo.update({id:entry.playerLeft}, {isPlaying:false});
+            await this.userRepo.update({id:entry.playerRight}, {isPlaying:false});
+            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+            this.server.to(entry.id+'-watch').emit("restart");
+            this.server.to(entry.id).emit("restart");
+
+        }
+    }
+
+    async deleteQueue(tab, userId)
+    {
+        var i = 0;
+        for (let entry of tab) {
+            if (entry.user.id === userId) {
+                tab.splice(i, i+1);
+                break;
+            }
+            i++;
+        }
+    }
+
+    async disconnectGame(client, the_date)
+    {
+        const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
+        if(whichuser)
+        {
+            const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
+            if (isUser.length === 1)
+            {
+                console.log('only one socket');
+                this.deleteQueue(gameQueue, whichuser.idUser);
+                this.deleteQueue(gameQueueSmach, whichuser.idUser);
+       
+               const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false}]});
+               for (let entry of room)
+                {
+                    this.server.to(entry.id).emit("opponent-leave");
+                    this.server.to(entry.id+'-watch').emit("opponent-leave");
+                    if (whichuser.idUser === entry.playerLeft)
+                        await this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
+                    else if (whichuser.idUser === entry.playerRight)
+                        await this.twoPlayerDisconnect(the_date, entry, entry.playerLeft);
+                }
+            }
+        }
+    }
 }
 

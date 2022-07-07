@@ -2,12 +2,24 @@
 
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import LogiqueModale from './ModaleWindow/logiqueModale';
-import Modale from './ModaleWindow/Friendsmodale';
+import FriendUserProfilExtended from './FriendUserProfileExtended';
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+
+const hello = {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflowY: 'scroll',
+} as React.CSSProperties;
 
 const Friends = () => {
-    const {revele, toggle} = LogiqueModale();
     const [friends, setFriends] = useState([]);
+    /* Outils d'affichage de la modale */
+    const [revele, setRevele] = useState(false);
+    const [reveller, setReveller] = useState(false);
+    const toggleModal = () => {setRevele(!revele);} 
+    const toggler = () => {setReveller(!reveller);} 
+    /*------*/
+
     /*get friendlist*/
     useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
@@ -15,9 +27,20 @@ const Friends = () => {
         })
 }, [])
     return(
-           <div>
-         <button onClick={toggle}>Friends</button>
-         <Modale revele={revele} toggle={toggle} friends={friends} />
+        <div style ={hello}>
+            <button onClick={toggleModal}>Friends</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+                <h1>My friends</h1>
+                {friends.map(friends => (
+                    <div>
+                    <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={friends.avatar}/><br></br></p>
+                     <button onClick={toggler}>{friends.login}</button>
+                     <ModalWindow revele={reveller} setRevele={toggler}>
+                     <FriendUserProfilExtended Value={friends.login}/>
+                     </ModalWindow>
+                     </div>
+                ))}
+            </ModalWindow>
         </div>
         );
 }

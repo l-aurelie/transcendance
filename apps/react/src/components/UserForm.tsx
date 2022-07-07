@@ -1,12 +1,42 @@
 /* aurel */
 import axios from "axios";
 import React from "react";
+//import { useForm } from "react-hook-form";
 
-/* Formulaire de modif de profil */
+//-* Formulaire de modif de profil 
+
+
+/*function UserForm() {
+
+     const { register, handleSubmit } = useForm();
+
+    const onSubmit = async (data) => {
+        const formData = new FormData();
+        formData.append("file", data.file[0]);
+
+        const res = await fetch("http://localhost:3000/users/setimg", {
+            method: "POST",
+            body: formData,
+        }).then((res) => res.json());
+        alert(JSON.stringify(`${res.message}, status: ${res.status}`));
+    };
+
+    return (
+        <div className="App">
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <input type="file" {...register("file")} />
+
+                <input type="submit" />
+            </form>
+        </div>
+    );
+}*/
+
+
 class UserForm extends React.Component<any, any, any> {
     constructor(props: any) {
       super(props);
-      /* Valeurs par defaut */
+      //-* Valeurs par defaut
       this.state = {
           id: props.user.id,
           login: props.user.login,
@@ -19,7 +49,7 @@ class UserForm extends React.Component<any, any, any> {
       this.handleSubmit = this.handleSubmit.bind(this);
     }
   
-    /* Gestion des champs controles/chgt des valeur */
+    //-* Gestion des champs controles/chgt des valeur 
     handleChange(e) {
         const name = e.target.name;
         const type = e.target.type;
@@ -34,15 +64,16 @@ class UserForm extends React.Component<any, any, any> {
           photo: e.target.file[-1]
         });
     }
-    /* Envoie du formulaire */
+    //-* Envoie du formulaire 
     async handleSubmit(e) {
       //alert('Le nom a été soumis : ' + this.state.value);
       e.preventDefault();
-      //const userFormData = new FormData();
+      //let userFormData = new FormData();
+      //userFormData.append("avatar", this.fileInput.current.file[0]);
       //userFormData.forEach((value, key) => {
-      //  console.log("key %s: value %s", key, value);})
-      console.log('file selected = ', this.fileInput.current.files[0].name);
-      /* Creation de l'obj a envoyer */
+      //  console.log("key %s: value %s", key, value.name);})
+     // console.log('file selected = ', this.fileInput.current.files[0].name);
+      //-* Creation de l'obj a envoyer
       const formUser = {
           id: this.state.id,
           login: this.state.login,
@@ -68,11 +99,11 @@ class UserForm extends React.Component<any, any, any> {
       // }
       console.log("submit form : ", this.state.login, this.state.email, this.state.twoFA);
       
-      /*this.setState({
-        login: '',
-        email: '',
-        twoFA: false
-      });*/
+      //this.setState({
+      //  login: '',
+      //  email: '',
+      //  twoFA: false
+      //});
     }
   
     render() {
@@ -92,7 +123,7 @@ class UserForm extends React.Component<any, any, any> {
             </div>
             <div>
                 <label>Photo
-                {/*<input type="file" value={this.state.photo} onChange={this.handleChangePhoto} id="photo" name="photo" /></label>*/}
+                
                 <input type="file" ref={this.fileInput} /></label>
             </div>
             <input type="submit" value="Envoyer" />
@@ -101,4 +132,6 @@ class UserForm extends React.Component<any, any, any> {
       );
     }
   }
+
+  //{/*<input type="file" value={this.state.photo} onChange={this.handleChangePhoto} id="photo" name="photo" /></label>*/}
 export default UserForm

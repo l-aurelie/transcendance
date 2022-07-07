@@ -35,6 +35,7 @@ const salonName = {
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
 
     useEffect(() => {
+        //setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
         props.callBack({msg: message, curSal: currentSalon});
     }, [message, currentSalon])
 
@@ -52,7 +53,6 @@ const salonName = {
         //Ecoute chat pour afficher tout nouveaux messages
         useEffect(() => {
             socket.off('chat');
-            console.log('FIRST USE EFFECT', currentSalon);
             if (currentSalon.length !== 0) {
                 socket.on('fetchmessage', data => {
                     setMessage(data);
@@ -61,10 +61,12 @@ const salonName = {
             }
             socket.on("chat", data => {
                 setMessage((message) => {
-                console.log(data);
                     //si l'emittingRoom est le salon courant on update les messages, sinon on met une notif si c'est indiqué par .dontNotif
                 if (data.emittingRoom === currentSalon.name)
-                    return ([...message, data.message]);
+                {
+                 //   return ([...message, data.message]);
+                 return ([...message, data]);
+                }
                 else if (data.dontNotif)
                     return (message);
                 else {
@@ -108,6 +110,7 @@ const salonName = {
 
             
             const handleClick = (salon) => {
+                console.log('handleclick my salon');
                   if (salon[1].avatar !== currentSalon.display) {
                     socket.off('leftsalon');           
                     setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false})));            

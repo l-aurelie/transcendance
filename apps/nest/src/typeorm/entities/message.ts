@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, ManyToOne } from "typeorm";
+import { User } from "./User";
 
 
 @Entity()
@@ -9,7 +10,10 @@ export class Message implements IMessage {
  
     @Column()
     senderId :number;
-
+    
+    @ManyToOne(() => User, User => User.sender)
+    sender: User;
+   
     @Column()
     roomID : number;
 
@@ -25,6 +29,7 @@ export class Message implements IMessage {
 export interface IMessage {
     id?: number;
     senderId?: number;
+    sender?: User;
     roomId?: number;
     content?:string;
   

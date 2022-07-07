@@ -41,6 +41,9 @@ export class Games implements IGames {
     @Column({default:false})
     finish: boolean;
 
+    @Column({default:false})
+    abort: boolean;
+
 }
 
 export interface IGames {
@@ -57,4 +60,5 @@ export interface IGames {
     looser?: number;
 
     finish?: boolean;
+    abort? : boolean;
 }

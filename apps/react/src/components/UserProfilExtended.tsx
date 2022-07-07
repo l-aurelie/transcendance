@@ -13,9 +13,10 @@ const UserProfilExtended = ({name}) => {
     const [user, setUser] = useState([] as any);
     const [wins, setWins] = useState([]);
     const [losses, setLosses] = useState([]);
+    const [history, setHistory] = useState([]);
+    const [ranking, setRanking] = useState([]);
     const [revele, setRevele] = useState(false);
     const toggleModal = () => {setRevele(!revele);} 
-    const [history, setHistory] = useState([]);
     
     useEffect(() => {
         axios.get("http://localhost:3000/users/" + user.name, {withCredentials:true}).then((res) =>{
@@ -38,6 +39,10 @@ const UserProfilExtended = ({name}) => {
         setHistory(res.data);
         })
 
+        axios.get("http://localhost:3000/stats/getRanking", {withCredentials:true}).then((res) =>{
+        setRanking(res.data);
+        })
+
     }, [])
     
     return(
@@ -47,7 +52,7 @@ const UserProfilExtended = ({name}) => {
             <div>{user.login}</div>
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
-            <p>Ligue []</p>
+            <p>Ranking: {ranking} </p>
             <div>{user.email}</div>
             <Friends></Friends>
             <FriendReqs></FriendReqs>

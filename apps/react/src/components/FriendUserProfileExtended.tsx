@@ -2,12 +2,14 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+import MatchHistory from "./MatchHistory";
 
 
 const friendProfileStyle = {
     alignItems: 'center',
     justifyContent: 'center',
-}
+} as React.CSSProperties;
 
 /* Composant affichant le profil detaille d'un utilisateur [login] recu en parametre {value} */
 const FriendUserProfilExtended = ({Value}) => {
@@ -15,7 +17,13 @@ const FriendUserProfilExtended = ({Value}) => {
     const [ThisUser, setThisUser] = useState([] as any);
     const [friends, setFriends] = useState([] as any);
     const [InboundReq, setInboundReq] = useState([] as any);
-   
+    const [revele, setRevele] = useState(false);
+    const toggleModal = () => {setRevele(!revele);} 
+    const [history, setHistory] = useState([]);
+    const [wins, setWins] = useState([]);
+    const [ranking, setRanking] = useState([]);
+    const [losses, setLosses] = useState([]);
+
 useEffect(() => {
     /*get user*/
     axios.get("http://localhost:3000/users/" + Value, {withCredentials:true}).then((res) => { 
@@ -28,7 +36,24 @@ useEffect(() => {
     /*get requests recus par cet utilisateur*/
     axios.get("http://localhost:3000/friends/friendRequest/me/hasSentMe/" + Value, {withCredentials:true}).then((res) =>{
     setInboundReq(res.data);
-    
+    })
+
+    axios.get("http://localhost:3000/stats/getMatchHistoryFriend/" + Value, {withCredentials:true}).then((res) =>{
+    setHistory(res.data);
+    })
+
+    axios.get("http://localhost:3000/stats/getWinsFriend/" + Value, {withCredentials:true}).then((res) =>{
+    //console.log("friend wins: ", res.data);
+    setWins(res.data);
+    })
+
+    axios.get("http://localhost:3000/stats/getLossesFriend/" + Value, {withCredentials:true}).then((res) =>{
+    //console.log("friend losses: ", res.data);
+    setLosses(res.data);
+    })
+
+    axios.get("http://localhost:3000/stats/getRankingFriend/" + Value, {withCredentials:true}).then((res) =>{
+    setRanking(res.data);
     })
 });
 
@@ -86,9 +111,9 @@ const RejectRequest = event => {
         <div style={friendProfileStyle}>
             <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
-            <p>[] Victoires</p>
-            <p>[] Defaites</p>
-            <p>Ligue []</p>
+            <p>Victoires: {wins} </p>
+            <p>Defaites: {losses} </p>
+            <p>Ranking {ranking} </p>
             <p>Friend request is {InboundReq.status}</p>
             <button onClick={AcceptRequest}>Accept request?</button>
             <button onClick={RejectRequest}>Reject request?</button>
@@ -102,9 +127,9 @@ const RejectRequest = event => {
         <div style={friendProfileStyle}>
             <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
-            <p>[] Victoires</p>
-            <p>[] Defaites</p>
-            <p>Ligue []</p>
+            <p>Victoires: {wins} </p>
+            <p>Defaites: {losses} </p>
+            <p>Ranking: {ranking} </p>
             <p>Friend request is {InboundReq.status}</p>
         </div>
     );
@@ -118,9 +143,13 @@ const RejectRequest = event => {
         <div style={friendProfileStyle}>
             <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
-            <p>[] Victoires</p>
-            <p>[] Defaites</p>
-            <p>Ligue []</p>
+            <p>Victoires: {wins} </p>
+            <p>Defaites: {losses} </p>
+            <p>Ranking: {ranking} </p>
+            <button onClick={toggleModal}>Match History</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <MatchHistory history={history}></MatchHistory>
+            </ModalWindow>
             <p>Friend :)</p>
         </div>
     );
@@ -131,9 +160,9 @@ const RejectRequest = event => {
         <div style={friendProfileStyle}>
             <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
             <div><h1>{ThisUser.login}</h1></div>
-            <p>[] Victoires</p>
-            <p>[] Defaites</p>
-            <p>Ligue []</p>
+            <p>Victoires: {wins} </p>
+            <p>Defaites: {losses} </p>
+            <p>Ranking: {ranking} </p>
             <button onClick={sendFriendRequest}>Send Friend Request</button>
         </div>
     );

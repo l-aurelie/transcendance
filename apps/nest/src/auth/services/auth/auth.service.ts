@@ -28,12 +28,14 @@ export class AuthService implements AuthenticationProvider {
             this.sendCode(user, myNewCode);
             details.authConfirmToken = myNewCode;
             const {intraId} = details;
-            await this.userRepo.update( { intraId }, details);
+            /*ON VEUT PAS REMPLACER LEURS INFOS*/
+            //await this.userRepo.update( { intraId }, details);
           }
           else
           {
-         //   details.isConnected = true;
-            await this.userRepo.update( { intraId }, details); // sinon on update dans le cas ou certaines infos aurai changee
+            //est-ce qu'il faut faire ca ? details.isConnected = true;
+            /*ON VEUT PAS REMPLACER LEURS INFOS*/
+            //await this.userRepo.update( { intraId }, details); // sinon on update dans le cas ou certaines infos aurai changee
           }
           console.log('updated');
           return user;// on retourne le user modifie
