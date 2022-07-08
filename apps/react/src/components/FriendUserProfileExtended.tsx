@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import MatchHistory from "./MatchHistory";
-
+import { socket } from "./Socket";
 
 const friendProfileStyle = {
     alignItems: 'center',
@@ -76,6 +76,13 @@ useEffect(() => {
             alert("Friend request sent");
         })
 }
+socket.on("changeColor", data => {
+    axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+     setFriends(res.data);
+     console.log('after socket on, ', res.data);
+     });
+  });
+
 
 const AcceptRequest = event => {
     axios.get("http://localhost:3000/friends/friendRequest/accept/" + InboundReq.id, {withCredentials:true}).then((res) => {
@@ -109,7 +116,12 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
+            <p><svg width="112" height="100" viewBox='0 0 110 100'>
+              <foreignObject x="0" y="0" width="110" height="100" >
+                <div><img style={{maxWidth: "100px", maxHeight: "100px", borderRadius: '100%' }} alt="friend-avatar" src={ThisUser.avatar}/></div>
+              </foreignObject>
+            <rect width="20" height="20" x="75" y="80" rx="10" ry="10" fill={ThisUser.color}></rect></svg></p>
+            {/*<img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />*/}
             <div><h1>{ThisUser.login}</h1></div>
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
@@ -125,7 +137,12 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
+            <p><svg width="112" height="100" viewBox='0 0 110 100'>
+              <foreignObject x="0" y="0" width="110" height="100" >
+                <div><img style={{maxWidth: "100px", maxHeight: "100px", borderRadius: '100%' }} alt="friend-avatar" src={ThisUser.avatar}/></div>
+              </foreignObject>
+            <rect width="20" height="20" x="75" y="80" rx="10" ry="10" fill={ThisUser.color}></rect></svg></p>
+            {/*<img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />*/}
             <div><h1>{ThisUser.login}</h1></div>
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
@@ -141,7 +158,12 @@ const RejectRequest = event => {
     {
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
+            <p><svg width="112" height="100" viewBox='0 0 110 100'>
+              <foreignObject x="0" y="0" width="110" height="100" >
+                <div><img style={{maxWidth: "100px", maxHeight: "100px", borderRadius: '100%' }} alt="friend-avatar" src={ThisUser.avatar}/></div>
+              </foreignObject>
+            <rect width="20" height="20" x="75" y="80" rx="10" ry="10" fill={ThisUser.color}></rect></svg></p>
+            {/*<img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />*/}
             <div><h1>{ThisUser.login}</h1></div>
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
@@ -158,7 +180,12 @@ const RejectRequest = event => {
     else 
     return(
         <div style={friendProfileStyle}>
-            <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />
+            <p><svg width="112" height="100" viewBox='0 0 110 100'>
+              <foreignObject x="0" y="0" width="110" height="100" >
+                <div><img style={{maxWidth: "100px", maxHeight: "100px", borderRadius: '100%' }} alt="friend-avatar" src={ThisUser.avatar}/></div>
+              </foreignObject>
+            <rect width="20" height="20" x="75" y="80" rx="10" ry="10" fill={ThisUser.color}></rect></svg></p>
+            {/*<img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="profil-avatar" src={ThisUser.avatar} />*/}
             <div><h1>{ThisUser.login}</h1></div>
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
