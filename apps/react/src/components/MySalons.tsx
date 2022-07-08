@@ -97,6 +97,12 @@ const MySalons = (props) => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
         setFriends(res.data);
         })
+        axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
+            for (let entry of res.data)
+                setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, owner: entry.isAdmin })))
+            console.log('after axios userRooms',res.data);
+            })
+
     }, [])
 
     useEffect(() => {
@@ -171,6 +177,20 @@ const MySalons = (props) => {
             socket.off('fetchmessage');
             setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId});
             }
+
+            axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+        console.log('RES.DATA ==> ', res.data);
+
+        const tab = [];
+        var def;
+    
+        for (let entry of res.data) {
+            def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
+            tab.push(def);
+        }
+        setUsersRoom(tab);
+        console.log('After created a tab user in ROOM ==> ', usersRoom);
+        });
             // useEffect(() => {
                 // console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
                 
@@ -199,24 +219,24 @@ const MySalons = (props) => {
         socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon});
     };
 
-    useEffect(() => {
-        console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
+    // useEffect(() => {
+    //     console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
         
-            /* get all users in the current room */
-        axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
-        console.log('RES.DATA ==> ', res.data);
+    //         /* get all users in the current room */
+    //     axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+    //     console.log('RES.DATA ==> ', res.data);
 
-        const tab = [];
-        var def;
+    //     const tab = [];
+    //     var def;
     
-        for (let entry of res.data) {
-            def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
-            tab.push(def);
-        }
-        setUsersRoom(tab);
-        console.log('After created a tab user in ROOM ==> ', usersRoom);
-        });
-    }, [currentSalon.roomId, usersRoom])
+    //     for (let entry of res.data) {
+    //         def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
+    //         tab.push(def);
+    //     }
+    //     setUsersRoom(tab);
+    //     console.log('After created a tab user in ROOM ==> ', usersRoom);
+    //     });
+    // }, [currentSalon.roomId, usersRoom])
 
     const submitPassword = (event) => {
     if (pwd !== "") {

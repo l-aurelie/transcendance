@@ -7,12 +7,13 @@ import { Socket, User, Games, Avatar } from "src/typeorm";
 import { FriendRequest } from "src/typeorm/entities/friend-request";
 import { RoomUser } from '../typeorm/entities/RoomUser';
 import { RoomEntity } from '../typeorm/entities/Room';
+import { RoomService } from "src/chat/service/room.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([User, Socket, FriendRequest, Games, Avatar, RoomUser, RoomEntity])],
     exports: [],
     controllers: [UsersController],
-    providers: [UsersService, SocketService],
+    providers: [UsersService, SocketService, RoomService],
 })
 export class UsersModule{
 

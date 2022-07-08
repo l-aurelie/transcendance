@@ -125,20 +125,24 @@ console.log(tab);
        this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.room);
     /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
        const dm = !(!infos.otherLogin);
+       let adm = false;
        var displayName = infos.otherLogin;
        if (!dm) {
            displayName = infos.room;
            const theRoom = await this.roomRepo.findOne({ name : infos.room });
            const theUser = await this.userService.findUserById(infos.userId);
            const joinedRoomId = await this.roomService.getRoomIdFromRoomName(infos.room);
-           let myUserRoom = await this.roomUserRepo.findOne({userId: infos.userId, user: theUser, roomId: joinedRoomId});
+           let myUserRoom = await this.roomUserRepo.findOne({userId: infos.userId, user: theUser, roomId: infos.roomId});
            if (!myUserRoom)
-               myUserRoom = {id: null, userId: infos.userId, user: theUser, room: theRoom, roomId: joinedRoomId, mute: false,
-                   ban: false, isAdmin: myUserRoom.isAdmin, expireBan: null, expiredMute: null};
-           this.roomUserRepo.save(myUserRoom);
+           {
+               const getNewUserRoom = {id: null, userId: infos.userId, user: theUser, room: theRoom, roomId: infos.roomId, mute: false,
+                   ban: false, isAdmin: false, expireBan: null, expiredMute: null};
+                myUserRoom = await this.roomUserRepo.save(getNewUserRoom);
+            }
+        adm = myUserRoom.isAdmin;
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
-       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId});
+       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId, isAdmin:adm});
        
     }
 
@@ -194,12 +198,16 @@ console.log(tab);
       /* on join la room avec tous les sockets du user, elle s'appelera par exemple sockets7 pour l'userId 7 */
       client.join('sockets' + user.id);
       /* on boucle sur les roomUser pour faire rejoindre à ce socket toutes les rooms du user, hors dm car pas besoin de les rejoindre (communication socket à socket) */
+      console.log('pbquery?');
       const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
+      console.log('rooms = ', rooms);
       for (let room of rooms) {
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
           /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
-          client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.roomUser.admin});
-          console.log("salonName ==> ", roomName, "dm ==> :", false, "displayName ==> ", roomName, "roomId: ==> ", room.RoomUser_roomId, "isAdmin ==> ", false);
+      //    console.log('A');
+       //   client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.RoomUser_isAdmin});
+       //   console.log('B');
+        //  console.log("salonName ==> ", roomName, "dm ==> :", false, "displayName ==> ", roomName, "roomId: ==> ", room.RoomUser_roomId, "isAdmin ==> ", room.RoomUser_isAdmin);
           client.join('salonRoom' + roomName);
       }
     }
@@ -209,7 +217,10 @@ console.log(tab);
     @SubscribeMessage('addsalon')
     async addsalon(client, infos) {
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
-        this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2], true);
+        console.log (newRoom.id)
+        const roomUser = await this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2], true);
+        await this.roomUserRepo.update({id: roomUser.id}, {isAdmin:true});
+        console.log('roomuserId= ', roomUser.id, roomUser.roomId, roomUser.userId, infos[0]);
         // await this.roomRepo.update({id:newRoom.id}, {creatorId:infos[0]})
         if (!infos[1]) {
             this.server.emit('newsalon', infos[3]);

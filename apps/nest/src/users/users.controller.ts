@@ -12,6 +12,7 @@ import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Readable } from 'typeorm/platform/PlatformTools';
 import { RoomEntity, RoomUser } from 'src/typeorm';
+import { RoomService } from 'src/chat/service/room.service';
 
 export class setProfilDto {
    login: string;
@@ -30,7 +31,9 @@ export class setImgDto {
 export class UsersController {
    constructor(private userServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>, 
    @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
-   @InjectRepository(RoomUser) private readonly  roomUser : Repository<RoomUser>) {}   /* Retourne le profil de l'utilisateur courant */
+   @InjectRepository(RoomUser) private roomUserRepo: Repository<RoomUser>,
+   @InjectRepository(RoomUser) private readonly  roomUser : Repository<RoomUser>,
+   private roomService: RoomService) {}   /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
    getUser(@Req() request: RequestWithUser) {//TODO: async ? 
@@ -191,7 +194,19 @@ export class UsersController {
       const user = await this.userServ.findUserById(userId);
       return (user);
    }
-
+   @Get('userRooms/:id')
+   async getUserRooms(@Param('id') id : string) {
+      const idUser = parseInt(id);
+   const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: idUser }).execute();
+   console.log('rooms = ', rooms);
+   let tab = [];
+   for (let room of rooms) {
+       var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
+       tab.push({salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.RoomUser_isAdmin});
+       /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
+   }
+   return (tab);
+   }
    /* Retourne la liste des utilisateurs presents dans un salon */
    @Get('test/:currentSalon')
    async getUsersInChannel(
@@ -199,9 +214,13 @@ export class UsersController {
       // @Req() request,
       ) : Promise<RoomUser[]> {
          console.log('IN USERSINCHANNEL');
-         // const currentSal = parseInt(currentSalon);
+         if (currentSalon === "undefined")
+         {
+            console.log('undef');
+            return([]);
+         }// const currentSal = parseInt(currentSalon);
          // console.log('Current Sal INT is ==> ' + currentSal);
-
+console.log('mais');
          const users = await this.roomUser.find({
             relations: ["user", "room"],
             where : {roomId: currentSalon}});
@@ -210,6 +229,8 @@ export class UsersController {
             console.log(users[0].user.avatar);
             console.log(users[0].room.creatorId);
             console.log(users[0].room.password);
+            console.log('quoi');
+
          return (users);
    }
 

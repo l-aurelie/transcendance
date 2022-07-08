@@ -26,29 +26,42 @@ export class RoomService {
        console.log('does room exist ?', does_exist);
        return does_exist ? does_exist : this.roomRepo.save(room);
      }
+    
 
  async associateUserRoom(room:IRoom, idUser: number, isPrivate:boolean, isDm:boolean, isAdmin:boolean) {
        // const newRoom = await this.addCreatorInRoom(room, creator);
       // const newRoom = await this.addCreatorInRoom(room, creator);
+      let newuserRoom;
       if (isPrivate === false)
-        this.addAllUser(room);
+      {
+      //  const theUser = await this.userServ.findUserById(idUser);
+      //  const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
+      //  newuserRoom = await this.roomUserRepo.save(userRoom);
+        newuserRoom = await this.addAllUser(room, idUser);
+      }
       else if (!isDm)
       {
         console.log('entre dans add creator');
         const theUser = await this.userServ.findUserById(idUser);
         const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
-        this.roomUserRepo.save(userRoom);
+        newuserRoom = await this.roomUserRepo.save(userRoom);
       }
+      return newuserRoom;
     }
 
-    async addAllUser(room : IRoom) {
+    async addAllUser(room : IRoom, idCreator:number) {
       console.log('entre dans addAllUser');
       const allUser = await this.userServ.findAll();
+      let idRoomCreate = 0;
       for (let entry of allUser) {
+          
         const theUser = await this.userServ.findUserById(entry.id);
         let userRoom = {userId: entry.id, user: theUser, room: room, roomId: room.id};
-        this.roomUserRepo.save(userRoom)
+        let newRoomUser = await this.roomUserRepo.save(userRoom);
+        if (entry.id === idCreator)
+          idRoomCreate = newRoomUser.id;
       }
+        return (await this.roomUserRepo.findOne({id:idRoomCreate}));
     }
 
     async getRoomIdFromRoomName(name: string) {
