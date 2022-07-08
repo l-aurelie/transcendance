@@ -25,16 +25,17 @@ const onChange = (event) => {
   /*get friendlist*/    
   useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-    console.log("res.data", res.data); 
     setFriends(res.data);
-    })
+    });
+
+    socket.on("changeColor", data => {
+      axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+       setFriends(res.data);
+       console.log('after socket on, ', res.data);
+       });
+    });
   }, [])
 
-  useEffect(() => {
-    socket.on("changeProfil", data => {
-      
-    });
-  },[])
 
   const beginChat = (friend) => {
     console.log('beginchat',props.user);
@@ -54,7 +55,7 @@ const onChange = (event) => {
               <foreignObject x="0" y="0" width="45" height="40" >
                 <div><img style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/></div>
               </foreignObject>
-            <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={color}></rect></svg>
+            <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={friends.color}></rect></svg>
             {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
             ))}   
           </div>
