@@ -134,11 +134,11 @@ console.log(tab);
            let myUserRoom = await this.roomUserRepo.findOne({userId: infos.userId, user: theUser, roomId: joinedRoomId});
            if (!myUserRoom)
                myUserRoom = {id: null, userId: infos.userId, user: theUser, room: theRoom, roomId: joinedRoomId, mute: false,
-                   ban: false, isAdmin: false, expireBan: null, expiredMute: null};
+                   ban: false, isAdmin: myUserRoom.isAdmin, expireBan: null, expiredMute: null};
            this.roomUserRepo.save(myUserRoom);
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
-       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, owner: false, roomId:infos.roomId});
+       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId});
        
     }
 
@@ -198,7 +198,8 @@ console.log(tab);
       for (let room of rooms) {
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
           /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
-          client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName, owner: false, roomId:room.RoomUser_roomId});
+          client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.roomUser.admin});
+          console.log("salonName ==> ", roomName, "dm ==> :", false, "displayName ==> ", roomName, "roomId: ==> ", room.RoomUser_roomId, "isAdmin ==> ", false);
           client.join('salonRoom' + roomName);
       }
     }
@@ -208,10 +209,11 @@ console.log(tab);
     @SubscribeMessage('addsalon')
     async addsalon(client, infos) {
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
-        this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2]);
+        this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2], true);
+        // await this.roomRepo.update({id:newRoom.id}, {creatorId:infos[0]})
         if (!infos[1]) {
             this.server.emit('newsalon', infos[3]);
-            this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: infos[3], owner: true, roomId:newRoom.id}); // add owner = true;
+            this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: infos[3], roomId:newRoom.id, isAdmin:true}); // add owner = true;
         }
     }
 

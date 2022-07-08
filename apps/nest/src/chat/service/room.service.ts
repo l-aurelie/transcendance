@@ -27,7 +27,7 @@ export class RoomService {
        return does_exist ? does_exist : this.roomRepo.save(room);
      }
 
- async associateUserRoom(room:IRoom, idUser: number, isPrivate:boolean, isDm:boolean) {
+ async associateUserRoom(room:IRoom, idUser: number, isPrivate:boolean, isDm:boolean, isAdmin:boolean) {
        // const newRoom = await this.addCreatorInRoom(room, creator);
       // const newRoom = await this.addCreatorInRoom(room, creator);
       if (isPrivate === false)
@@ -36,7 +36,7 @@ export class RoomService {
       {
         console.log('entre dans add creator');
         const theUser = await this.userServ.findUserById(idUser);
-        const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: false};
+        const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
         this.roomUserRepo.save(userRoom);
       }
     }

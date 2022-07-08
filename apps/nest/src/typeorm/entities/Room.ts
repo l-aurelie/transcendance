@@ -38,6 +38,9 @@ export class RoomEntity implements IRoom {
 
     @UpdateDateColumn()
     updatedAt: Date;
+    
+    // @ManyToMany(() => User, User => User.admin)
+    // admin: User[];
 }
 
 
@@ -52,4 +55,5 @@ export interface IRoom {
     creatorId? : number;
     createdAt?: Date;
     updatedAt? : Date;
+    // admin?: User[];
 }

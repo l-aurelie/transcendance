@@ -4,6 +4,7 @@ import { socket } from "./Socket";
 import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
 import CSS from 'csstype';
 import Select from 'react-select';
+import { useResolvedPath, useRoutes } from 'react-router-dom';
 
 
 /* John aurelie */
@@ -33,26 +34,18 @@ const channel = {
 }
 
 const buttons = {
-    width: "100%",
     display: "flex",
     justifyContent: "end",
 }
 
 const setting = {
-    width: "20%",
     display: 'flex',
     justifyContent: "center",
 }
 
 
 const modalBackground: CSS.Properties = {
-    // width: "100vh",
-    // height: "100vh",
-    // backgroundColor: "rgba(200,200,200)",
-    // position: "fixed",
-    // display: "flex,",
-    // jusitfyContent: "center" as 'center',
-    // alignItems: "center",
+  
 }
 
 const modalContainer: CSS.Properties = {
@@ -85,6 +78,7 @@ const MySalons = (props) => {
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
 
     const [usersRoom, setUsersRoom] = useState([]);
+    const [isAdmin, setIsAdmin] = useState([]);
     const [owner, setOwner] = useState([] as any);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
@@ -142,7 +136,8 @@ const MySalons = (props) => {
     useEffect(() => {
     socket.on('joinedsalon', data => {
         socket.off('leftsalon');
-        setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, owner: data.owner, roomId: data.roomId })));
+        setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin })));
+        console.log("Owner ==> ", owner);
         //socket.off('chat');
         //socket.off('fetchmessage');
         //setCurrentSalon({name: data.salonName, isDm: data.dm, display: data.chatterLogin});
@@ -176,6 +171,26 @@ const MySalons = (props) => {
             socket.off('fetchmessage');
             setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId});
             }
+            // useEffect(() => {
+                // console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
+                
+                //     /* get all users in the current room */
+                // axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+                // console.log('RES.DATA ==> ', res.data);
+        
+                // const tab = [];
+                // var def;
+            
+                // for (let entry of res.data) {
+                //     def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
+                //     tab.push(def);
+                // }
+                // setUsersRoom(tab);
+                // // console.log("current salon owner", usersRoom[0].id);
+                // console.log('After created a tab user in ROOM ==> ', usersRoom);
+                // });
+            // }, [currentSalon.roomId])
+        
         };
 
     const closeSalon = (salon) => {
@@ -186,6 +201,7 @@ const MySalons = (props) => {
 
     useEffect(() => {
         console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
+        
             /* get all users in the current room */
         axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
         console.log('RES.DATA ==> ', res.data);
@@ -194,13 +210,13 @@ const MySalons = (props) => {
         var def;
     
         for (let entry of res.data) {
-            def= {value:entry.room.id, label: entry.user.login}
+            def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
             tab.push(def);
         }
         setUsersRoom(tab);
         console.log('After created a tab user in ROOM ==> ', usersRoom);
         });
-    }, [currentSalon.roomId])
+    }, [currentSalon.roomId, usersRoom])
 
     const submitPassword = (event) => {
     if (pwd !== "") {
@@ -221,10 +237,15 @@ const MySalons = (props) => {
     const addAdmin = (event) => {
         console.log('add this friend in admin for this salon '  + event.label);
         console.log('Users in Room ==> ', usersRoom);
-            //sokcet emit('addAdmin') with 
+        axios.post("http://localhost:3000/users/setAdminTrue/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+            console.log("in set amdin true");
+        });
+        console.log("is admin ===>" + usersRoom);
+        //sokcet emit('addAdmin') with 
                 //event.label -> login to add as admin
                 //room on va avoir besoin de salon.......
     }
+
     const muteUser = (event) => {
         console.log('mute this guy'   + event.label);
         //sokcet emit('addAdmin') with 
@@ -254,7 +275,7 @@ const MySalons = (props) => {
             <div style={buttons}>
                 {salon[1].owner && <button style={setting} onClick={toggleModal}> ⚙️ </button> }
                 {/* Setting par channel */}
-                <div style={modalBackground}>
+                {/* <div style={modalBackground}> */}
                 <ModalWindow  revele={revele} setRevele={toggleModal}> 
                     {/* <div style={modalContainer}> */}
                         <h1>Admin Settings</h1>
@@ -289,10 +310,16 @@ const MySalons = (props) => {
                             <Select onChange={banUser} options={usersRoom}/>
                             </div> 
                             </div>
+                            <h1>Admins : </h1>
+                            {/* <div style={body}>
+                                {usersRoom.map((user) => 
+
+                                <p key={user.id}>{usersRoom.admin}</p>) }
+                           </div> */}
                         {/* </div> */}
                     </div>
                 </ModalWindow>
-                </div>
+                {/* </div> */}
                 {/* Permet de quitter le channel */}
             <div><button style={setting} onClick={(event) => {
                 event.stopPropagation();

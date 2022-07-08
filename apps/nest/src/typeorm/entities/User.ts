@@ -77,6 +77,8 @@ export class User implements IUser { // donne la composition de User, permet de 
     @CreateDateColumn()
     createAt: Date;
 
+    // @ManyToMany(() => RoomEntity , RoomEntity => RoomEntity.admin)
+    // admin: RoomEntity[];
     
 }
 
@@ -94,5 +96,6 @@ interface IUser {
         createAt: Date;
         twoFA?: boolean;
         total_wins: number;
+        // admin?: RoomEntity[];
     }
     export default IUser;
