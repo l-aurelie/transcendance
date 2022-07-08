@@ -34,10 +34,10 @@ export class RoomService {
       let newuserRoom;
       if (isPrivate === false)
       {
-      //  const theUser = await this.userServ.findUserById(idUser);
-      //  const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
-      //  newuserRoom = await this.roomUserRepo.save(userRoom);
-        newuserRoom = await this.addAllUser(room, idUser);
+        const theUser = await this.userServ.findUserById(idUser);
+        const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
+        newuserRoom = await this.roomUserRepo.save(userRoom);
+     //   newuserRoom = await this.addAllUser(room, idUser);
       }
       else if (!isDm)
       {
