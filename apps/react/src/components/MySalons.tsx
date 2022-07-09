@@ -192,28 +192,8 @@ const MySalons = (props) => {
         }
         setUsersRoom(tab);
         console.log('After created a tab user in ROOM ==> ', usersRoom);
-        });
-            // useEffect(() => {
-                // console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
-                
-                //     /* get all users in the current room */
-                // axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
-                // console.log('RES.DATA ==> ', res.data);
-        
-                // const tab = [];
-                // var def;
-            
-                // for (let entry of res.data) {
-                //     def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
-                //     tab.push(def);
-                // }
-                // setUsersRoom(tab);
-                // // console.log("current salon owner", usersRoom[0].id);
-                // console.log('After created a tab user in ROOM ==> ', usersRoom);
-                // });
-            // }, [currentSalon.roomId])
-        
-        };
+        });     
+    };
 
     const closeSalon = (salon) => {
         //A la fermeture d'un salon, on en informe le back qui va renvoyer
@@ -221,39 +201,24 @@ const MySalons = (props) => {
         socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon});
     };
 
-    // useEffect(() => {
-    //     console.log("Salon in getUsersRoom ===> ", currentSalon.roomId)
-        
-    //         /* get all users in the current room */
-    //     axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
-    //     console.log('RES.DATA ==> ', res.data);
-
-    //     const tab = [];
-    //     var def;
-    
-    //     for (let entry of res.data) {
-    //         def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
-    //         tab.push(def);
-    //     }
-    //     setUsersRoom(tab);
-    //     console.log('After created a tab user in ROOM ==> ', usersRoom);
-    //     });
-    // }, [currentSalon.roomId, usersRoom])
-
     const submitPassword = (event) => {
     if (pwd !== "") {
         setPwd(pwdRef.current.value);
         event.preventDefault();
         console.log('pwd => ', pwdRef.current.value);
+        axios.post("http://localhost:3000/users/changemdp/" + currentSalon.roomId + "/" +  pwdRef.current.value, {withCredentials:true}).then((res) => {
+        });
         event.target.reset(); //clear all input values in the form
-        // ici on va faire un socket emit pour delete le password de la room a la db?
         return;
     }
 };
     
     const resetPassword = (event) => {
         event.preventDefault();
+        axios.post("http://localhost:3000/users/resetpwd/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+        });
         console.log('pwd to DELETE => ', pwd);
+        
     };
     
     const addAdmin = (event) => {
@@ -263,9 +228,6 @@ const MySalons = (props) => {
             console.log("in set amdin true");
         });
         console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
-        //sokcet emit('addAdmin') with 
-                //event.label -> login to add as admin
-                //room on va avoir besoin de salon.......
     }
 
     const muteUser = (event) => {

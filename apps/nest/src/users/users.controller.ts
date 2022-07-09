@@ -143,8 +143,25 @@ export class UsersController {
       console.log(room_user);
       room_user.room.password = new_password;
       console.log(room_user);
+      console.log("NEW PASSWORD" + new_password);
       const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: new_password});
    }
+
+
+  @Post('resetpwd/:currentSalonId')
+  async resetPwd(
+  @Param('currentSalonId') salonId: string) {
+     const currentSal = parseInt(salonId);
+     const room_user = await this.roomUser.findOne(
+        { relations: ["room"],
+           where : {roomId: currentSal}
+        });
+     console.log(room_user);
+     room_user.room.password = "";
+     console.log(room_user);
+     console.log("NEW PASSWORD :" + "[" + room_user.room.password +  ']');
+     const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: room_user.room.password});
+  }
 
   @Post('/setAdminTrue/:currentSalonId/:idNewAdm')
    async setAminTrue(@Param('currentSalonId') salonId: string,
