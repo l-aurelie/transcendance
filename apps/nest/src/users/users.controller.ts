@@ -13,6 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Readable } from 'typeorm/platform/PlatformTools';
 import { RoomEntity, RoomUser } from 'src/typeorm';
 import { RoomService } from 'src/chat/service/room.service';
+import * as bcrypt from 'bcrypt';
+
 
 export class setProfilDto {
    login: string;
@@ -140,11 +142,16 @@ export class UsersController {
          { relations: ["room"],
             where : {roomId: currentSal}
          });
-      console.log(room_user);
-      room_user.room.password = new_password;
-      console.log(room_user);
+      const saltOrRounds = 10;
+      const hash =  await bcrypt.hash(new_password, saltOrRounds);
       console.log("NEW PASSWORD" + new_password);
-      const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: new_password});
+      console.log("HASH ===> " , hash);
+      room_user.room.password = hash;
+      const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: hash});
+         
+      /* To compare/check a password, use the compare function:
+      
+         const isMatch = await bcrypt.compare(password, hash); */
    }
 
 
