@@ -146,16 +146,20 @@ export class UsersController {
       const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: new_password});
    }
 
-  @Post('/setAdminTrue/:currentSalonId')
-   async setAminTrue(@Param('currentSalonId') salonId: string) {
+  @Post('/setAdminTrue/:currentSalonId/:idNewAdm')
+   async setAminTrue(@Param('currentSalonId') salonId: string,
+   @Param('idNewAdm') idNewAdm: string) {
+
       const currentSal = parseInt(salonId);
+      const adm = parseInt(idNewAdm)
       const room_user = await this.roomUser.findOne(
          {
-            where : {roomId: currentSal}
+            where : {roomId: currentSal, userId: adm}
          });
-      console.log(room_user);
-      room_user.isAdmin = true;
-      const ret = await this.roomUser.save(room_user);
+      console.log('room user id' ,room_user.id);
+         this.roomUser.update({id:room_user.id}, {isAdmin:true});
+      //room_user.isAdmin = true;
+      //const ret = await this.roomUser.save(room_user);
    }
 
    @Post('/setAdminFalse/:currentSalonId')
@@ -202,7 +206,8 @@ export class UsersController {
    let tab = [];
    for (let room of rooms) {
        var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
-       tab.push({salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.RoomUser_isAdmin});
+       var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);
+       tab.push({salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.RoomUser_isAdmin, creator:roomCreator});
        /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
    }
    return (tab);
@@ -216,20 +221,20 @@ export class UsersController {
          console.log('IN USERSINCHANNEL');
          if (currentSalon === "undefined")
          {
-            console.log('undef');
+           // console.log('undef');
             return([]);
          }// const currentSal = parseInt(currentSalon);
          // console.log('Current Sal INT is ==> ' + currentSal);
-console.log('mais');
+//console.log('mais');
          const users = await this.roomUser.find({
             relations: ["user", "room"],
             where : {roomId: currentSalon}});
-            console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
-            console.log(users[0].user.login);
-            console.log(users[0].user.avatar);
-            console.log(users[0].room.creatorId);
-            console.log(users[0].room.password);
-            console.log('quoi');
+          //  console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
+          //  console.log(users[0].user.login);
+          //  console.log(users[0].user.avatar);
+          //  console.log(users[0].room.creatorId);
+          //  console.log(users[0].room.password);
+          //  console.log('quoi');
 
          return (users);
    }

@@ -76,6 +76,11 @@ export class RoomService {
       console.log(retRoom);
       return retRoom ? retRoom.name : null;
     }
+    async getRoomCreatorFromId(idRoom: number) {
+      const retRoom = await this.roomRepo.findOne( {id: idRoom} );
+      console.log(retRoom);
+      return retRoom ? retRoom.creatorId : null;
+    }
      /*async getRoomsForUser(userId: number, options: IPaginationOptions) : Promise<Pagination<IRoom>> {
         const query = this.roomRepo
         .createQueryBuilder('room')

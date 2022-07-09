@@ -82,7 +82,9 @@ const MySalons = (props) => {
     const [owner, setOwner] = useState([] as any);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
+    const [revele2, setRevele2] = useState(false);
     const toggleModal = () => {setRevele(!revele);} 
+    const toggleModal2 = () => {setRevele2(!revele2);} 
     /*------*/
     const pwdRef = useRef(null);
     const [pwd, setPwd] = useState([''] as any); 
@@ -99,7 +101,7 @@ const MySalons = (props) => {
         })
         axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
             for (let entry of res.data)
-                setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, owner: entry.isAdmin })))
+                setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin })))
             console.log('after axios userRooms',res.data);
             })
 
@@ -130,7 +132,7 @@ const MySalons = (props) => {
                 return (message);
             else {
                 socket.off('leftsalon');
-                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId})));
+                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon})));
                 return (message);
             }
             });
@@ -142,7 +144,7 @@ const MySalons = (props) => {
     useEffect(() => {
     socket.on('joinedsalon', data => {
         socket.off('leftsalon');
-        setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin })));
+        setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator })));
         console.log("Owner ==> ", owner);
         //socket.off('chat');
         //socket.off('fetchmessage');
@@ -172,10 +174,10 @@ const MySalons = (props) => {
         console.log('handleclick my salon');
         if (salon[1].avatar !== currentSalon.display) {
             socket.off('leftsalon');           
-            setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId})));            
+            setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator})));            
             socket.off('chat');
             socket.off('fetchmessage');
-            setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId});
+            setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId, creator:salon[1].creator});
             }
 
             axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
@@ -185,7 +187,7 @@ const MySalons = (props) => {
         var def;
     
         for (let entry of res.data) {
-            def= {value:entry.room.id, label: entry.user.login, admin:entry.isAdmin}
+            def= {value:entry.user.id, label: entry.user.login, admin:entry.isAdmin}
             tab.push(def);
         }
         setUsersRoom(tab);
@@ -257,10 +259,10 @@ const MySalons = (props) => {
     const addAdmin = (event) => {
         console.log('add this friend in admin for this salon '  + event.label);
         console.log('Users in Room ==> ', usersRoom);
-        axios.post("http://localhost:3000/users/setAdminTrue/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+        axios.post("http://localhost:3000/users/setAdminTrue/" + currentSalon.roomId + "/" + event.value, {withCredentials:true}).then((res) => {
             console.log("in set amdin true");
         });
-        console.log("is admin ===>" + usersRoom);
+        console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
         //sokcet emit('addAdmin') with 
                 //event.label -> login to add as admin
                 //room on va avoir besoin de salon.......
@@ -293,12 +295,13 @@ const MySalons = (props) => {
 
             {/* modale qui va etre un setting avec close dedans et si owner..... */}
             <div style={buttons}>
-                {salon[1].owner && <button style={setting} onClick={toggleModal}> ⚙️ </button> }
+                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <button style={setting} onClick={toggleModal}> ⚙️ </button> : null}
+                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <button style={setting} onClick={toggleModal2}> ⚙️ </button> : null}
                 {/* Setting par channel */}
                 {/* <div style={modalBackground}> */}
                 <ModalWindow  revele={revele} setRevele={toggleModal}> 
                     {/* <div style={modalContainer}> */}
-                        <h1>Admin Settings</h1>
+                        <h1>Owner Settings</h1>
                         <div style={body}></div>
                         <h3>Define password</h3>
                         <div style={containerSetting}>
@@ -330,7 +333,33 @@ const MySalons = (props) => {
                             <Select onChange={banUser} options={usersRoom}/>
                             </div> 
                             </div>
-                            <h1>Admins : </h1>
+                            {/*<h1>Admins : </h1>*/}
+                            {/* <div style={body}>
+                                {usersRoom.map((user) => 
+
+                                <p key={user.id}>{usersRoom.admin}</p>) }
+                           </div> */}
+                        {/* </div> */}
+                    </div>
+                </ModalWindow>
+                <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
+                    {/* <div style={modalContainer}> */}
+                        <h1>Admin Settings</h1>
+                        <div style={body}></div>
+                        {/* </div> */}
+                        <div style={containerSetting}>
+                        <h3>MUTE User</h3>
+                        {/* <div style={containerSetting}> */}
+                            <div style={bar}>
+                            <Select onChange={muteUser} options={usersRoom}/>
+                            </div>   
+                            <h3>BAN User</h3>
+                            <div style={containerSetting}>
+                            <div style={bar}>
+                            <Select onChange={banUser} options={usersRoom}/>
+                            </div> 
+                            </div>
+                            {/*<h1>Admins : </h1>*/}
                             {/* <div style={body}>
                                 {usersRoom.map((user) => 
 
