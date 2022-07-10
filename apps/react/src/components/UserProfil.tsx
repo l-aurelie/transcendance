@@ -48,9 +48,11 @@ const UserProfil = (props) => {
     {/* Ce qui est entre les deux modalWindow correspond a children recu en prop de la ft ModalWindow
     ** et sera affiche conditionnellement selon l'etat de revele */} 
     <ModalWindow revele={revele} setRevele={toggleModal}>
-      <UserProfilExtended name={user.login}/>
-     <UserForm user={user}/> 
-     <UserFormAvatar user={user} />
+      <UserProfilExtended myuser={user}/><br></br>
+    <div style={{display:'flex', justifyContent:'space-around'}}>
+     <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user}/></div>
+     <div><h2>Change your photo</h2><UserFormAvatar user={user} /></div>
+    </div>
     </ModalWindow>
     
     <div>{user.login}</div>

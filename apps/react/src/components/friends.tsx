@@ -6,9 +6,9 @@ import FriendUserProfilExtended from './FriendUserProfileExtended';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import { socket } from './Socket';
 const hello = {
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflowY: 'scroll',
+   // alignItems: 'center',
+ //   justifyContent: 'center',
+  //  overflowY: 'scroll',
 } as React.CSSProperties;
 
 const Friends = () => {

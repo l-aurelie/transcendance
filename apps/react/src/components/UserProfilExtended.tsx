@@ -8,7 +8,7 @@ import MatchHistory from "./MatchHistory";
 import Leaderboard from "./Leaderboard";
 
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
-const UserProfilExtended = ({name}) => {
+const UserProfilExtended = ({myuser}) => {
     
     const [user, setUser] = useState([] as any);
     const [wins, setWins] = useState([]);
@@ -19,7 +19,7 @@ const UserProfilExtended = ({name}) => {
     const toggleModal = () => {setRevele(!revele);} 
     
     useEffect(() => {
-        axios.get("http://localhost:3000/users/" + user.name, {withCredentials:true}).then((res) =>{
+        axios.get("http://localhost:3000/users/" + myuser.login, {withCredentials:true}).then((res) =>{
         console.log('User profil extended : ', res.data);
         setUser(res.data);
         })
@@ -47,21 +47,24 @@ const UserProfilExtended = ({name}) => {
     
     return(
         <div>
-            <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />
-            <button>SetProfil</button>
-            <div>{user.login}</div>
-            <p>Victoires: {wins} </p>
-            <p>Defaites: {losses} </p>
-            <p>Ranking: {ranking} </p>
-            <div>{user.email}</div>
-             <Friends></Friends>
-            <FriendReqs></FriendReqs>
-            <Leaderboard></Leaderboard>
-            <button onClick={toggleModal}>Match History</button>
+            <div style={{display:'flex', justifyContent:'center'}}>
+                <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
+            </div>
+            <h1 style={{display:'flex', justifyContent:'center'}}>{user.login}</h1>
+            <div style={{display:'flex', justifyContent:'space-around'}}>
+                <div>Victoires: {wins} </div>
+                <div>Defaites: {losses} </div>
+                <div>Ranking: {ranking} </div>
+            </div>
+            <div style={{display:'flex', justifyContent:'space-around'}}>
+             <p><Friends></Friends></p>
+            <p><FriendReqs></FriendReqs></p>
+            <p><Leaderboard></Leaderboard></p>
+            <p><button onClick={toggleModal}>Match History</button></p>
+        </div>
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <MatchHistory history={history}></MatchHistory>
             </ModalWindow>
-            <div>2fa</div>
         </div>
     );
 }

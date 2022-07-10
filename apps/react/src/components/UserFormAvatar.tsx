@@ -39,9 +39,9 @@ function UserFormAvatar({user}) {
     return (
         <div className="App">
             <form onSubmit={handleSubmit(onSubmit)}>
-                <input type="file" {...register("file")} />
+                <input type="file" {...register("file")} /><br></br><br></br>
 
-                <input type="submit" value="send"/>
+                <input type="submit" value="Set photo"/>
             </form>
         </div>
     );

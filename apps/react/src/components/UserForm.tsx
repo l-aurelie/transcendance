@@ -44,14 +44,14 @@ class UserForm extends React.Component<any, any, any> {
           twoFA: props.user.twoFA,
         };
  
-      this.fileInput = React.createRef();
+      //this.fileInput = React.createRef();
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
   
     //-* Gestion des champs controles/chgt des valeur 
     handleChange(e) {
-      console.log('handlechange');
+     // console.log('handlechange');
         const name = e.target.name;
         const type = e.target.type;
         const value = type === 'checkbox' ? e.target.checked : e.target.value;
@@ -122,14 +122,14 @@ class UserForm extends React.Component<any, any, any> {
             <div>
                 <label>Two-factor Authentication
                 <input type="checkbox" value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA" /></label>
-            </div>
-            <div>
+            </div><br></br>
+            {/* <div>
                 <label>Photo
                 
                 <input type="file" ref={this.fileInput} /></label>
-            </div>
-            <input type="submit" value="Envoyer" />
-            {JSON.stringify(this.state)}
+            </div> */}
+            <input type="submit" value="Set changes" />
+            {/* {JSON.stringify(this.state)} */}
         </form>
       );
     }
