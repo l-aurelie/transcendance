@@ -41,9 +41,9 @@ class UserForm extends React.Component<any, any, any> {
           id: props.user.id,
           login: props.user.login,
           email: props.user.email,
-          twoFA: props.user.twoFA,
+          twoFA: props.twoFa,
         };
- 
+ console.log('props 2fa',props.twoFa, this.state.twoFA, "yo");
       //this.fileInput = React.createRef();
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
@@ -120,8 +120,9 @@ class UserForm extends React.Component<any, any, any> {
                 <input type="text" value={this.state.email} onChange={this.handleChange} id="email" name="email" /></label>
             </div>
             <div>
+              { this.state.twoFA === false ? <input type="checkbox"  value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA"/> : <input type="checkbox"  value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA" checked/>}
                 <label>Two-factor Authentication
-                <input type="checkbox" value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA" /></label>
+                </label>
             </div><br></br>
             {/* <div>
                 <label>Photo

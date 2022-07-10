@@ -2,7 +2,7 @@
 //TODO: Mettre le bouton login dans son propre composant ?
 
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserForm from './UserForm';
 import UserProfilExtended from './UserProfilExtended';
@@ -10,16 +10,27 @@ import UserFormAvatar from './UserFormAvatar';
 import { socket } from "./Socket";
 
 const UserProfil = (props) => {
+    //const actual = props.dataFromParent;
+    //const [user, setUser] = useState(props.dataFromParent);
     const user = props.dataFromParent;
+    const [twofa, settwofa] = useState(false);
     const [connected, setConnected] = useState([false] as any);
 
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
-    const toggleModal = () => {setRevele(!revele);} 
+    const toggleModal = () => {setRevele(!revele);
+      
+        console.log('in user profil user demand');
+        axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
+            settwofa(res.data.twoFA)
+            console.log('user demand',res.data.twoFA);
+        })
+      ;} 
     /*------*/
 
    
-  
+
+
   // fonction trigger lorsque l'on clique sur le bouton, qui va lgout l'utilisateur s'il est connecte ou le login s'il ne l'est pas
   const handleClick = event => {
     if (connected) {
@@ -50,7 +61,7 @@ const UserProfil = (props) => {
     <ModalWindow revele={revele} setRevele={toggleModal}>
       <UserProfilExtended myuser={user}/><br></br>
     <div style={{display:'flex', justifyContent:'space-around'}}>
-     <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user}/></div>
+     <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} twoFa={twofa}/></div>
      <div><h2>Change your photo</h2><UserFormAvatar user={user} /></div>
     </div>
     </ModalWindow>
