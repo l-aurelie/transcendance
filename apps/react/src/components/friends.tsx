@@ -4,7 +4,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-
+import { socket } from './Socket';
 const hello = {
     alignItems: 'center',
     justifyContent: 'center',
@@ -19,7 +19,12 @@ const Friends = () => {
     const toggleModal = () => {setRevele(!revele);} 
     const toggler = () => {setReveller(!reveller);} 
     /*------*/
-
+    socket.on("changeColor", data => {
+        axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+         setFriends(res.data);
+         console.log('after socket on, ', res.data);
+         });
+      });
     /*get friendlist*/
     useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
@@ -33,7 +38,12 @@ const Friends = () => {
                 <h1>My friends</h1>
                 {friends.map(friends => (
                     <div>
-                    <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={friends.avatar}/><br></br></p>
+                        <p><svg width="112" height="100" viewBox='0 0 110 100'>
+              <foreignObject x="0" y="0" width="110" height="100" >
+                <div><img style={{maxWidth: "100px", maxHeight: "100px", borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/></div>
+              </foreignObject>
+            <rect width="20" height="20" x="75" y="80" rx="10" ry="10" fill={friends.color}></rect></svg><br></br></p>
+                   {/* <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} src={friends.avatar}/><br></br></p>*/}
                      <button onClick={toggler}>{friends.login}</button>
                      <ModalWindow revele={reveller} setRevele={toggler}>
                      <FriendUserProfilExtended Value={friends.login}/>

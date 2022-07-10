@@ -18,15 +18,24 @@ const onChange = (event) => {
   const [value, setValue] = useState([]);
   /* Outils d'affichage de la modale */
   const [revele, setRevele] = useState(false);
-  const toggleModal = () => {setRevele(!revele);} 
+  const toggleModal = () => {setRevele(!revele);}
+  const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
   /*------*/
   
   /*get friendlist*/    
   useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-      setFriends(res.data);
-    })
+    setFriends(res.data);
+    });
+
+    socket.on("changeColor", data => {
+      axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+       setFriends(res.data);
+       console.log('after socket on, ', res.data);
+       });
+    });
   }, [])
+
 
   const beginChat = (friend) => {
     console.log('beginchat',props.user);
@@ -42,7 +51,12 @@ const onChange = (event) => {
         <div>
           <div style={lists}>
             {friends.map(friends => (
-            <p><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/> {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
+            <p><svg width="48" height="40" viewBox='0 0 45 40'>
+              <foreignObject x="0" y="0" width="45" height="40" >
+                <div><img style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/></div>
+              </foreignObject>
+            <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={friends.color}></rect></svg>
+            {friends.login} | <button onClick={() => {beginChat(friends)}}>L</button>Spectate | Defeat |<br></br></p>
             ))}   
           </div>
           <p>Search for friends</p>
