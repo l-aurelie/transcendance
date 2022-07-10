@@ -24,7 +24,7 @@ const UserProfil = (props) => {
   const handleClick = event => {
     if (connected) {
       axios.get("http://localhost:3000/auth/logout", { withCredentials:true })
-      socket.emit('disco');
+      socket.emit('logout', {userId:user.id});
       setConnected(false);
     }
     else {

@@ -30,6 +30,7 @@ function UserFormAvatar({user}) {
         const res = await fetch("http://localhost:3000/users/setimg/" + user.id, {
             method: "POST",
             body: formData,
+            credentials: 'include',
         }).then((res) => res.json());
         alert(JSON.stringify(`${res.message}, status: ${res.status}`));
     };

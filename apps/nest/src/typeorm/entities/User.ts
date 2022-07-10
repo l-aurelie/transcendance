@@ -92,7 +92,7 @@ interface IUser {
         avatar: string;
         email: string;
         Avatar2 : Avatar;
-        authConfirmToken: number;
+        authConfirmToken?: number;
         isVerified: boolean;
         isConnected:boolean;
         isPlaying?: boolean;

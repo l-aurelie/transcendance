@@ -21,7 +21,13 @@ const headStyle = {
     borderWidth: '1px',
     borderColor: 'dark',
 }
-
+const allStyle = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+ //   borderStyle: 'solid',
+    borderWidth: '1px',
+    //borderColor: 'dark',
+}
 /*
 const background = {
     background: 'rgba(0,0,0,0.5)',
@@ -33,7 +39,12 @@ const background = {
     zIndex: '9998'
 }
 */
-
+const bodyLogoutStyle = {
+    display: 'flex',
+    width:"100%",
+    height: "100vh",
+    justifyContent:'center',
+}
 const bodyStyle = {
     display: 'flex',
     width:"100%",
@@ -44,6 +55,11 @@ const bodyStyle = {
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'dark',
+}
+
+const thankStyle = {
+    position:'absolute' as 'absolute',
+    top:'50%'
 }
 
 const chatStyle = {
@@ -73,7 +89,7 @@ const gameStyle = {
 const Home = () => {
    
     const [profil, setProfil/*, setlogins*/] = useState([] as any);
-    
+    const [login, setLogin] = useState(false);
     //DECOMMENTER POUR AFFICHER L'AVATAR + deccomment ligne 114
     /*
     const [avatar, setAvatar] = useState([] as any);
@@ -101,21 +117,28 @@ const Home = () => {
        axios.get("http://localhost:3000/users", { withCredentials:true })
        .then((res) =>{ 
         setProfil(res.data); 
+        setLogin(true);
         socket.emit('whoAmI', res.data);
     })
         .catch(error => {
             if (error.response && error.response.status === 403)
                 window.location.href = "http://localhost:4200/";
             })
+
+    socket.on('logout', data => {
+        socket.emit('disco');
+        setProfil([]);
+        setLogin(false);
+    });
     }, [])
   /*      axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
         setlogins(res.data); 
       })*/
 
-    if (profil.id)
+    if (login)
     {
         return (
-        <div>
+         <div>
            {/* <div><img src={avatar} alt="rien" /></div> */} 
            
             <div style={headStyle}>
@@ -132,7 +155,19 @@ const Home = () => {
     );
     }
     else
-        return null;    
+    return (
+    <div>
+    {/* <div><img src={avatar} alt="rien" /></div> */} 
+    
+     <div style={allStyle}>
+         <Logo></Logo>
+         <UserProfil dataFromParent={profil}></UserProfil>
+     </div>
+     <div style={bodyLogoutStyle}>
+                <div style={thankStyle}><p><b>Thank you! See you soon !</b></p></div>
+    </div>
+ </div>
+    );
 };
 
 export default Home;

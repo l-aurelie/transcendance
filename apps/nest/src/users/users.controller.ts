@@ -2,7 +2,7 @@
 
 import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body, UseInterceptors, UploadedFile, Res, StreamableFile } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthenticatedGuard } from 'src/auth/guards';
+import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { User } from 'src/typeorm/entities/User';
 import { Avatar } from 'src/typeorm/entities/Avatar';
@@ -53,7 +53,8 @@ export class UsersController {
    }*/
 
    /* WIP: set le profil avec le formulaire envoye */
-   //@UseGuards(AuthenticatedGuard)
+   @UseGuards(AuthenticatedGuard)
+   //@UseGuards(IntraAuthGuard)
    @Post('set')
    async setUsers(@Req() req: RequestWithUser, @Body() body: setProfilDto) {
       console.log('SetUser===()');
@@ -77,7 +78,8 @@ export class UsersController {
    }*/
 
    //-* UPLOAD l'image et la place dans la base de donnee
-   //@UseGuards(AuthenticatedGuard)
+  // @UseGuards(AuthenticatedGuard)
+   @UseGuards(AuthenticatedGuard)
    @Post('setimg/:userId')
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
@@ -85,6 +87,7 @@ export class UsersController {
    //   console.log('===setImg()')
     //  console.log('file', file);
       //const ActualUser = await this.userRepo.findOne({id : 1});
+      console.log('passe in img');
       const buf64 = (file.buffer).toString('base64');
       let newUrl;
       if (file.mimetype === 'image/jpeg')
@@ -132,7 +135,7 @@ export class UsersController {
       //console.log('req.user', req.user);
     //  return ('SetImg()');
    }
-
+   @UseGuards(AuthenticatedGuard)
   @Post('changemdp/:currentSalonId/:newmdp')
    async changeMdp(
    @Param('newmdp') new_password: string, 
@@ -153,8 +156,7 @@ export class UsersController {
       
          const isMatch = await bcrypt.compare(password, hash); */
    }
-
-
+   @UseGuards(AuthenticatedGuard)
   @Post('resetpwd/:currentSalonId')
   async resetPwd(
   @Param('currentSalonId') salonId: string) {
@@ -170,6 +172,7 @@ export class UsersController {
      const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: room_user.room.password});
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Post('/setAdminTrue/:currentSalonId/:idNewAdm')
    async setAminTrue(@Param('currentSalonId') salonId: string,
    @Param('idNewAdm') idNewAdm: string) {
@@ -185,7 +188,8 @@ export class UsersController {
       //room_user.isAdmin = true;
       //const ret = await this.roomUser.save(room_user);
    }
-
+   
+   @UseGuards(AuthenticatedGuard)
    @Post('/setAdminFalse/:currentSalonId')
    async setAminFalse(@Param('currentSalonId') salonId: string) {
       const currentSal = parseInt(salonId);

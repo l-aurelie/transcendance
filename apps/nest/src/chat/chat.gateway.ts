@@ -75,6 +75,11 @@ console.log('handleDisconnect');
     async leaveRoom(client, name) {
       client.leave(name);
     }
+    @SubscribeMessage('logout')
+    async logOut(client, infos) {
+       this.server.to('sockets' + infos.userId).emit('logout');
+
+    }
     @SubscribeMessage('disco')
     async disconnect(client) {
         client.disconnect();

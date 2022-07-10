@@ -115,7 +115,7 @@ export class AuthController {
      console.log ('coucou');
      }
     
-
+     @UseGuards(AuthenticatedGuard)
     @Post('/verify')
     async Verify(@Body() body, @Res() res) { // cette fonction servira quand on activera l'authentification avec le 2FA qui envoit des un code par mail pour verifier l'utilisateur, actuellement il est desactive pour eviter les spam demail et c'est mieux si c'est l' utilisateur qui choisi de l' activer ou non.
       try{

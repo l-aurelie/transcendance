@@ -2,6 +2,7 @@
 import axios from 'axios';
 import React from 'react';
 import {Navigate} from "react-router-dom";
+import Logo from '../components/Logo';
 
 
 class Verify extends React.Component<any, any, any> {
@@ -42,15 +43,21 @@ class Verify extends React.Component<any, any, any> {
       else
       {
       return (
-        <div>
-        <form onSubmit={this.handleSubmit}>
+        
+        <div style={{width:"100%", height:"100%", textAlign:'center'}}>
+          <div>
+          <Logo></Logo>
+        </div>
+          <div style={{position: "absolute", top:"45%", left:"25%"}}>
+        <form  onSubmit={this.handleSubmit}>
           <label>
-            Nom :
+            Please, check your mail and enter your secret number : <br></br><br></br>
             <input type="text" value={this.state.value} onChange={this.handleChange} />
             </label>
-          <input type="submit" value="Envoyer" />
+          <input type="submit" value="Send" />
         </form>
         <b>{this.state.message ? '' : 'wrong code, please try again'}</b> 
+        </div>
         </div>
       );
      }
