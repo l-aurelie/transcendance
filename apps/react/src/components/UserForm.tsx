@@ -51,6 +51,7 @@ class UserForm extends React.Component<any, any, any> {
   
     //-* Gestion des champs controles/chgt des valeur 
     handleChange(e) {
+      console.log('handlechange');
         const name = e.target.name;
         const type = e.target.type;
         const value = type === 'checkbox' ? e.target.checked : e.target.value;
@@ -68,6 +69,7 @@ class UserForm extends React.Component<any, any, any> {
     async handleSubmit(e) {
       //alert('Le nom a été soumis : ' + this.state.value);
       e.preventDefault();
+
       //let userFormData = new FormData();
       //userFormData.append("avatar", this.fileInput.current.file[0]);
       //userFormData.forEach((value, key) => {

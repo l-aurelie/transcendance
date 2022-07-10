@@ -24,6 +24,7 @@ function UserFormAvatar({user}) {
     };*/
 
     const onSubmit = async (data) => {
+        console.log('submit avatar');
         const formData = new FormData();
         formData.append("file", data.file[0]);
 
@@ -40,10 +41,17 @@ function UserFormAvatar({user}) {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input type="file" {...register("file")} />
 
-                <input type="submit" />
+                <input type="submit" value="send"/>
             </form>
         </div>
     );
 }
 
+{/* <form  onSubmit={this.handleSubmit}>
+<label>
+  Please, check your mail and enter your secret number : <br></br><br></br>
+  <input type="text" value={this.state.value} onChange={this.handleChange} />
+  </label>
+<input type="submit" value="Send" />
+</form> */}
 export default UserFormAvatar;

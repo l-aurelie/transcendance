@@ -16,10 +16,11 @@ const FriendReqss = () => {
 
 
     useEffect(() => {
+        console.log('in friend request');
         axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
             setreqs(res.data);
         })
-    });
+    },[]);
 
     return(
         <div>

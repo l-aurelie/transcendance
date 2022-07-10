@@ -54,7 +54,7 @@ const UserProfilExtended = ({name}) => {
             <p>Defaites: {losses} </p>
             <p>Ranking: {ranking} </p>
             <div>{user.email}</div>
-            <Friends></Friends>
+             <Friends></Friends>
             <FriendReqs></FriendReqs>
             <Leaderboard></Leaderboard>
             <button onClick={toggleModal}>Match History</button>

@@ -88,6 +88,8 @@ export class UsersController {
     //  console.log('file', file);
       //const ActualUser = await this.userRepo.findOne({id : 1});
       console.log('passe in img');
+      if (!file || !file.buffer)
+         return;
       const buf64 = (file.buffer).toString('base64');
       let newUrl;
       if (file.mimetype === 'image/jpeg')
