@@ -41,7 +41,8 @@ export class UsersController {
    getUser(@Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
 //     console.log('===getUser', user);
-     return (user);
+return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified});
+//  return (user);
      }
 
   /* @UseGuards(AuthenticatedGuard)
@@ -210,7 +211,14 @@ export class UsersController {
    async getUsers() {
       const users = await this.userServ.findAll();
       //console.log('GetUsers()');
-      return (users);
+      let tab = [];
+      for (let entry of users)
+      {
+     // return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA});
+      tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified})
+      }
+      //return (users);
+   return(tab);
    }
 
    /* Retourne le user [login] */
@@ -218,15 +226,18 @@ export class UsersController {
    async getUserByLogin(@Param() params) {
       const user = await this.userServ.findUserByLogin(params);
       //console.log('=====getUserByLogin()', user);
-      return (user);
+      //return (user);
+      return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified});
    }
 
    /* Retourne le user [id] */
    @Get(':id')
-   async getUserByID(@Param() userStringId: string): Promise<User> {
+   async getUserByID(@Param() userStringId: string) {
       const userId = parseInt(userStringId);
       const user = await this.userServ.findUserById(userId);
-      return (user);
+      //return (user);
+      return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified});
+
    }
    @Get('userRooms/:id')
    async getUserRooms(@Param('id') id : string) {

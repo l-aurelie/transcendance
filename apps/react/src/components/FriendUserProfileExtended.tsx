@@ -55,7 +55,7 @@ useEffect(() => {
     axios.get("http://localhost:3000/stats/getRankingFriend/" + Value, {withCredentials:true}).then((res) =>{
     setRanking(res.data);
     })
-});
+},[]);
 
 /****************************************/
 /*ACTION FUNCTIONS: send/accept/reject***/
