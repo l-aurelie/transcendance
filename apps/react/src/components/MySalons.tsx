@@ -30,7 +30,7 @@ const channel = {
     width: "100%",
     // backgroundColor: 'green',
     display: "flex",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
 }
 
 const buttons = {
@@ -234,17 +234,18 @@ const MySalons = (props) => {
     }
 
     const muteUser = (event) => {
-        console.log('mute this guy'   + event.label);
-        //sokcet emit('addAdmin') with 
-            //event.label -> login to mute
-            //room on va avoir besoin de salon.......
+        const inf = { userId : event.value, roomId: currentSalon.roomId, muteUser: true};
+        console.log('mute this guy'   + event.value);
+        axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
+            console.log(event.label + " is muted...")
+        });
     }
 
     const banUser = (event) => {
-        console.log('Ban this guy'   + event.label);
-        //sokcet emit('addAdmin') with 
-            //event.label -> login to ban
-            //room on va avoir besoin de salon.......
+        const inf = { userId : event.value, roomId: currentSalon.roomId, banUser: true};
+        axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
+            console.log(event.label + " is banned...")
+        });
     }
 
     return(
