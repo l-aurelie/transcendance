@@ -15,7 +15,11 @@ import { RoomEntity, RoomUser } from 'src/typeorm';
 import { RoomService } from 'src/chat/service/room.service';
 import * as bcrypt from 'bcrypt';
 
-
+export class setUserRoomDto {
+   userId: string;
+   roomId:string;
+   pwd: string;
+}
 export class setProfilDto {
    login: string;
    email:string;
@@ -147,31 +151,28 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
     //  return ('SetImg()');
    }
    @UseGuards(AuthenticatedGuard)
-  @Post('changemdp/:currentSalonId/:newmdp')
-   async changeMdp(
-   @Param('newmdp') new_password: string, 
-   @Param('currentSalonId') salonId: string) {
-      const currentSal = parseInt(salonId);
+  @Post('changemdp')
+   async changeMdp(@Body() body: setUserRoomDto) {
+      const currentSal = parseInt(body.roomId);
       const room_user = await this.roomUser.findOne(
          { relations: ["room"],
             where : {roomId: currentSal}
          });
       const saltOrRounds = 10;
-      const hash =  await bcrypt.hash(new_password, saltOrRounds);
-      console.log("NEW PASSWORD" + new_password);
+      const hash =  await bcrypt.hash(body.pwd, saltOrRounds);
+      console.log("NEW PASSWORD" + body.pwd);
       console.log("HASH ===> " , hash);
       room_user.room.password = hash;
       const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: hash});
-         
+      return({status:201})
       /* To compare/check a password, use the compare function:
       
          const isMatch = await bcrypt.compare(password, hash); */
    }
    @UseGuards(AuthenticatedGuard)
-  @Post('resetpwd/:currentSalonId')
-  async resetPwd(
-  @Param('currentSalonId') salonId: string) {
-     const currentSal = parseInt(salonId);
+  @Post('resetpwd')
+  async resetPwd(@Body() body: setUserRoomDto) {
+     const currentSal = parseInt(body.roomId);
      const room_user = await this.roomUser.findOne(
         { relations: ["room"],
            where : {roomId: currentSal}
@@ -181,21 +182,23 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
      console.log(room_user);
      console.log("NEW PASSWORD :" + "[" + room_user.room.password +  ']');
      const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: room_user.room.password});
-  }
+     return({status:201})
+   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post('/setAdminTrue/:currentSalonId/:idNewAdm')
-   async setAminTrue(@Param('currentSalonId') salonId: string,
-   @Param('idNewAdm') idNewAdm: string) {
+  @Post('/setAdminTrue')///:currentSalonId/:idNewAdm')
+   async setAminTrue(@Body() body: setUserRoomDto)// ,@Param('currentSalonId') salonId: string,@Param('idNewAdm') idNewAdm: string) 
+   {
 
-      const currentSal = parseInt(salonId);
-      const adm = parseInt(idNewAdm)
+      const currentSal = parseInt(body.roomId);//salonId);
+      const adm = parseInt(body.userId);//idNewAdm)
       const room_user = await this.roomUser.findOne(
          {
             where : {roomId: currentSal, userId: adm}
          });
       console.log('room user id' ,room_user.id);
          this.roomUser.update({id:room_user.id}, {isAdmin:true});
+      return({status:201})
       //room_user.isAdmin = true;
       //const ret = await this.roomUser.save(room_user);
    }

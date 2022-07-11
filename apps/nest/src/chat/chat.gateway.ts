@@ -110,8 +110,12 @@ console.log('handleDisconnect');
         {
                 if (arrayBlockedUsers.includes(entry.sender.id))
                    break;
-                tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
-        }
+                const roomUser = await this.roomUserRepo.findOne({where: {userId:entry.senderId, roomId:data.roomId}});
+                if (roomUser.mute === false)
+                {
+                    tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
+                }
+            }
         /*tab = await Promise.all(message.map( async (it) : Promise<any[]> => {
                 if (arrayBlockedUsers.includes(it.sender.id))
                    return tab;
@@ -127,6 +131,15 @@ console.log(tab);
     /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */
      @SubscribeMessage('user_joins_room')
      async user_joins_room(client, infos) {
+        if(infos.roomId)
+        {
+            const roomUser = await this.roomUserRepo.findOne({where: {userId:infos.userId, roomId:infos.roomId}});
+                if (roomUser && roomUser.ban === true)
+                {
+                    console.log('bann = true');
+                    return;
+                }
+        }
     /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
        this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.room);
     /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
@@ -168,7 +181,12 @@ console.log(tab);
         //any clients listenning  for the chat event on the data.roomToEmit channel would receive the message data instantly
         const time = new Date(Date.now()).toLocaleString();
         await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
-
+        if (!data.isDm)
+        {
+            const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
+            if (roomUser.mute === true)
+                return;
+        }
         /* on récupère les infos de block */
         /* on fait un array constitué de tous les salons de sockets qui nous ont blouqués pour ne pas leur emit grâce à .except */
         let bannedMe = await this.userBlockRepo.createQueryBuilder().where({ blockedUserId: data.whoAmI.id }).execute();

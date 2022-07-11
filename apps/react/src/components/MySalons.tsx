@@ -118,7 +118,7 @@ const MySalons = (props) => {
             socket.on('fetchmessage', data => {
                 setMessage(data);
             });
-            socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id});
+            socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id, roomId:currentSalon.roomId});
         }
         socket.on("chat", data => {
             setMessage((message) => {
@@ -205,26 +205,29 @@ const MySalons = (props) => {
     if (pwd !== "") {
         setPwd(pwdRef.current.value);
         event.preventDefault();
+        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
         console.log('pwd => ', pwdRef.current.value);
-        axios.post("http://localhost:3000/users/changemdp/" + currentSalon.roomId + "/" +  pwdRef.current.value, {withCredentials:true}).then((res) => {
+        axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
         });
-        event.target.reset(); //clear all input values in the form
+        event.target.reset(); //clear all input values in the form withCredentials:true
         return;
     }
 };
     
     const resetPassword = (event) => {
+        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};
         event.preventDefault();
-        axios.post("http://localhost:3000/users/resetpwd/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+        axios.post("http://localhost:3000/users/resetpwd", inf, {withCredentials:true}).then((res) => {
         });
         console.log('pwd to DELETE => ', pwd);
         
     };
     
     const addAdmin = (event) => {
+        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};
         console.log('add this friend in admin for this salon '  + event.label);
         console.log('Users in Room ==> ', usersRoom);
-        axios.post("http://localhost:3000/users/setAdminTrue/" + currentSalon.roomId + "/" + event.value, {withCredentials:true}).then((res) => {
+        axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
             console.log("in set amdin true");
         });
         console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
