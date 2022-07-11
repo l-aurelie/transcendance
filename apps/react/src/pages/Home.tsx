@@ -130,6 +130,11 @@ const Home = () => {
         setProfil([]);
         setLogin(false);
     });
+        socket.on("changeInfos", data => {
+          axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
+          setProfil(res.data);
+          });
+       });
     }, [])
   /*      axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
         setlogins(res.data); 
