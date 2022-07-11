@@ -60,9 +60,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async setUsers(@Req() req: RequestWithUser, @Body() body: setProfilDto) {
       console.log('SetUser===()');
       console.log('BODY1', body);
+      const already = await this.userRepo.findOne({where:{login: req.body.login}});
+      if (already)
+      {
+         if (already.id !== req.body.id)
+            return false;
+      }
      // console.log('req.user', req.user);
       await this.userRepo.update({ id: req.body.id }, {login: req.body.login, email: req.body.email, twoFA: req.body.twoFA});
-      return ('SetUsers()');
+      return (true);
    }
 
    //-* A DECOMMENTER pour obtenir l'img

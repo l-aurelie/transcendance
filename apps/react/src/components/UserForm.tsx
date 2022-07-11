@@ -43,7 +43,9 @@ class UserForm extends React.Component<any, any, any> {
           login: props.user.login,
           email: props.user.email,
           twoFA: props.user.twoFA,
-          toggle: props.toggle
+          toggle: props.toggle,
+          ok: true,
+          message:false
         };
  console.log('props 2fa',props.twoFa, this.state.twoFA, "yo");
       //this.fileInput = React.createRef();
@@ -71,7 +73,7 @@ class UserForm extends React.Component<any, any, any> {
     async handleSubmit(e) {
       //alert('Le nom a été soumis : ' + this.state.value);
       e.preventDefault();
-
+     // this.setState({ok:true, message:false});
       //let userFormData = new FormData();
       //userFormData.append("avatar", this.fileInput.current.file[0]);
       //userFormData.forEach((value, key) => {
@@ -85,7 +87,17 @@ class UserForm extends React.Component<any, any, any> {
           twoFA: this.state.twoFA,
       }
       axios.post("http://localhost:3000/users/set", formUser, {withCredentials:true}).then((res) =>{
-        console.log("form submit");  
+        console.log("form submit"); 
+        console.log(res);
+        if (res.data === false)
+        {
+          console.log('enter data === false');
+          this.setState({ok:false, message:true})
+        }
+        else{
+          socket.emit('changeInfos', this.state.id);
+          this.state.toggle();
+        }
       })
      // try {
      //   const ret = await axios.get("http://localhost:3000/users/set");
@@ -108,8 +120,11 @@ class UserForm extends React.Component<any, any, any> {
       //  email: '',
       //  twoFA: false
       //});
-      socket.emit('changeInfos', this.state.id);
-      this.state.toggle();
+      // if (this.state.ok === true)
+      // {
+      // socket.emit('changeInfos', this.state.id);
+      // this.state.toggle();
+      // }
     }
   
     render() {
@@ -133,7 +148,7 @@ class UserForm extends React.Component<any, any, any> {
                 
                 <input type="file" ref={this.fileInput} /></label>
             </div> */}
-            <input type="submit" value="Set changes" />
+            <input type="submit" value="Set changes" /><b>{this.state.message ? 'log already use...' : ''}</b>
             {/* {JSON.stringify(this.state)} */}
         </form>
       );
