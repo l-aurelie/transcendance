@@ -148,7 +148,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    }
    @UseGuards(AuthenticatedGuard)
   @Post('changemdp/:currentSalonId/:newmdp')
-   async changeMdp(
+   async changeMdp(@Req() req: RequestWithUser,@Body() body: setProfilDto,
    @Param('newmdp') new_password: string, 
    @Param('currentSalonId') salonId: string) {
       const currentSal = parseInt(salonId);

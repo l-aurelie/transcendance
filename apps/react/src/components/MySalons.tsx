@@ -118,7 +118,7 @@ const MySalons = (props) => {
             socket.on('fetchmessage', data => {
                 setMessage(data);
             });
-            socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id});
+            socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id, roomId:currentSalon.roomId});
         }
         socket.on("chat", data => {
             setMessage((message) => {
@@ -206,9 +206,9 @@ const MySalons = (props) => {
         setPwd(pwdRef.current.value);
         event.preventDefault();
         console.log('pwd => ', pwdRef.current.value);
-        axios.post("http://localhost:3000/users/changemdp/" + currentSalon.roomId + "/" +  pwdRef.current.value, {withCredentials:true}).then((res) => {
+        axios.post("http://localhost:3000/users/changemdp/" + currentSalon.roomId + "/" +  pwdRef.current.value, {withCredentials: true}).then((res) => {
         });
-        event.target.reset(); //clear all input values in the form
+        event.target.reset(); //clear all input values in the form withCredentials:true
         return;
     }
 };
