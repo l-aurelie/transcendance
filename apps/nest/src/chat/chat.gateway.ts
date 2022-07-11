@@ -134,8 +134,11 @@ console.log(tab);
         if(infos.roomId)
         {
             const roomUser = await this.roomUserRepo.findOne({where: {userId:infos.userId, roomId:infos.roomId}});
-                if (roomUser.ban === true)
+                if (roomUser && roomUser.ban === true)
+                {
+                    console.log('bann = true');
                     return;
+                }
         }
     /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
        this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.room);
