@@ -197,10 +197,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             where : {roomId: currentSal, userId: adm}
          });
       console.log('room user id' ,room_user.id);
-         this.roomUser.update({id:room_user.id}, {isAdmin:true});
+      this.roomUser.update({id:room_user.id}, {isAdmin:true});
       return({status:201})
-      //room_user.isAdmin = true;
-      //const ret = await this.roomUser.save(room_user);
    }
    
    @UseGuards(AuthenticatedGuard)
@@ -216,6 +214,36 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const ret = await this.roomUser.save(room_user);
    }
 
+   @UseGuards(AuthenticatedGuard)
+   @Post('/mute')
+   async mute(@Body() body: setUserRoomDto)
+   {
+      const currentSal = parseInt(body.roomId);
+      const id = parseInt(body.userId)
+      const room_user = await this.roomUser.findOne(
+         {
+            where : {roomId: currentSal, userId: id}
+         });
+      this.roomUser.update({id: room_user.id}, {mute:true});
+      console.log("is mute = " + room_user.mute);
+      return({status:201})
+
+   }
+
+   @UseGuards(AuthenticatedGuard)
+   @Post('/ban')
+   async ban(@Body() body: setUserRoomDto)
+   {
+      const currentSal = parseInt(body.roomId);
+      const id = parseInt(body.userId)
+      const room_user = await this.roomUser.findOne(
+         {
+            where : {roomId: currentSal, userId: id}
+         });
+      this.roomUser.update({id:room_user.id}, {ban:true});
+      console.log("is ban = " + room_user.ban);
+      return({status:201})
+   }
 
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')
