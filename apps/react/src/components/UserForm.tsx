@@ -2,37 +2,8 @@
 import axios from "axios";
 import React from "react";
 import { socket } from "./Socket";
-//import { useForm } from "react-hook-form";
 
 //-* Formulaire de modif de profil 
-
-
-/*function UserForm() {
-
-     const { register, handleSubmit } = useForm();
-
-    const onSubmit = async (data) => {
-        const formData = new FormData();
-        formData.append("file", data.file[0]);
-
-        const res = await fetch("http://localhost:3000/users/setimg", {
-            method: "POST",
-            body: formData,
-        }).then((res) => res.json());
-        alert(JSON.stringify(`${res.message}, status: ${res.status}`));
-    };
-
-    return (
-        <div className="App">
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <input type="file" {...register("file")} />
-
-                <input type="submit" />
-            </form>
-        </div>
-    );
-}*/
-
 
 class UserForm extends React.Component<any, any, any> {
     constructor(props: any) {
@@ -55,7 +26,6 @@ class UserForm extends React.Component<any, any, any> {
   
     //-* Gestion des champs controles/chgt des valeur 
     handleChange(e) {
-     // console.log('handlechange');
         const name = e.target.name;
         const type = e.target.type;
         const value = type === 'checkbox' ? e.target.checked : e.target.value;
@@ -73,12 +43,13 @@ class UserForm extends React.Component<any, any, any> {
     async handleSubmit(e) {
       //alert('Le nom a été soumis : ' + this.state.value);
       e.preventDefault();
-     // this.setState({ok:true, message:false});
+      //this.setState({ok:true, message:false});
       //let userFormData = new FormData();
       //userFormData.append("avatar", this.fileInput.current.file[0]);
       //userFormData.forEach((value, key) => {
-      //  console.log("key %s: value %s", key, value.name);})
-     // console.log('file selected = ', this.fileInput.current.files[0].name);
+      //console.log("key %s: value %s", key, value.name);})
+      //console.log('file selected = ', this.fileInput.current.files[0].name);
+      
       //-* Creation de l'obj a envoyer
       const formUser = {
           id: this.state.id,
@@ -99,27 +70,9 @@ class UserForm extends React.Component<any, any, any> {
           this.state.toggle();
         }
       })
-     // try {
-     //   const ret = await axios.get("http://localhost:3000/users/set");
-     //   console.log(ret);
-     // } catch(error) {
-     //   console.log(error);
-     // }
 
-      // try {
-      //     axios.post("http://localhost:3000/users/set", 
-      //       'truc: toto', {headers: {"Content-Type": "application/x-www-form-urlencoded"},}).
-      //     then((res)=> { console.log("res submit form: ", res); })
-      // } catch(error) {
-      //   console.log(error);
-      // }
       console.log("submit form : ", this.state.login, this.state.email, this.state.twoFA);
-      
-      //this.setState({
-      //  login: '',
-      //  email: '',
-      //  twoFA: false
-      //});
+
       // if (this.state.ok === true)
       // {
       // socket.emit('changeInfos', this.state.id);

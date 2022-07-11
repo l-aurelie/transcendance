@@ -6,23 +6,29 @@ import { useEffect, useState } from "react";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import MatchHistory from "./MatchHistory";
 import Leaderboard from "./Leaderboard";
+import UserFormAvatar from "./UserFormAvatar";
+import UserForm from "./UserForm";
 
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
-const UserProfilExtended = ({myuser}) => {
+const UserProfilExtended = ({user}) => {
     
-    const [user, setUser] = useState([] as any);
+   // const [user, setUser] = useState([] as any);
     const [wins, setWins] = useState([]);
     const [losses, setLosses] = useState([]);
     const [history, setHistory] = useState([]);
     const [ranking, setRanking] = useState([]);
-    const [revele, setRevele] = useState(false);
-    const toggleModal = () => {setRevele(!revele);} 
+
+    const [reveleHistory, setReveleHistory] = useState(false);
+    const toggleHistory = () => {setReveleHistory(!reveleHistory);} 
+    //---
+    const [reveleForm, setReveleForm] = useState(false);
+    const toggleForm = () => {setReveleForm(!reveleForm);} 
     
     useEffect(() => {
-        axios.get("http://localhost:3000/users/" + myuser.login, {withCredentials:true}).then((res) =>{
-        console.log('User profil extended : ', res.data);
-        setUser(res.data);
-        })
+        //axios.get("http://localhost:3000/users/" + myuser.login, {withCredentials:true}).then((res) =>{
+        //console.log('User profil extended : ', res.data);
+        //setUser(res.data);
+        //})
 
         axios.get("http://localhost:3000/stats/getWins", {withCredentials:true}).then((res) =>{
         console.log('User profil extended : ', res.data);
@@ -50,6 +56,13 @@ const UserProfilExtended = ({myuser}) => {
             <div style={{display:'flex', justifyContent:'center'}}>
                 <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
             </div>
+            <p><button onClick={toggleForm}>Set profil</button></p>
+            <ModalWindow revele={reveleForm} setRevele={toggleForm}>
+                <div style={{display:'flex', justifyContent:'space-around'}}>
+                <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
+                <div><h2>Change your photo</h2><UserFormAvatar user={user} toggle={toggleForm}/></div>
+                </div>
+            </ModalWindow>
             <h1 style={{display:'flex', justifyContent:'center'}}>{user.login}</h1>
             <div style={{display:'flex', justifyContent:'space-around'}}>
                 <div>Victoires: {wins} </div>
@@ -60,9 +73,9 @@ const UserProfilExtended = ({myuser}) => {
              <p><Friends></Friends></p>
             <p><FriendReqs></FriendReqs></p>
             <p><Leaderboard></Leaderboard></p>
-            <p><button onClick={toggleModal}>Match History</button></p>
+            <p><button onClick={toggleHistory}>Match History</button></p>
         </div>
-            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <ModalWindow revele={reveleHistory} setRevele={toggleHistory}>
                 <MatchHistory history={history}></MatchHistory>
             </ModalWindow>
         </div>

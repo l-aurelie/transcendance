@@ -1,12 +1,9 @@
 /*aurelie john*/
-//TODO: Mettre le bouton login dans son propre composant ?
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-import UserForm from './UserForm';
 import UserProfilExtended from './UserProfilExtended';
-import UserFormAvatar from './UserFormAvatar';
 import { socket } from "./Socket";
 
 const UserProfil = (props) => {
@@ -14,7 +11,7 @@ const UserProfil = (props) => {
     //const [user, setUser] = useState(props.dataFromParent);
     //const [user, setUser] = useState();
     //setUser(props.dataFromParent);
-  //  let user = props.dataFromParent;
+    //let user = props.dataFromParent;
     const [user, setUser] = useState(props.dataFromParent);
     const [connected, setConnected] = useState([false] as any);
 
@@ -38,8 +35,6 @@ const UserProfil = (props) => {
         });
      });
     },[]);
-  
-
 
   // fonction trigger lorsque l'on clique sur le bouton, qui va lgout l'utilisateur s'il est connecte ou le login s'il ne l'est pas
   const handleClick = event => {
@@ -54,41 +49,25 @@ const UserProfil = (props) => {
     }
   };
 
-
-
   // return conditionnel selon l'etat de connection de l'utilisateur
   if (connected) {
     return(
    // <h2>{props.dataFromParent}</h2>
       <div>
-    {/* Bonton pour display profilExtended + avatar et login */}
-    <button onClick={toggleModal}>
-      <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} src={user.avatar} alt="description yes"/>
-    </button>
+        {/* Bonton pour display profilExtended */}
+        <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/>
+        <ModalWindow revele={revele} setRevele={toggleModal}>
+          <UserProfilExtended user={user} /><br></br>
+        </ModalWindow>
+        <div>{user.login}</div>
 
-    {/* Ce qui est entre les deux modalWindow correspond a children recu en prop de la ft ModalWindow
-    ** et sera affiche conditionnellement selon l'etat de revele */} 
-    <ModalWindow revele={revele} setRevele={toggleModal}>
-      <UserProfilExtended myuser={user}/><br></br>
-    <div style={{display:'flex', justifyContent:'space-around'}}>
-    <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleModal}/></div>
-     <div><h2>Change your photo</h2><UserFormAvatar user={user} revele={revele} toggle={toggleModal}/></div>
-    </div>
-    </ModalWindow>
-    
-    <div>{user.login}</div>
-
-    <button onClick={handleClick}>
-          Logout
-        </button>
+        <button onClick={handleClick}> Logout </button>
       </div>
     ); }
   else {
     return(
       <div>
-    <button onClick={handleClick}>
-          Login
-        </button>
+        <button onClick={handleClick}> Login </button>
       </div>
     ); }
   }

@@ -1,28 +1,10 @@
-//import axios from "axios";
-//import React from "react";
 import { useForm } from "react-hook-form";
 import { socket } from "./Socket";
 
-//-* Formulaire de modif de profil 
-
-//-* Je n'ai pas reussi a faire le formulaire pour la photo, cest un code copie colle quil faut que jadapte avec UserForm, a moins de laisser deux form separes
-function UserFormAvatar({user, revele, toggle}) {
+//-* Formulaire de modif de Avatar 
+function UserFormAvatar({user, toggle}) {
 
      const { register, handleSubmit } = useForm();
-
-/*    const onSubmit = async (data) => {
-        const formData = new FormData();
-        formData.append("file", data.file[0]);
-
-        const res = await axios("http://localhost:3000/users/setimg", {
-            method: "POST",
-            data: formData,
-        }).then((res) => {
-            console.log("avatar sent");
-            });
-        //}).then((res) => res.json());
-        //alert(JSON.stringify(`${res.message}, status: ${res.status}`));
-    };*/
 
     const onSubmit = async (data) => {
         console.log('submit avatar');
@@ -41,7 +23,7 @@ function UserFormAvatar({user, revele, toggle}) {
                 "Access-Control-Allow-Credentials" : 'true',
             }
         }).then((res) => res.json());
-       // alert(JSON.stringify(`${res.message}, status: ${res.status}`));
+        alert(JSON.stringify(`${res.message}, status: ${res.status}`));
         close();
     };
 
