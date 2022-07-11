@@ -6,7 +6,7 @@ import { Socket } from './Socket';
 import { FriendRequest } from './friend-request';
 import { Games } from '..';
 import { Message } from './message';
-import { Avatar } from './Avatar';
+//import { Avatar } from './Avatar';
 import { RoomUser } from './RoomUser';
 
 
@@ -27,8 +27,8 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({unique: true, nullable: true})
     email: string;
 
-    @OneToOne(() => Avatar, Avatar => Avatar.user)
-    Avatar2 : Avatar;
+   // @OneToOne(() => Avatar, Avatar => Avatar.user)
+   // Avatar2 : Avatar;
 
     @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.sender)
     RequestsSent: FriendRequest[]; 
@@ -91,7 +91,7 @@ interface IUser {
         intraId: string;
         avatar: string;
         email: string;
-        Avatar2 : Avatar;
+      //  Avatar2 : Avatar;
         authConfirmToken?: number;
         isVerified: boolean;
         isConnected:boolean;
