@@ -41,7 +41,7 @@ export class UsersController {
    getUser(@Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
 //     console.log('===getUser', user);
-return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified});
+return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
 //  return (user);
      }
 
@@ -98,6 +98,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       else if (file.mimetype === 'image/png')
          newUrl = "data:image/png;base64,"+buf64;
       await this.userRepo.update({id:userId}, {avatar:newUrl});
+      const data = '{"status":"200"}';
+      return(JSON.parse(data));
     /*  const ActualUser = await this.userRepo.findOne({id : 1})
       //-* Enregistre l'avatar en format bytea dans Avatar2 une relation one avec le user
       if(!ActualUser.Avatar2)
@@ -215,7 +217,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       for (let entry of users)
       {
      // return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA});
-      tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified})
+      tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified, email:entry.email})
       }
       //return (users);
    return(tab);
@@ -227,7 +229,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const user = await this.userServ.findUserByLogin(params);
       //console.log('=====getUserByLogin()', user);
       //return (user);
-      return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified});
+      return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
    }
 
    /* Retourne le user [id] */
@@ -236,7 +238,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const userId = parseInt(userStringId);
       const user = await this.userServ.findUserById(userId);
       //return (user);
-      return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified});
+      return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
 
    }
    @Get('userRooms/:id')

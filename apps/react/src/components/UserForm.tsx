@@ -1,6 +1,7 @@
 /* aurel */
 import axios from "axios";
 import React from "react";
+import { socket } from "./Socket";
 //import { useForm } from "react-hook-form";
 
 //-* Formulaire de modif de profil 
@@ -41,7 +42,8 @@ class UserForm extends React.Component<any, any, any> {
           id: props.user.id,
           login: props.user.login,
           email: props.user.email,
-          twoFA: props.twoFa,
+          twoFA: props.user.twoFA,
+          toggle: props.toggle
         };
  console.log('props 2fa',props.twoFa, this.state.twoFA, "yo");
       //this.fileInput = React.createRef();
@@ -106,6 +108,8 @@ class UserForm extends React.Component<any, any, any> {
       //  email: '',
       //  twoFA: false
       //});
+      socket.emit('changeInfos', this.state.id);
+      this.state.toggle();
     }
   
     render() {

@@ -12,8 +12,10 @@ import { socket } from "./Socket";
 const UserProfil = (props) => {
     //const actual = props.dataFromParent;
     //const [user, setUser] = useState(props.dataFromParent);
-    const user = props.dataFromParent;
-    const [twofa, settwofa] = useState(false);
+    //const [user, setUser] = useState();
+    //setUser(props.dataFromParent);
+  //  let user = props.dataFromParent;
+    const [user, setUser] = useState(props.dataFromParent);
     const [connected, setConnected] = useState([false] as any);
 
     /* Outils d'affichage de la modale */
@@ -22,13 +24,21 @@ const UserProfil = (props) => {
       
         console.log('in user profil user demand');
         axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
-            settwofa(res.data.twoFA)
-            console.log('user demand',res.data.twoFA);
+            setUser(res.data);
         })
       ;} 
     /*------*/
-
-   
+    useEffect(() => {
+      axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
+            setUser(res.data);
+        });
+      socket.on("changeInfos", data => {
+        axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
+        setUser(res.data);
+        });
+     });
+    },[]);
+  
 
 
   // fonction trigger lorsque l'on clique sur le bouton, qui va lgout l'utilisateur s'il est connecte ou le login s'il ne l'est pas
@@ -61,8 +71,8 @@ const UserProfil = (props) => {
     <ModalWindow revele={revele} setRevele={toggleModal}>
       <UserProfilExtended myuser={user}/><br></br>
     <div style={{display:'flex', justifyContent:'space-around'}}>
-     <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} twoFa={twofa}/></div>
-     <div><h2>Change your photo</h2><UserFormAvatar user={user} /></div>
+    <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleModal}/></div>
+     <div><h2>Change your photo</h2><UserFormAvatar user={user} revele={revele} toggle={toggleModal}/></div>
     </div>
     </ModalWindow>
     
