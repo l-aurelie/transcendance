@@ -5,6 +5,8 @@ import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
 import CSS from 'csstype';
 import Select from 'react-select';
 import { useResolvedPath, useRoutes } from 'react-router-dom';
+import { isBooleanObject } from 'util/types';
+import { ConsoleLogger } from '@nestjs/common';
 
 
 /* John aurelie */
@@ -30,7 +32,7 @@ const channel = {
     width: "100%",
     // backgroundColor: 'green',
     display: "flex",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
 }
 
 const buttons = {
@@ -43,28 +45,7 @@ const setting = {
     justifyContent: "center",
 }
 
-
-const modalBackground: CSS.Properties = {
-  
-}
-
-const modalContainer: CSS.Properties = {
-    // width: "500px",
-    // height: "500px",
-    // borderRadius: "12px",
-    // backgroundColor: "white",
-    // boxShadow: "ragb(0,0,0,0.35) 0px 5px 15px",
-    // display:"flex",
-    // flexDirection: "column",
-    // padding: "25px",
-
-}
-
 const body ={
-
-}
-
-const containerSetting = {
 
 }
 
@@ -78,8 +59,6 @@ const MySalons = (props) => {
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
 
     const [usersRoom, setUsersRoom] = useState([]);
-    const [isAdmin, setIsAdmin] = useState([]);
-    const [owner, setOwner] = useState([] as any);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
     const [revele2, setRevele2] = useState(false);
@@ -118,7 +97,7 @@ const MySalons = (props) => {
             socket.on('fetchmessage', data => {
                 setMessage(data);
             });
-            socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id});
+            socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id, roomId:currentSalon.roomId});
         }
         socket.on("chat", data => {
             setMessage((message) => {
@@ -145,7 +124,7 @@ const MySalons = (props) => {
     socket.on('joinedsalon', data => {
         socket.off('leftsalon');
         setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator })));
-        console.log("Owner ==> ", owner);
+        // console.log("Owner ==> ", owner);
         //socket.off('chat');
         //socket.off('fetchmessage');
         //setCurrentSalon({name: data.salonName, isDm: data.dm, display: data.chatterLogin});
@@ -171,6 +150,8 @@ const MySalons = (props) => {
     }, [joinedSalons])
 
     const handleClick = (salon) => {
+        if (revele || revele2)
+            return;
         console.log('handleclick my salon');
         if (salon[1].avatar !== currentSalon.display) {
             socket.off('leftsalon');           
@@ -178,8 +159,7 @@ const MySalons = (props) => {
             socket.off('chat');
             socket.off('fetchmessage');
             setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId, creator:salon[1].creator});
-            }
-
+        }
             axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
         console.log('RES.DATA ==> ', res.data);
 
@@ -205,43 +185,68 @@ const MySalons = (props) => {
     if (pwd !== "") {
         setPwd(pwdRef.current.value);
         event.preventDefault();
-        console.log('pwd => ', pwdRef.current.value);
-        axios.post("http://localhost:3000/users/changemdp/" + currentSalon.roomId + "/" +  pwdRef.current.value, {withCredentials:true}).then((res) => {
+        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
+        // console.log('pwd => ', pwdRef.current.value);
+        axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
         });
-        event.target.reset(); //clear all input values in the form
+        event.target.reset(); //clear all input values in the form withCredentials:true
+        alert("Password has been set");
         return;
     }
 };
     
     const resetPassword = (event) => {
+        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};
         event.preventDefault();
-        axios.post("http://localhost:3000/users/resetpwd/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
+        axios.post("http://localhost:3000/users/resetpwd", inf, {withCredentials:true}).then((res) => {
         });
-        console.log('pwd to DELETE => ', pwd);
+        // console.log('pwd to DELETE => ', pwd);
+        alert("Password reset to null");
+
         
     };
     
     const addAdmin = (event) => {
+        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};
         console.log('add this friend in admin for this salon '  + event.label);
         console.log('Users in Room ==> ', usersRoom);
-        axios.post("http://localhost:3000/users/setAdminTrue/" + currentSalon.roomId + "/" + event.value, {withCredentials:true}).then((res) => {
-            console.log("in set amdin true");
+        axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
         });
-        console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
+        alert(event.label + "is now an admin");
+        // console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
     }
 
     const muteUser = (event) => {
-        console.log('mute this guy'   + event.label);
-        //sokcet emit('addAdmin') with 
-            //event.label -> login to mute
-            //room on va avoir besoin de salon.......
+        console.log(" currentSalon.creator " + currentSalon.creator)
+        console.log(" event.value " + event.value)
+        const inf = { userId : event.value, roomId: currentSalon.roomId, muteUser: true};
+        console.log('mute this guy'   + event.value);
+        axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
+        });
+        alert(event.label + " muted!");
     }
 
     const banUser = (event) => {
-        console.log('Ban this guy'   + event.label);
-        //sokcet emit('addAdmin') with 
-            //event.label -> login to ban
-            //room on va avoir besoin de salon.......
+        const inf = { userId : event.value, roomId: currentSalon.roomId, banUser: true};
+        axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
+        });
+        alert(event.label + " banned!");
+    }
+
+    const admin = (obj) => {
+        for (let entry of obj)
+        {
+            console.log("obj.isAdmin ==> " + entry.admin);
+            if (entry.admin === true)
+                return true;
+        }
+        return false;
+    }
+
+    const isEmpty = (obj)  => {
+        console.log("OBJ ==> ");
+        console.log(obj);
+        return Object.keys(obj).length === 0;
     }
 
     return(
@@ -260,82 +265,57 @@ const MySalons = (props) => {
                 {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <button style={setting} onClick={toggleModal}> ⚙️ </button> : null}
                 {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <button style={setting} onClick={toggleModal2}> ⚙️ </button> : null}
                 {/* Setting par channel */}
-                {/* <div style={modalBackground}> */}
                 <ModalWindow  revele={revele} setRevele={toggleModal}> 
-                    {/* <div style={modalContainer}> */}
-                        <h1>Owner Settings</h1>
-                        <div style={body}></div>
-                        <h3>Define password</h3>
-                        <div style={containerSetting}>
-                            <form onSubmit={submitPassword}>
-                            <input
-                                ref={pwdRef}
-                                id="pwd"
-                                name="pwd"
-                                type="text"
-                            />
-                            <button type="submit">Submit</button>
-                            </form>
-                            <button onClick={resetPassword}>Reset password</button>
-                        {/* </div> */}
-                        <h3>Add admin's channel</h3>
-                        {/* <div style={containerSetting}> */}
-                           <div style={bar}>
-                            <Select onChange={addAdmin} options={usersRoom}/>
-                           </div>   
-                        {/* </div> */}
-                        <h3>MUTE User</h3>
-                        {/* <div style={containerSetting}> */}
-                            <div style={bar}>
+                    <h1>Owner Settings</h1>
+                    <h3>Define password</h3>
+                    <form onSubmit={submitPassword}>
+                        <input
+                            ref={pwdRef}
+                            id="pwd"
+                            name="pwd"
+                            type="text"
+                        />
+                        <button type="submit">Submit</button>
+                    </form>
+                    <button onClick={resetPassword}>Reset password</button>
+                    <h3>Add admin's channel</h3>
+                    <div style={bar}>
+                        <Select onChange={addAdmin} options={usersRoom}/>
+                    </div>   
+                    <h3>MUTE User</h3>
+                        <div style={bar}>
                             <Select onChange={muteUser} options={usersRoom}/>
-                            </div>   
-                            <h3>BAN User</h3>
-                            <div style={containerSetting}>
-                            <div style={bar}>
-                            <Select onChange={banUser} options={usersRoom}/>
-                            </div> 
-                            </div>
-                            {/*<h1>Admins : </h1>*/}
-                            {/* <div style={body}>
-                                {usersRoom.map((user) => 
-
-                                <p key={user.id}>{usersRoom.admin}</p>) }
-                           </div> */}
-                        {/* </div> */}
+                        </div>   
+                    <h3>BAN User</h3>
+                    <div style={bar}>
+                        <Select onChange={banUser} options={usersRoom}/>
                     </div>
                 </ModalWindow>
                 <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
-                    {/* <div style={modalContainer}> */}
-                        <h1>Admin Settings</h1>
-                        <div style={body}></div>
-                        {/* </div> */}
-                        <div style={containerSetting}>
-                        <h3>MUTE User</h3>
-                        {/* <div style={containerSetting}> */}
-                            <div style={bar}>
+                    <h1>Admin Settings</h1>
+                    <div style={body}></div>
+                    <h3>MUTE User</h3>
+                        <div style={bar}>
                             <Select onChange={muteUser} options={usersRoom}/>
-                            </div>   
-                            <h3>BAN User</h3>
-                            <div style={containerSetting}>
-                            <div style={bar}>
-                            <Select onChange={banUser} options={usersRoom}/>
-                            </div> 
-                            </div>
-                            {/*<h1>Admins : </h1>*/}
-                            {/* <div style={body}>
-                                {usersRoom.map((user) => 
-
-                                <p key={user.id}>{usersRoom.admin}</p>) }
-                           </div> */}
-                        {/* </div> */}
+                        </div>   
+                    <h3>BAN User</h3>
+                    <div style={bar}>
+                        <Select onChange={banUser} options={usersRoom}/>
                     </div>
                 </ModalWindow>
-                {/* </div> */}
                 {/* Permet de quitter le channel */}
-            <div><button style={setting} onClick={(event) => {
-                event.stopPropagation();
-                closeSalon(salon[0])}}
-                > x </button></div>
+                <div>
+                    <button style={setting} onClick={(event) => {
+                        if ((salon[1].owner && salon[1].creator === props.actualUser.id) && !isEmpty(usersRoom) && !admin(usersRoom)) {
+                            console.log("ICI" + {usersRoom});
+                            alert('Choose an admin before leaving the channel')
+                            return;
+                        }
+                        else {
+                                
+                                event.stopPropagation();
+                                closeSalon(salon[0])
+                        }}}> x </button></div>
                 </div>
             </button>))}
             {/* PlaceHolder 

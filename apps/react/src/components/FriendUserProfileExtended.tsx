@@ -126,6 +126,10 @@ const RejectRequest = event => {
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
             <p>Ranking {ranking} </p>
+            <button onClick={toggleModal}>Match History</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <MatchHistory history={history}></MatchHistory>
+            </ModalWindow>
             <p>Friend request is {InboundReq.status}</p>
             <button onClick={AcceptRequest}>Accept request?</button>
             <button onClick={RejectRequest}>Reject request?</button>
@@ -147,6 +151,10 @@ const RejectRequest = event => {
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
             <p>Ranking: {ranking} </p>
+            <button onClick={toggleModal}>Match History</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <MatchHistory history={history}></MatchHistory>
+            </ModalWindow>
             <p>Friend request is {InboundReq.status}</p>
         </div>
     );
@@ -190,6 +198,10 @@ const RejectRequest = event => {
             <p>Victoires: {wins} </p>
             <p>Defaites: {losses} </p>
             <p>Ranking: {ranking} </p>
+            <button onClick={toggleModal}>Match History</button>
+            <ModalWindow revele={revele} setRevele={toggleModal}>
+            <MatchHistory history={history}></MatchHistory>
+            </ModalWindow>
             <button onClick={sendFriendRequest}>Send Friend Request</button>
         </div>
     );
