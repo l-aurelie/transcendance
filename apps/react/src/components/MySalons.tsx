@@ -5,6 +5,8 @@ import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
 import CSS from 'csstype';
 import Select from 'react-select';
 import { useResolvedPath, useRoutes } from 'react-router-dom';
+import { isBooleanObject } from 'util/types';
+import { ConsoleLogger } from '@nestjs/common';
 
 
 /* John aurelie */
@@ -43,28 +45,7 @@ const setting = {
     justifyContent: "center",
 }
 
-
-const modalBackground: CSS.Properties = {
-  
-}
-
-const modalContainer: CSS.Properties = {
-    // width: "500px",
-    // height: "500px",
-    // borderRadius: "12px",
-    // backgroundColor: "white",
-    // boxShadow: "ragb(0,0,0,0.35) 0px 5px 15px",
-    // display:"flex",
-    // flexDirection: "column",
-    // padding: "25px",
-
-}
-
 const body ={
-
-}
-
-const containerSetting = {
 
 }
 
@@ -78,8 +59,6 @@ const MySalons = (props) => {
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
 
     const [usersRoom, setUsersRoom] = useState([]);
-    const [isAdmin, setIsAdmin] = useState([]);
-    const [owner, setOwner] = useState([] as any);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
     const [revele2, setRevele2] = useState(false);
@@ -145,7 +124,7 @@ const MySalons = (props) => {
     socket.on('joinedsalon', data => {
         socket.off('leftsalon');
         setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator })));
-        console.log("Owner ==> ", owner);
+        // console.log("Owner ==> ", owner);
         //socket.off('chat');
         //socket.off('fetchmessage');
         //setCurrentSalon({name: data.salonName, isDm: data.dm, display: data.chatterLogin});
@@ -171,6 +150,8 @@ const MySalons = (props) => {
     }, [joinedSalons])
 
     const handleClick = (salon) => {
+        if (revele || revele2)
+            return;
         console.log('handleclick my salon');
         if (salon[1].avatar !== currentSalon.display) {
             socket.off('leftsalon');           
@@ -178,8 +159,7 @@ const MySalons = (props) => {
             socket.off('chat');
             socket.off('fetchmessage');
             setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId, creator:salon[1].creator});
-            }
-
+        }
             axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
         console.log('RES.DATA ==> ', res.data);
 
@@ -231,7 +211,6 @@ const MySalons = (props) => {
         console.log('add this friend in admin for this salon '  + event.label);
         console.log('Users in Room ==> ', usersRoom);
         axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
-            // console.log("in set amdin true");
         });
         alert(event.label + "is now an admin");
         // console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
@@ -240,26 +219,34 @@ const MySalons = (props) => {
     const muteUser = (event) => {
         console.log(" currentSalon.creator " + currentSalon.creator)
         console.log(" event.value " + event.value)
-        // if (currentSalon.owner === event.value) {
-        //     return (
-        //         <p>You can't mute the creator of the channel</p>
-        //     )
-        // }
         const inf = { userId : event.value, roomId: currentSalon.roomId, muteUser: true};
         console.log('mute this guy'   + event.value);
         axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
-            // console.log(event.label + " is muted...")
         });
         alert(event.label + " muted!");
-
     }
 
     const banUser = (event) => {
         const inf = { userId : event.value, roomId: currentSalon.roomId, banUser: true};
         axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
-            // console.log(event.label + " is banned...")
         });
         alert(event.label + " banned!");
+    }
+
+    const admin = (obj) => {
+        for (let entry of obj)
+        {
+            console.log("obj.isAdmin ==> " + entry.admin);
+            if (entry.admin === true)
+                return true;
+        }
+        return false;
+    }
+
+    const isEmpty = (obj)  => {
+        console.log("OBJ ==> ");
+        console.log(obj);
+        return Object.keys(obj).length === 0;
     }
 
     return(
@@ -319,9 +306,16 @@ const MySalons = (props) => {
                 {/* Permet de quitter le channel */}
                 <div>
                     <button style={setting} onClick={(event) => {
-                        event.stopPropagation();
-                        closeSalon(salon[0])}}
-                        > x </button></div>
+                        if ((salon[1].owner && salon[1].creator === props.actualUser.id) && !isEmpty(usersRoom) && !admin(usersRoom)) {
+                            console.log("ICI" + {usersRoom});
+                            alert('Choose an admin before leaving the channel')
+                            return;
+                        }
+                        else {
+                                
+                                event.stopPropagation();
+                                closeSalon(salon[0])
+                        }}}> x </button></div>
                 </div>
             </button>))}
             {/* PlaceHolder 
