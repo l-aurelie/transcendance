@@ -10,11 +10,7 @@ import { RoomEntity } from '../typeorm/entities/Room';
 import { RoomService } from "src/chat/service/room.service";
 
 @Module({
-<<<<<<< HEAD
-    imports: [TypeOrmModule.forFeature([User, Socket, FriendRequest, Games, RoomUser, RoomEntity])],
-=======
     imports: [TypeOrmModule.forFeature([User, Socket, FriendRequest, Games,  RoomUser, RoomEntity])],
->>>>>>> ff3deed4fb3b4d37a8d4a21bc7b4e11fd9d4f929
     exports: [],
     controllers: [UsersController],
     providers: [UsersService, SocketService, RoomService],
