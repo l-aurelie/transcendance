@@ -9,6 +9,7 @@
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
+    "material-icons-react": "^1.0.4",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-files-hooks": "^2.0.0",

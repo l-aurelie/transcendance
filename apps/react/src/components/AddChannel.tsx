@@ -1,6 +1,8 @@
 /* sam  john aurelie */
 import {socket} from './Socket';
 import {useState, useEffect} from 'react';
+import { ModalWindow } from './ModaleWindow/LogiqueModale2';
+import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 const chatTitle1 = {
     display: "flex",
@@ -39,6 +41,9 @@ const AddChannel = ({user}) => {
   
     const[message, setMessage] = useState('');
     const [salons, setSalons] = useState([]); //Array de tous les salons a afficher, que l'on peut selectionner
+  
+    const [reveleAdd, setReveleAdd] = useState(false);
+    const toggleAdd = () => {setReveleAdd(!reveleAdd);}
 
     useEffect(() => {
       socket.on('fetchsalon', data => {
@@ -66,15 +71,19 @@ const AddChannel = ({user}) => {
 
     return(
         <div>
-            <p>Click to join Channels</p>    
+            <MaterialIcon icon="chat add on" onClick={toggleAdd} />
+            <p>Join existing channels</p>    
             {salons.map((salon) => ( 
             <button onClick={() => handleClick(salon)}>
                 <div key={salon.id}>{salon.name}</div>
             </button>))}
-            <p>Create a new Channel</p>
-            <input type='text' id="message" name="message" onChange={handleChange} value={message} style={text}/>
-            <button style={chatTitle1} onClick={() => sendNewSalon(false, message)}>Public channel</button>
-            <button style={chatTitle2} onClick={() => sendNewSalon(true, message)}>Private channel</button>
+
+            <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
+                <p>Create a new Channel</p>
+                <input type='text' id="message" name="message" onChange={handleChange} value={message} style={text}/>
+                <button style={chatTitle1} onClick={() => sendNewSalon(false, message)}>Public channel</button>
+                <button style={chatTitle2} onClick={() => sendNewSalon(true, message)}>Private channel</button>
+            </ModalWindow>
         </div>
     );
 }

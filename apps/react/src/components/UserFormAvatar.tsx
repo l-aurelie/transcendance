@@ -23,7 +23,7 @@ function UserFormAvatar({user, toggle}) {
                 "Access-Control-Allow-Credentials" : 'true',
             }
         }).then((res) => res.json());
-        alert(JSON.stringify(`${res.message}, status: ${res.status}`));
+        //alert(JSON.stringify(`${res.message}, status: ${res.status}`));
         close();
     };
 
