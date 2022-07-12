@@ -138,7 +138,7 @@ console.log(tab);
      async user_joins_room(client, infos) {
         console.log('userJoinRoom');
 
-        if(infos.roomId)
+        if(infos.roomId && !infos.otherLogin)
         {
             console.log('user_joins, infos.roomId')
             const roomUser = await this.roomUserRepo.findOne({where: {userId:infos.userId, roomId:infos.roomId}});
@@ -169,10 +169,6 @@ console.log(tab);
         adm = myUserRoom.isAdmin;
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
-       if (infos.newMember) {
-        this.server.to('sockets' + infos.newMember).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId, isAdmin:adm, creator: theRoom.creatorId, private:theRoom.private});
-        return;
-    }
        this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId, isAdmin:adm, creator: theRoom.creatorId, private:theRoom.private});
        
     }

@@ -50,17 +50,17 @@ const button: CSS.Properties = {
 }
 
   
-const AddPrivateMember = ({roomId, revele, toggle}) => {
+const AddPrivateMember = ({idRoom, roomName, revele, toggle}) => {
     const [allUser, setAllUsers] = useState([]);
     const [members, setMembers] = useState([]);
     useEffect(() => { 
-        axios.get("http://localhost:3000/users/allNoMembers/" + roomId, {withCredentials:true}).then((res) =>{
+        axios.get("http://localhost:3000/users/allNoMembers/" + idRoom, {withCredentials:true}).then((res) =>{
             let tab = [];
             for (let entry of res.data)
                 tab.push({value: entry.id, label:entry.login});
             setAllUsers(tab);
             })
-            axios.get("http://localhost:3000/users/members/" + roomId, {withCredentials:true}).then((res) =>{
+            axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
             setMembers(res.data)
             console.log('meembers in front', members);   
                 })
@@ -84,6 +84,7 @@ const AddPrivateMember = ({roomId, revele, toggle}) => {
             return ;
         else
         {
+            socket.emit('user_joins_room', {userId: option, room: roomName, roomId: idRoom});
             let tabU = allUser.filter(element => element.value != option)
             setAllUsers(tabU);
             let tab = members;

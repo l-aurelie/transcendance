@@ -276,7 +276,7 @@ const MySalons = (props) => {
                         <h1>Owner Settings</h1>
                         {currentSalon.private === true ?  <div><h2>Private room</h2>
                     <button onClick={toggleModal3}>Add members</button>
-                        <AddPrivateMember roomId={currentSalon.roomId} revele={revele3} toggle={toggleModal3}></AddPrivateMember>
+                        <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3}></AddPrivateMember>
                     </div> : <></> }
                         <div style={body}></div>
                         <h3>Define password</h3>
