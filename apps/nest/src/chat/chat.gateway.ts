@@ -271,10 +271,10 @@ console.log(tab);
         console.log('addSalon5');
         console.log('roomuserId= ', roomUser.id, roomUser.roomId, roomUser.userId, infos[0]);
         // await this.roomRepo.update({id:newRoom.id}, {creatorId:infos[0]})
-        if (!infos[1]) {
-            this.server.emit('newsalon', infos[3]);
-            this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: infos[3], roomId:newRoom.id, creator:infos[0], isAdmin:true}); // add owner = true;
-        }
+        // if (!infos[1]) {
+        this.server.emit('newsalon', infos[3]);
+        this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: infos[3], roomId:newRoom.id, creator:infos[0], isAdmin:true}); // add owner = true;
+        // }
         console.log('addSalon');
     }
 

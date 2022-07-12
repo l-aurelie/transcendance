@@ -1,12 +1,12 @@
 /*aurelie, samantha, Laura*/
 
-import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body, UseInterceptors, UploadedFile, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Headers, UseGuards, Req, Param, Put, Body, UseInterceptors, UploadedFile, Res, StreamableFile, UseFilters } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { User } from 'src/typeorm/entities/User';
 //import { Avatar } from 'src/typeorm/entities/Avatar';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -303,18 +303,18 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          {
            // console.log('undef');
             return([]);
-         }// const currentSal = parseInt(currentSalon);
-         // console.log('Current Sal INT is ==> ' + currentSal);
-//console.log('mais');
+         }
+         const room = this.roomRepo.findOne({where: {id:currentSalon}});
+      
          const users = await this.roomUser.find({
             relations: ["user", "room"],
-            where : {roomId: currentSalon}});
-          //  console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
-          //  console.log(users[0].user.login);
-          //  console.log(users[0].user.avatar);
-          //  console.log(users[0].room.creatorId);
-          //  console.log(users[0].room.password);
-          //  console.log('quoi');
+            where : {roomId: currentSalon, userId:Not((await room).creatorId),}});
+         //   console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
+         //   console.log(users[0].user.login);
+         //   console.log(users[0].user.avatar);
+         //   console.log(users[0].room.creatorId);
+         //   console.log(users[0].room.password);
+         //   console.log('quoi');
 
          return (users);
    }

@@ -278,83 +278,50 @@ const MySalons = (props) => {
                 {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <button style={setting} onClick={toggleModal}> ⚙️ </button> : null}
                 {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <button style={setting} onClick={toggleModal2}> ⚙️ </button> : null}
                 {/* Setting par channel */}
-                {/* <div style={modalBackground}> */}
                 <ModalWindow  revele={revele} setRevele={toggleModal}> 
-                    {/* <div style={modalContainer}> */}
-                        <h1>Owner Settings</h1>
-                        <div style={body}></div>
-                        <h3>Define password</h3>
-                        <div style={containerSetting}>
-                            <form onSubmit={submitPassword}>
-                            <input
-                                ref={pwdRef}
-                                id="pwd"
-                                name="pwd"
-                                type="text"
-                            />
-                            <button type="submit">Submit</button>
-                            </form>
-                            <button onClick={resetPassword}>Reset password</button>
-                        {/* </div> */}
-                        <h3>Add admin's channel</h3>
-                        {/* <div style={containerSetting}> */}
-                           <div style={bar}>
-                            <Select onChange={addAdmin} options={usersRoom}/>
-                           </div>   
-                        {/* </div> */}
-                        <h3>MUTE User</h3>
-                        {/* <div style={containerSetting}> */}
-                            <div style={bar}>
+                    <h1>Owner Settings</h1>
+                    <h3>Define password</h3>
+                    <form onSubmit={submitPassword}>
+                        <input
+                            ref={pwdRef}
+                            id="pwd"
+                            name="pwd"
+                            type="text"
+                        />
+                        <button type="submit">Submit</button>
+                    </form>
+                    <button onClick={resetPassword}>Reset password</button>
+                    <h3>Add admin's channel</h3>
+                    <div style={bar}>
+                        <Select onChange={addAdmin} options={usersRoom}/>
+                    </div>   
+                    <h3>MUTE User</h3>
+                        <div style={bar}>
                             <Select onChange={muteUser} options={usersRoom}/>
-                            </div>   
-                            <h3>BAN User</h3>
-                            <div style={containerSetting}>
-                            <div style={bar}>
-                            <Select onChange={banUser} options={usersRoom}/>
-                            </div> 
-                            </div>
-                            <h1>Admins : </h1>
-                            {/* <div style={body}> */}
-                            {usersRoom.map((user) => { 
-                                <button key={user.id}>        
-                                {
-                                    user.isAdmin ?
-                                        <div >{user.login}</div>
-                                    :
-                                    null
-                                
-                                }
-                                </button>
-                            })}
+                        </div>   
+                    <h3>BAN User</h3>
+                    <div style={bar}>
+                        <Select onChange={banUser} options={usersRoom}/>
                     </div>
                 </ModalWindow>
                 <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
-                    {/* <div style={modalContainer}> */}
-                        <h1>Admin Settings</h1>
-                        <div style={body}></div>
-                        {/* </div> */}
-                        {/* <div style={containerSetting}> */}
-                        <h3>MUTE User</h3>
-                        {/* <div style={containerSetting}> */}
-                            <div style={bar}>
+                    <h1>Admin Settings</h1>
+                    <div style={body}></div>
+                    <h3>MUTE User</h3>
+                        <div style={bar}>
                             <Select onChange={muteUser} options={usersRoom}/>
-                            </div>   
-                            <h3>BAN User</h3>
-                            <div style={containerSetting}>
-                            <div style={bar}>
-                            <Select onChange={banUser} options={usersRoom}/>
-                            </div> 
-                            </div>
-                           
-                          
-                    {/* </div> */}
+                        </div>   
+                    <h3>BAN User</h3>
+                    <div style={bar}>
+                        <Select onChange={banUser} options={usersRoom}/>
+                    </div>
                 </ModalWindow>
-                {/* </div> */}
                 {/* Permet de quitter le channel */}
-            <div><button style={setting} onClick={(event) => {
-                event.stopPropagation();
-                closeSalon(salon[0])}}
-                > x </button></div>
+                <div>
+                    <button style={setting} onClick={(event) => {
+                        event.stopPropagation();
+                        closeSalon(salon[0])}}
+                        > x </button></div>
                 </div>
             </button>))}
             {/* PlaceHolder 
