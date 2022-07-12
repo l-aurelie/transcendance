@@ -658,6 +658,12 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     }
     @SubscribeMessage('defeat')
     async defeat(client, infos) {
+        //for block
+        //if is block 
+        //{
+            //this.rejectMatch(infos[1], infos[0], infos[2]);
+        // return;
+        //}
         this.server.to('sockets'+infos[0].id).emit('defeat', infos[1]);
         const data = {user:infos[0], version:infos[2] };
         console.log('smash = ', infos[2])
