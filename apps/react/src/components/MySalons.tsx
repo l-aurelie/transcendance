@@ -5,6 +5,7 @@ import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
 import CSS from 'csstype';
 import Select from 'react-select';
 import { useResolvedPath, useRoutes } from 'react-router-dom';
+import AddPrivateMember from './AddPrivateMember';
 
 
 /* John aurelie */
@@ -83,8 +84,10 @@ const MySalons = (props) => {
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
     const [revele2, setRevele2] = useState(false);
+    const [revele3, setRevele3] = useState(false);
     const toggleModal = () => {setRevele(!revele);} 
     const toggleModal2 = () => {setRevele2(!revele2);} 
+    const toggleModal3 = (data) => {setRevele3(!revele3);console.log('hheye in revele3 toggle modaaaaaaaaale', data)} 
     /*------*/
     const pwdRef = useRef(null);
     const [pwd, setPwd] = useState([''] as any); 
@@ -101,7 +104,7 @@ const MySalons = (props) => {
         })
         axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
             for (let entry of res.data)
-                setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin })))
+                setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
             console.log('after axios userRooms',res.data);
             })
 
@@ -132,7 +135,7 @@ const MySalons = (props) => {
                 return (message);
             else {
                 socket.off('leftsalon');
-                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon})));
+                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
                 return (message);
             }
             });
@@ -144,7 +147,7 @@ const MySalons = (props) => {
     useEffect(() => {
     socket.on('joinedsalon', data => {
         socket.off('leftsalon');
-        setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator })));
+        setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator, private: data.private})));
         console.log("Owner ==> ", owner);
         //socket.off('chat');
         //socket.off('fetchmessage');
@@ -171,13 +174,15 @@ const MySalons = (props) => {
     }, [joinedSalons])
 
     const handleClick = (salon) => {
+        if (revele|| revele2 ||revele3)
+            return ;
         console.log('handleclick my salon');
         if (salon[1].avatar !== currentSalon.display) {
             socket.off('leftsalon');           
-            setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator})));            
+            setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator, private:salon[1].private})));
             socket.off('chat');
             socket.off('fetchmessage');
-            setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId, creator:salon[1].creator});
+            setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId, creator:salon[1].creator, private:salon[1].private});
             }
 
             axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
@@ -267,7 +272,12 @@ const MySalons = (props) => {
                 {/* <div style={modalBackground}> */}
                 <ModalWindow  revele={revele} setRevele={toggleModal}> 
                     {/* <div style={modalContainer}> */}
+                   
                         <h1>Owner Settings</h1>
+                        {currentSalon.private === true ?  <div><h2>Private room</h2>
+                    <button onClick={toggleModal3}>Add members</button>
+                        <AddPrivateMember roomId={currentSalon.roomId} revele={revele3} toggle={toggleModal3}></AddPrivateMember>
+                    </div> : <></> }
                         <div style={body}></div>
                         <h3>Define password</h3>
                         <div style={containerSetting}>
@@ -308,9 +318,14 @@ const MySalons = (props) => {
                         {/* </div> */}
                     </div>
                 </ModalWindow>
+               
                 <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
                     {/* <div style={modalContainer}> */}
                         <h1>Admin Settings</h1>
+                        {currentSalon.private === true ? <div><h2>Private room</h2>
+                    <button onClick={toggleModal3}>Add members</button>
+                    
+                    </div> : <></>}
                         <div style={body}></div>
                         {/* </div> */}
                         <div style={containerSetting}>

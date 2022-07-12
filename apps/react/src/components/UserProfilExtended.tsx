@@ -56,14 +56,14 @@ const UserProfilExtended = ({user}) => {
             <div style={{display:'flex', justifyContent:'center'}}>
                 <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
             </div>
-            <p><button onClick={toggleForm}>Set profil</button></p>
+            <h1 style={{display:'flex', justifyContent:'center', marginBottom:'0'}}>{user.login}</h1>
+            <div style={{display:'flex', justifyContent:'center', paddingTop:'0'}}><p><button onClick={toggleForm}>Set profil</button></p></div><br></br>
             <ModalWindow revele={reveleForm} setRevele={toggleForm}>
                 <div style={{display:'flex', justifyContent:'space-around'}}>
                 <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
                 <div><h2>Change your photo</h2><UserFormAvatar user={user} toggle={toggleForm}/></div>
                 </div>
             </ModalWindow>
-            <h1 style={{display:'flex', justifyContent:'center'}}>{user.login}</h1>
             <div style={{display:'flex', justifyContent:'space-around'}}>
                 <div>Victoires: {wins} </div>
                 <div>Defaites: {losses} </div>
