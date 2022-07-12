@@ -16,8 +16,8 @@ const DisplayUser = ({userConnected, userSelected, isFriend}) => {
     const beginChat = (friend) => {
       console.log('beginchat', userConnected);
       const roomname = friend.id < userConnected.id ? friend.id + '.' + userConnected.id : userConnected.id + '.' + friend.id;
-      socket.emit('addsalon', userConnected.id, true, true, roomname);
-      socket.emit('user_joins_room', {userId: userConnected.id, room: roomname, otherLogin: friend.login});
+      socket.emit('addsalon', userConnected.id, true, true, roomname, friend.login);
+     // socket.emit('user_joins_room', {userId: userConnected.id, room: roomname, otherLogin: friend.login});
     };
 
     const sendFriendRequest = event => {
