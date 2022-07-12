@@ -259,6 +259,24 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       //return (users);
    return(tab);
    }
+   @Get('allNoMembers/:roomId')
+   async getNoMember(@Param('roomId') roomId : string) {
+      const users = await this.userServ.findAll();
+      //console.log('GetUsers()');
+      let tab = [];
+      const id = parseInt(roomId);
+      console.log('allNoMembers')
+      for (let entry of users)
+      {
+         let isMember = await this.roomUser.find({where: {roomId:id, userId:entry.id}});
+         console.log("allNoMembers ; ", entry.login, isMember);
+         if(isMember.length === 0)
+            tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified, email:entry.email})
+      // return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA});
+      }
+      //return (users);
+   return(tab);
+   }
 
    /* Retourne le user [login] */
    @Get(':login')

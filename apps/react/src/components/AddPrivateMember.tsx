@@ -54,7 +54,7 @@ const AddPrivateMember = ({roomId, revele, toggle}) => {
     const [allUser, setAllUsers] = useState([]);
     const [members, setMembers] = useState([]);
     useEffect(() => { 
-        axios.get("http://localhost:3000/users/all", {withCredentials:true}).then((res) =>{
+        axios.get("http://localhost:3000/users/allNoMembers/" + roomId, {withCredentials:true}).then((res) =>{
             let tab = [];
             for (let entry of res.data)
                 tab.push({value: entry.id, label:entry.login});
@@ -68,36 +68,33 @@ const AddPrivateMember = ({roomId, revele, toggle}) => {
         }, [])
   
     const [option, setOption] = useState(-1);
+    const [lab, setLab] = useState("");
     const handleChange = (e) => {
         setOption(e.value);
+        setLab(e.label);
     }
     const reset = () => {
         setOption(-1);
         toggle();
     }
-const tab = [{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},
-{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {value:roomId, label:roomId},]
 
-    const watch = () => {
+
+    const add = () => {
         if (option === -1)
             return ;
         else
         {
+            let tabU = allUser.filter(element => element.value != option)
+            setAllUsers(tabU);
+            let tab = members;
+            tab.push({value:option, label:lab});
+            setMembers(tab);
             setOption(-1);
-            toggle();
+            setLab("");
+        //    toggle();
         }
     }
+
     if (revele)
     {
     return(
@@ -118,7 +115,7 @@ const tab = [{value:1, label:"nique-ta-race"}, {value:2, label:"connard"}, {valu
           <div style={{position:"relative",top:"20%"}}>
                     <Select onChange={handleChange} options={allUser}/>
             </div>
-            <div style={watchButton}><button  type='button' onClick={watch}>Add</button>
+            <div style={watchButton}><button  type='button' onClick={add}>Add</button>
             </div>
         </div>
         </div>
