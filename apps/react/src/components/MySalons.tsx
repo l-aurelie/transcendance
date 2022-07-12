@@ -203,7 +203,7 @@ const MySalons = (props) => {
     const closeSalon = (salon) => {
         //A la fermeture d'un salon, on en informe le back qui va renvoyer
         // sur le canal leftsalon l'information du leave, pour que tous les sockets soient informés
-        socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon});
+        socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon, roomId: salon.roomId});
     };
 
     const submitPassword = (event) => {
