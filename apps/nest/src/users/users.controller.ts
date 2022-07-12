@@ -5,12 +5,8 @@ import { UsersService } from './users.service';
 import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { User } from 'src/typeorm/entities/User';
-<<<<<<< HEAD
-import { Repository } from 'typeorm';
-=======
 //import { Avatar } from 'src/typeorm/entities/Avatar';
 import { Not, Repository } from 'typeorm';
->>>>>>> ff3deed4fb3b4d37a8d4a21bc7b4e11fd9d4f929
 import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';

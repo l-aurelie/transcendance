@@ -1,3 +1,4 @@
+/* aurelie */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {socket} from './Socket';
@@ -19,7 +20,7 @@ const onChange = (event) => {
   const [friends, setFriends] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [value, setValue] = useState([]);
-  const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
+  //const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
   
   /* Outils d'affichage de la modale */
   const [revele, setRevele] = useState(false);
@@ -49,14 +50,6 @@ const onChange = (event) => {
   }, [])
 
 
-  const beginChat = (friend) => {
-    console.log('beginchat',props.user);
-    const roomname = friend.id < props.user.id ? friend.id + '.' + props.user.id : props.user.id + '.' + friend.id;
-    socket.emit('addsalon', props.user.id, true, true, roomname);
-    socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
-
-  };
-
 
 /* Recherche d'amis a ajouter */
     return(
@@ -64,12 +57,7 @@ const onChange = (event) => {
           <MaterialIcon icon="person add" onClick={toggleAdd} />
           <div style={lists}>
             {friends.map(friends => (
-            <p><svg width="48" height="40" viewBox='0 0 45 40'>
-              <foreignObject x="0" y="0" width="45" height="40" >
-                <div><img style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="friend-avatar" src={friends.avatar}/></div>
-              </foreignObject>
-            <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={friends.color}></rect></svg>
-            {friends.login} | <MaterialIcon icon="chat" onClick={() => {beginChat(friends)}} /> | Spectate | Defeat |<br></br></p>
+              <DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} />
             ))}   
           </div>
           <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
@@ -86,17 +74,7 @@ const onChange = (event) => {
             <div style={lists}>
               {allUsers.map(users => (
                 <div>
-                  <DisplayUser userConnected={props.user} userSelected={users} />
-                  {/*<p><svg width="48" height="40" viewBox='0 0 45 40'>
-                  <foreignObject x="0" y="0" width="45" height="40" >
-                    <div><img style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={users.avatar}/></div>
-                  </foreignObject>
-                  <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={users.color}></rect></svg>
-                
-                  {users.login} | <MaterialIcon icon="person add" onClick={toggleProfil} /> | <MaterialIcon icon="chat" onClick={() => {beginChat(users)}} /> | Spectate | Defeat |<br></br></p>
-                  <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
-                    <FriendUserProfilExtended Value={users.login}/>
-                  </ModalWindow>*/}
+                  <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} />
                 </div>
               ))}   
             </div>

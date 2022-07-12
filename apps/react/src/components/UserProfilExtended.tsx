@@ -70,11 +70,11 @@ const UserProfilExtended = ({user}) => {
                 <div>Ranking: {ranking} </div>
             </div>
             <div style={{display:'flex', justifyContent:'space-around'}}>
-             <p><Friends></Friends></p>
-            <p><FriendReqs></FriendReqs></p>
-            <p><Leaderboard></Leaderboard></p>
-            <p><button onClick={toggleHistory}>Match History</button></p>
-        </div>
+                <p><Friends user={user}></Friends></p>
+                <p><FriendReqs></FriendReqs></p>
+                <p><Leaderboard></Leaderboard></p>
+                <p><button onClick={toggleHistory}>Match History</button></p>
+            </div>
             <ModalWindow revele={reveleHistory} setRevele={toggleHistory}>
                 <MatchHistory history={history}></MatchHistory>
             </ModalWindow>

@@ -1,5 +1,5 @@
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import AddNav from './AddNav';
 import Logo from './Logo';
 

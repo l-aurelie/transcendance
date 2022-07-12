@@ -75,7 +75,8 @@ useEffect(() => {
         /*sinon, tout s'est bien passe et on affiche le suivant:*/
             alert("Friend request sent");
         })
-}
+    }
+
 socket.on("changeColor", data => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
      setFriends(res.data);
