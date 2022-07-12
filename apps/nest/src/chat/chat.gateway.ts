@@ -100,12 +100,19 @@ console.log('handleDisconnect');
      /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, data) {
-        console.log('messafe')
+        console.log('messafe', data.roomId);
         const message = await this.messageRepo.find({relations: ["sender"], where: { roomID : data.roomId }});//await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
+        console.log('messafe2')
         /* Récupération de l'id des users bloqués par le client dans un tableau*/
+        console.log('messafe3')
         const blockedUsers = await this.userBlockRepo.find({where: {blockingUserId: data.idUser}});
+        console.log('messafe4')
         const arrayBlockedUsers = blockedUsers.map((it) => it.blockedUserId);
-       const dm = (await this.roomRepo.findOne({where: {id:data.roomId}})).directMessage;
+        console.log('messafe5')
+        const room = (await this.roomRepo.findOne({where: {id:data.roomId}}));
+        console.log('messafe6', room.name)
+        const dm = room.directMessage;
+        console.log('messafe7')
         console.log('dmmmmmmm' ,dm,  data.roomId)
         /* Concatene userName et le contenu du message si celui ci n'a pas été envoyé par quelqu'un de bloqué*/
         let tab = [];
@@ -263,7 +270,7 @@ console.log(tab);
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
         const roomUser = await this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2], true);
         console.log('addSalon4');
-        if (roomUser.id)
+        if (infos[2] === false && roomUser.id)
             await this.roomUserRepo.update({id: roomUser.id}, {isAdmin:true});
         console.log('addSalon5');
        // console.log('roomuserId= ', roomUser.id, roomUser.roomId, roomUser.userId, infos[0]);
@@ -273,6 +280,9 @@ console.log(tab);
         this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: infos[3], roomId:newRoom.id, creator:infos[0], isAdmin:true, private:infos[1]}); // add owner = true;
         //}
         console.log('addSalon');
+        if (infos.length > 4)
+        this.user_joins_room(client, {userId: infos[0], room: infos[3], otherLogin: infos[4], roomId:newRoom.id})
+      //  socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
     }
 
     @SubscribeMessage('changeInfos')
