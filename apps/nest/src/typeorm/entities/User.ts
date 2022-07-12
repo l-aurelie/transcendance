@@ -87,10 +87,6 @@ interface IUser {
         intraId: string;
         avatar: string;
         email: string;
-<<<<<<< HEAD
-=======
-      //  Avatar2 : Avatar;
->>>>>>> ff3deed4fb3b4d37a8d4a21bc7b4e11fd9d4f929
         authConfirmToken?: number;
         isVerified: boolean;
         isConnected:boolean;
