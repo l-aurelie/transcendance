@@ -259,6 +259,22 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       //return (users);
    return(tab);
    }
+   @Get('allNoMembers/:roomId')
+   async getNoMember(@Param('roomId') roomId : string) {
+      const users = await this.userServ.findAll();
+      //console.log('GetUsers()');
+      let tab = [];
+      const id = parseInt(roomId);
+      for (let entry of users)
+      {
+         let isMember = await this.roomUser.find({where: {roomId:id, userId:entry.id}});
+         if(isMember.length === 0)
+            tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified, email:entry.email})
+      // return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA});
+      }
+      //return (users);
+   return(tab);
+   }
 
    /* Retourne le user [login] */
    @Get(':login')
@@ -287,7 +303,16 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    for (let room of rooms) {
        var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
        var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);
-       tab.push({salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.RoomUser_isAdmin, creator:roomCreator});
+       var roomPrivate = await this.roomService.getRoomPrivateFromId(room.RoomUser_roomId);
+       tab.push({
+         salonName: roomName,
+         dm: false,
+         displayName: roomName,
+         roomId:room.RoomUser_roomId,
+         isAdmin:room.RoomUser_isAdmin,
+         creator:roomCreator, 
+         private:roomPrivate,
+      });
        /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
    }
    return (tab);
@@ -318,6 +343,26 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
 
          return (users);
    }
+
+   @Get('members/:idRoom')
+   async members(@Param('idRoom') idRoom: string) {
+      const id = parseInt(idRoom);
+      const allRelations = await this.roomUser.find({where: {roomId:id}});
+      let tab = [];
+      for (let entry of allRelations)
+      {
+         let log = await this.userRepo.findOne({where: {id:entry.userId}});
+         let show = log.login;
+         if (entry.mute === true)
+            show += " (mute)";
+         if (entry.ban === true)
+            show += " (ban)";
+         tab.push({value:log.id, label:show});
+      }
+      console.log('members in back', tab)
+      return tab;
+   }
+
 
    //  @Get('testing/test')
    // async getUsersInChannel(
