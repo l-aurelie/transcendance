@@ -206,10 +206,11 @@ const MySalons = (props) => {
         setPwd(pwdRef.current.value);
         event.preventDefault();
         const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
-        console.log('pwd => ', pwdRef.current.value);
+        // console.log('pwd => ', pwdRef.current.value);
         axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
         });
         event.target.reset(); //clear all input values in the form withCredentials:true
+        alert("Password has been set");
         return;
     }
 };
@@ -219,7 +220,9 @@ const MySalons = (props) => {
         event.preventDefault();
         axios.post("http://localhost:3000/users/resetpwd", inf, {withCredentials:true}).then((res) => {
         });
-        console.log('pwd to DELETE => ', pwd);
+        // console.log('pwd to DELETE => ', pwd);
+        alert("Password reset to null");
+
         
     };
     
@@ -228,24 +231,35 @@ const MySalons = (props) => {
         console.log('add this friend in admin for this salon '  + event.label);
         console.log('Users in Room ==> ', usersRoom);
         axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
-            console.log("in set amdin true");
+            // console.log("in set amdin true");
         });
-        console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
+        alert(event.label + "is now an admin");
+        // console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
     }
 
     const muteUser = (event) => {
+        console.log(" currentSalon.creator " + currentSalon.creator)
+        console.log(" event.value " + event.value)
+        // if (currentSalon.owner === event.value) {
+        //     return (
+        //         <p>You can't mute the creator of the channel</p>
+        //     )
+        // }
         const inf = { userId : event.value, roomId: currentSalon.roomId, muteUser: true};
         console.log('mute this guy'   + event.value);
         axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
-            console.log(event.label + " is muted...")
+            // console.log(event.label + " is muted...")
         });
+        alert(event.label + " muted!");
+
     }
 
     const banUser = (event) => {
         const inf = { userId : event.value, roomId: currentSalon.roomId, banUser: true};
         axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
-            console.log(event.label + " is banned...")
+            // console.log(event.label + " is banned...")
         });
+        alert(event.label + " banned!");
     }
 
     return(
@@ -299,13 +313,19 @@ const MySalons = (props) => {
                             <Select onChange={banUser} options={usersRoom}/>
                             </div> 
                             </div>
-                            {/*<h1>Admins : </h1>*/}
-                            {/* <div style={body}>
-                                {usersRoom.map((user) => 
-
-                                <p key={user.id}>{usersRoom.admin}</p>) }
-                           </div> */}
-                        {/* </div> */}
+                            <h1>Admins : </h1>
+                            {/* <div style={body}> */}
+                            {usersRoom.map((user) => { 
+                                <button key={user.id}>        
+                                {
+                                    user.isAdmin ?
+                                        <div >{user.login}</div>
+                                    :
+                                    null
+                                
+                                }
+                                </button>
+                            })}
                     </div>
                 </ModalWindow>
                 <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
@@ -313,7 +333,7 @@ const MySalons = (props) => {
                         <h1>Admin Settings</h1>
                         <div style={body}></div>
                         {/* </div> */}
-                        <div style={containerSetting}>
+                        {/* <div style={containerSetting}> */}
                         <h3>MUTE User</h3>
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
@@ -325,14 +345,9 @@ const MySalons = (props) => {
                             <Select onChange={banUser} options={usersRoom}/>
                             </div> 
                             </div>
-                            {/*<h1>Admins : </h1>*/}
-                            {/* <div style={body}>
-                                {usersRoom.map((user) => 
-
-                                <p key={user.id}>{usersRoom.admin}</p>) }
-                           </div> */}
-                        {/* </div> */}
-                    </div>
+                           
+                          
+                    {/* </div> */}
                 </ModalWindow>
                 {/* </div> */}
                 {/* Permet de quitter le channel */}
