@@ -219,12 +219,14 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async mute(@Body() body: setUserRoomDto)
    {
       const currentSal = parseInt(body.roomId);
-      const id = parseInt(body.userId)
+      const id = parseInt(body.userId);
+      const dateT = new Date().getTime() + 86400000;
+      const expired = new Date(dateT);
       const room_user = await this.roomUser.findOne(
          {
             where : {roomId: currentSal, userId: id}
          });
-      this.roomUser.update({id: room_user.id}, {mute:true});
+      this.roomUser.update({id: room_user.id}, {mute:true, expiredMute: expired});
       console.log("is mute = " + room_user.mute);
       return({status:201})
 
@@ -235,12 +237,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async ban(@Body() body: setUserRoomDto)
    {
       const currentSal = parseInt(body.roomId);
-      const id = parseInt(body.userId)
+      const id = parseInt(body.userId);
+      const dateT = new Date().getTime() + 86400000;
+      const expired = new Date(dateT);
+      console.log('date.now', dateT, expired);
       const room_user = await this.roomUser.findOne(
          {
             where : {roomId: currentSal, userId: id}
          });
-      this.roomUser.update({id:room_user.id}, {ban:true});
+      this.roomUser.update({id:room_user.id}, {ban:true, expireBan: expired});
       console.log("is ban = " + room_user.ban);
       return({status:201})
    }
@@ -303,14 +308,14 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
    var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);
    var roomPrivate = await this.roomService.getRoomPrivateFromId(room.RoomUser_roomId);
-   console.log('rooms5 = ', room.RoomUser_ban, room.RoomUser_mute, room.RoomUser_expireMute, room.RoomUser_expireBan);
+   console.log('rooms5 = ', room.RoomUser_ban, room.RoomUser_mute, room.RoomUser_expiredMute, room.RoomUser_expireBan);
    if (room.RoomUser_ban === true) {
          const date = new Date().getTime();
          if (room.RoomUser_mute === true){
-            if (date >= room.RoomUser_expireMute)
+            if (date >= room.RoomUser_expiredMute.getTime())
                await this.roomUserRepo.update({id:room.RoomUser_id}, {mute:false});
          }
-   if (date >= room.RoomUser_expireBan) {
+   if (date >= room.RoomUser_expireBan.getTime()) {
             await this.roomUserRepo.update({id:room.RoomUser_id}, {ban:false});
             tab.push({
                salonName: roomName,
@@ -326,7 +331,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       else if (room.RoomUser_ban === false) {
          if (room.RoomUser_mute === true){
             const date = new Date().getTime();
-            if (date >= room.RoomUser_expireMute)
+            if (date >= room.RoomUser_expiredMute.getTime())
                await this.roomUserRepo.update({id:room.RoomUser_id}, {mute:false});
          }
          tab.push({
@@ -365,7 +370,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          //   console.log(users[0].room.creatorId);
          //   console.log(users[0].room.password);
          //   console.log('quoi');
-
          return (users);
    }
 
