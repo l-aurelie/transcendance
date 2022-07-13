@@ -176,7 +176,27 @@ const MySalons = (props) => {
         }
         setUsersRoom(tab);
         console.log('After created a tab user in ROOM ==> ', usersRoom);
-        });     
+        });
+            /* on recupere le password de la room actuelle */
+            axios.get("http://localhost:3000/users/pwd/" + currentSalon.roomId, {withCredentials: true}).then((res) => {
+                console.log('PWD', res.data);
+                let goodPwd = false;
+    
+                if (res.data === true) {
+                    
+                 
+                   const pwdInput = prompt('Enter the password to join the room');
+                //    setPwd(pwdInput);
+                   const inf = {roomId: currentSalon.roomId, pwd: pwdInput};
+                   console.log("PWD === ", pwdInput);
+                    axios.post("http://localhost:3000/users/checkpwd/", inf, {withCredentials: true}).then((res) => {
+                        goodPwd = res.data;
+                        if(!goodPwd)
+                        alert('Wrong password');
+                    })
+                }
+            });
+            console.log('handleclick my salon');    
     };
 
     const closeSalon = (salon) => {

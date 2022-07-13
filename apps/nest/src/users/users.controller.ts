@@ -392,6 +392,47 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       return tab;
    }
 
+      /* Retourne si il y a un password */
+      @Get('pwd/:currentSalon')
+      async getPwd(@Param('currentSalon') currentSalon: string) {
+         console.log('IN USERSINCHANNEL 2');
+         console.log('current SALON : ' + currentSalon);
+         if (currentSalon === "undefined")
+         {
+           console.log('undef');
+            return(false);
+         }
+         var currentSal = parseInt(currentSalon);
+         console.log('current SAL: ' + currentSal);
+         const room = await this.roomRepo.findOne(currentSal);
+         console.log("ROOM +++> ", room);
+         console.log("PWD +++> ", room.password);
+         const pwd = room.password;
+         console.log("password == ", pwd);
+         if (pwd == null)
+         {   
+            console.log("RETURN 0");
+            return(false);
+         }
+         else
+         {   
+            console.log("RETURN 1");
+            return(true);
+         }
+      }
+   
+      /* check si le password est valide */
+      @UseGuards(AuthenticatedGuard)
+      @Post('/checkpwd')
+      async checkpwd(@Body() body: setUserRoomDto) {
+         const currentSal = parseInt(body.roomId);
+         const room = await this.roomRepo.findOne(currentSal);
+         const pwdHashed = room.password;
+         const isMatch = await bcrypt.compare(body.pwd, pwdHashed);
+         console.log("MATCH === ", isMatch);
+         return (isMatch);
+      }
+
 
    //  @Get('testing/test')
    // async getUsersInChannel(
