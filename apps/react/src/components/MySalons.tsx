@@ -256,7 +256,7 @@ const MySalons = (props) => {
     }
 
     return(
-        <div>   
+        <div style={{overflowY:'scroll' as 'scroll'}}>   
           {Array.from(joinedSalons.entries()).map((salon) => ( 
             <button key={salon[1].roomId} style={channel} onClick={() => {handleClick(salon)}}>        
             {

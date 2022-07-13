@@ -220,7 +220,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    {
       const currentSal = parseInt(body.roomId);
       const id = parseInt(body.userId);
-      const dateT = new Date().getTime() + 86400000;
+      const dateT = new Date().getTime() + 120000;//86400000;
       const expired = new Date(dateT);
       const room_user = await this.roomUser.findOne(
          {
@@ -238,7 +238,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    {
       const currentSal = parseInt(body.roomId);
       const id = parseInt(body.userId);
-      const dateT = new Date().getTime() + 86400000;
+      const dateT = new Date().getTime() + 120000//86400000;
       const expired = new Date(dateT);
       console.log('date.now', dateT, expired);
       const room_user = await this.roomUser.findOne(
