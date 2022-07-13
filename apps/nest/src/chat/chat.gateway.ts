@@ -111,7 +111,8 @@ console.log('handleDisconnect');
         for (let entry of message)
         {
                 if (arrayBlockedUsers.includes(entry.sender.id))
-                   break; // plutot continue ; non ?
+                    continue;
+                //   break; // plutot continue ; non ?
                 // if (dm === true)
                 //    tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
                 // else {
@@ -130,6 +131,14 @@ tab = tab.sort((a,b) => a.id- b.id);
 console.log(tab);
         client.emit('fetchmessage', tab);
       }
+    
+     @SubscribeMessage('just-block')
+     async justBlock(client)
+     {
+        console.log("here just block back")
+        client.emit('just_block');
+     }
+      
 
     /* Un user join une room ou crée une conversation privée, on cree une entre userRoom */
     /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */
@@ -378,6 +387,7 @@ console.log(tab);
 
     @SubscribeMessage('rejectMatch')
     async rejectMatch(client, infos) {
+        console.log (infos);
         console.log('arrive dans reject');
         this.server.to('sockets' + infos[0].id).emit("opponent-quit");
     }
@@ -669,6 +679,14 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     @SubscribeMessage('defeat')
     async defeat(client, infos) {
         //for block
+        const isBlock = await this.userBlockRepo.find({where: {blockingUserId: infos[0].id, blockedUserId:infos[1]}});
+        const isBlock2 = await this.userBlockRepo.find({where: {blockingUserId: infos[1], blockedUserId:infos[0].id}});
+        const user2 = await this.userRepo.findOne({id: infos[1]});
+        if (isBlock.length > 0 || isBlock2.length > 0 || infos[0].isPlaying === true || user2.isPlaying === true)
+        {
+            this.rejectMatch(client, infos);
+            return ; 
+        }
         //if is block 
         //{
             //this.rejectMatch(infos[1], infos[0], infos[2]);

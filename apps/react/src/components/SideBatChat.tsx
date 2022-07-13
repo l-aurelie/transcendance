@@ -2,6 +2,7 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import { useState } from 'react';
 import AddNav from './AddNav';
 import Logo from './Logo';
+import { socket } from './Socket';
 
 const SideBarChat = (props) => {
 

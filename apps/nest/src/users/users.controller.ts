@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Readable } from 'typeorm/platform/PlatformTools';
-import { RoomEntity, RoomUser } from 'src/typeorm';
+import { RoomEntity, RoomUser, UserBlock } from 'src/typeorm';
 import { RoomService } from 'src/chat/service/room.service';
 import * as bcrypt from 'bcrypt';
 
@@ -39,6 +39,7 @@ export class UsersController {
    @InjectRepository(RoomEntity) private roomRepo: Repository<RoomEntity>,
    @InjectRepository(RoomUser) private roomUserRepo: Repository<RoomUser>,
    @InjectRepository(RoomUser) private readonly  roomUser : Repository<RoomUser>,
+   @InjectRepository(UserBlock) private readonly  blockRepo : Repository<UserBlock>,
    private roomService: RoomService) {}   /* Retourne le profil de l'utilisateur courant */
    @UseGuards(AuthenticatedGuard)
    @Get()
@@ -373,6 +374,43 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          return (users);
    }
 
+   //set a userBlock instance
+   @Get('setBlock/:idBlocking/:idBlocked')
+   async setBlock(@Param('idBlocking') idBlocking : string, @Param('idBlocked') idBlocked:string)
+   {
+      const userBlocking = parseInt(idBlocking);
+      const userBlocked = parseInt(idBlocked);
+      const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
+      if (already.length > 0)
+         return ;
+      const create = await this.blockRepo.create({blockingUserId:userBlocking, blockedUserId:userBlocked});
+      this.blockRepo.save(create);
+   }
+
+   @Get('isBlock/:idBlocking/:idBlocked')
+   async isBlock(@Param('idBlocking') idBlocking : string, @Param('idBlocked') idBlocked:string)
+   {
+      const userBlocking = parseInt(idBlocking);
+      const userBlocked = parseInt(idBlocked);
+      const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
+      if (already.length > 0)
+         return true;
+      else
+         return false;
+   }
+
+   @Get('setUnblock/:idBlocking/:idBlocked')
+   async setUnblock(@Param('idBlocking') idBlocking : string, @Param('idBlocked') idBlocked:string)
+   {
+      const userBlocking = parseInt(idBlocking);
+      const userBlocked = parseInt(idBlocked);
+      const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
+      if (already.length === 0)
+         return ;
+      const create = await this.blockRepo.delete({id:already[0].id});
+   }
+
+   //return all room that a user joined when he logged
    @Get('members/:idRoom')
    async members(@Param('idRoom') idRoom: string) {
       const id = parseInt(idRoom);
