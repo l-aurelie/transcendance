@@ -111,7 +111,8 @@ console.log('handleDisconnect');
         for (let entry of message)
         {
                 if (arrayBlockedUsers.includes(entry.sender.id))
-                   break; // plutot continue ; non ?
+                    continue;
+                //   break; // plutot continue ; non ?
                 // if (dm === true)
                 //    tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
                 // else {
@@ -130,6 +131,14 @@ tab = tab.sort((a,b) => a.id- b.id);
 console.log(tab);
         client.emit('fetchmessage', tab);
       }
+    
+     @SubscribeMessage('just-block')
+     async justBlock(client)
+     {
+        console.log("here just block back")
+        client.emit('just_block');
+     }
+      
 
     /* Un user join une room ou crée une conversation privée, on cree une entre userRoom */
     /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */

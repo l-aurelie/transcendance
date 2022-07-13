@@ -18,25 +18,15 @@ const  DisplayUser = ({userConnected, userSelected, isFriend}) => {
     const toggleDefeat = () => {setReveleDefeat(!reveleDefeat);}
     const [bloc, setBlock] = useState(false);
 
-  //   useEffect(() => {
-     const ret = axios.get("http://localhost:3000/users/isBlock/" +  userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
-      console.log("form submit"); 
-      console.log(res);
+     axios.get("http://localhost:3000/users/isBlock/" +  userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
       if (res.data === false)
       {
       setBlock(false);
-      console.log("isBlock in false= bloc = ", bloc);
-      return (false);
       }
       else{
       setBlock(true);
-      console.log("isBlock in true= bloc = ", bloc)
-      return(true)
       }
-      console.log("isBlock = bloc = ", bloc)
     });
-  //   setBlock(ret);
-  // }, [])
 
     /* Lancer un message prive */
     const beginChat = (friend) => {
@@ -69,40 +59,15 @@ const defeat = () => {
   toggleDefeat();
 }
 const block = () => {
-  //console.log('bloc, bloc = ', bloc);
- // console.log('bloc, bloc = ', bloc);
   axios.get("http://localhost:3000/users/setBlock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
-    // const mess = res.data.error;
-    // if (typeof(mess) === 'string')
-    // {
-    //     const str = JSON.stringify(mess);
-    //     alert(str);
-    // }
-    // else
-    //       alert("user blocked" + bloc);
-    })
-   // setBlock(!bloc);
-  console.log('bloc, bloc = ', bloc);
-   
-   setBlock(true);
-  console.log('bloc, bloc = ', bloc);
+    setBlock(true);
+  })
 }
 
 const  unblock = () => {
-  console.log('unbloc, bloc = ', bloc);
-
- axios.get("http://localhost:3000/users/setUnblock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
-    // const mess = res.data.error;
-    // if (typeof(mess) === 'string')
-    // {
-    //     const str = JSON.stringify(mess);
-    //     alert(str);
-    // }
-    // else
-    //       alert("user unblocked" + bloc);}
-    })
+  axios.get("http://localhost:3000/users/setUnblock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
     setBlock(false);
-    console.log('unbloc, bloc = ', bloc);
+  })
   }
 
   

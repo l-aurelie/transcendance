@@ -1,5 +1,6 @@
 /* aurel */
 import CSS from 'csstype';
+import { socket } from '../Socket';
 
 const modaleWindow: CSS.Properties = {
     height: '500px',

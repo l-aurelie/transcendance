@@ -102,6 +102,7 @@ const MySalons = (props) => {
             });
             socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: props.actualUser.id, roomId:currentSalon.roomId});
         }
+
         socket.on("chat", data => {
             setMessage((message) => {
                 //si l'emittingRoom est le salon courant on update les messages, sinon on met une notif si c'est indiqué par .dontNotif

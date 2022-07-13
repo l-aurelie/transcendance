@@ -116,6 +116,11 @@ const Chat = (props) => {
 
 //if user that ask to play quit window for accept or reject the request disappear
   useEffect(() => {
+    // socket.on('just-block', data => {
+    //   console.log("here in socketOn just blooooooooooooooooooock")
+    //   socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: actualUser.id, roomId:currentSalon.roomId});
+
+    // })
     socket.on("noMoreMatch", data => {
       setRevele(false);
     });
