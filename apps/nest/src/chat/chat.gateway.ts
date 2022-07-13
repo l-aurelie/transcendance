@@ -100,33 +100,25 @@ console.log('handleDisconnect');
      /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
      @SubscribeMessage('fetchmessage')
      async fetch_message(client, data) {
-        console.log('messafe', data.roomId);
         const message = await this.messageRepo.find({relations: ["sender"], where: { roomID : data.roomId }});//await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
-        console.log('messafe2')
         /* Récupération de l'id des users bloqués par le client dans un tableau*/
-        console.log('messafe3')
         const blockedUsers = await this.userBlockRepo.find({where: {blockingUserId: data.idUser}});
-        console.log('messafe4')
         const arrayBlockedUsers = blockedUsers.map((it) => it.blockedUserId);
-        console.log('messafe5')
         const room = (await this.roomRepo.findOne({where: {id:data.roomId}}));
-        console.log('messafe6', room.name)
         const dm = room.directMessage;
-        console.log('messafe7')
-        console.log('dmmmmmmm' ,dm,  data.roomId)
         /* Concatene userName et le contenu du message si celui ci n'a pas été envoyé par quelqu'un de bloqué*/
         let tab = [];
         for (let entry of message)
         {
                 if (arrayBlockedUsers.includes(entry.sender.id))
-                   break;
-                if (dm === true)
-                   tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
-                else {
-                    const roomUser = await this.roomUserRepo.findOne({where: {userId:entry.senderId, roomId:data.roomId}});
-                 if (roomUser.mute === false)
+                   break; // plutot continue ; non ?
+                // if (dm === true)
+                //    tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
+                // else {
+                //     const roomUser = await this.roomUserRepo.findOne({where: {userId:entry.senderId, roomId:data.roomId}});
+                //  if (roomUser.mute === false)
                      tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
-                 }
+               //  }
             }
         /*tab = await Promise.all(message.map( async (it) : Promise<any[]> => {
                 if (arrayBlockedUsers.includes(it.sender.id))
@@ -150,10 +142,7 @@ console.log(tab);
             console.log('user_joins, infos.roomId')
             const roomUser = await this.roomUserRepo.findOne({where: {userId:infos.userId, roomId:infos.roomId}});
                 if (roomUser && roomUser.ban === true)
-                {
-                    console.log('bann = true');
                     return;
-                }
         }
     /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
        this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.roomId);
@@ -189,21 +178,28 @@ console.log(tab);
       this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
 
+    @SubscribeMessage('user_isBan_room')
+    async user_isBan_room(client, infos) {
+      this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.roomId);
+      /* On emit le nom du salon quitté pour en informer tous les fronts */
+      this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
+    }
+
     /* Recoit un message et un room dans laquelle re-emit le message */
     /* {roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm} */
     @SubscribeMessage('chat')
     async onChat(client, data) {
         //any clients listenning  for the chat event on the data.roomToEmit channel would receive the message data instantly
         const time = new Date(Date.now()).toLocaleString();
-        await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
-        // if (data.isDm === false)
-        // {
-        //     const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
-        //     if (roomUser.mute === true)
-        //         return;
-        // }
+        if (data.isDm === false)
+        {
+             const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
+             if (roomUser.mute === true)
+                 return;
+        }
         /* on récupère les infos de block */
         /* on fait un array constitué de tous les salons de sockets qui nous ont blouqués pour ne pas leur emit grâce à .except */
+        await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
         let bannedMe = await this.userBlockRepo.createQueryBuilder().where({ blockedUserId: data.whoAmI.id }).execute();
         bannedMe.forEach(function(el, id, arr) {
             arr[id] = 'sockets' + arr[id].UserBlock_blockingUserId;
@@ -219,12 +215,13 @@ console.log(tab);
         }
         else {
             bannedMe.push('sockets' + data.whoAmI.id);
-            const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
-             if (roomUser.mute === true)
-             {
-                console.log('roomUser.mute === true')
-                 return;
-                     }        //   this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
+            // const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
+            //  if (roomUser.mute === true)
+            //  {
+            //     console.log('roomUser.mute === true')
+            //      return;
+            //          }        
+                     //   this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
             //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
          //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
          this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, roomId:data.roomId, creator:data.creator});
