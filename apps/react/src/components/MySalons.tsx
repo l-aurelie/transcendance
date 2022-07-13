@@ -234,6 +234,8 @@ const MySalons = (props) => {
         const inf = { userId : event.value, roomId: currentSalon.roomId, banUser: true};
         axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
         });
+
+        socket.emit('user_isBan_room', {userId: event.value, room: currentSalon.name, roomId: currentSalon.roomId});
         alert(event.label + " banned!");
     }
 
@@ -254,7 +256,7 @@ const MySalons = (props) => {
     }
 
     return(
-        <div>   
+        <div style={{overflowY:'scroll' as 'scroll'}}>   
           {Array.from(joinedSalons.entries()).map((salon) => ( 
             <button key={salon[1].roomId} style={channel} onClick={() => {handleClick(salon)}}>        
             {
@@ -331,7 +333,7 @@ const MySalons = (props) => {
                     <button style={setting} onClick={(event) => {
                         if ((salon[1].owner && salon[1].creator === props.actualUser.id) && !isEmpty(usersRoom) && !admin(usersRoom)) {
                             console.log("ICI" + {usersRoom});
-                            alert('Choose an admin before leaving the channel')
+                            alert('Your the creator, choose a successor before leaving the channel')
                             return;
                         }
                         else {

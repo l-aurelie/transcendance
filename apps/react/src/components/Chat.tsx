@@ -177,9 +177,9 @@ const closeMenu = () => {
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
       {/*modale qui apparaissent seulement si elle sont demande: userProfil et lorsque l' utilisateur est defie par un autre */}
-      <ModalWindow revele={revele} setRevele={toggleModal}>
-        <Defeat toggle={toggleModal} opponent={defeatUser} actual={actualUser} version={version}></Defeat>
-      </ModalWindow>
+      {/* <ModalWindow revele={revele} setRevele={toggleModal}> */}
+        <Defeat toggle={toggleModal} revele={revele} opponent={defeatUser} actual={actualUser} version={version}></Defeat>
+      {/* </ModalWindow> */}
       <ModalWindow revele={revele2} setRevele={toggleModal2}>
         <FriendUserProfilExtended Value={userLogClick}/>
       </ModalWindow>
@@ -190,7 +190,7 @@ const closeMenu = () => {
         {message.map((data) => (
         <div style={messageSent} key={data.id}>
           {/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
-          {show ? (<div style={{
+          {show ? (<div key={data.id} style={{
             fontSize: '14px', backgroundColor:'#D7677E', width : '100px', height:'auto',
             position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
               <b style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
@@ -199,7 +199,7 @@ const closeMenu = () => {
               <p style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
             </div>): null }
             {/*affiche les message sous forme nom: message */}
-            <p > { show ? <b style={over} onClick={closeMenu} >{data.senderLog}</b>: <b style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
+            <p > { show ? <b key= {data.id} style={over} onClick={closeMenu} >{data.senderLog}</b>: <b key={data.id} style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
           </div>
 
       ))}

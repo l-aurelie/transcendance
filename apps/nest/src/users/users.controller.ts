@@ -6,7 +6,7 @@ import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { User } from 'src/typeorm/entities/User';
 //import { Avatar } from 'src/typeorm/entities/Avatar';
-import { Not, Repository } from 'typeorm';
+import { Not, Repository, UsingJoinColumnIsNotAllowedError } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -219,12 +219,14 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async mute(@Body() body: setUserRoomDto)
    {
       const currentSal = parseInt(body.roomId);
-      const id = parseInt(body.userId)
+      const id = parseInt(body.userId);
+      const dateT = new Date().getTime() + 120000;//86400000;
+      const expired = new Date(dateT);
       const room_user = await this.roomUser.findOne(
          {
             where : {roomId: currentSal, userId: id}
          });
-      this.roomUser.update({id: room_user.id}, {mute:true});
+      this.roomUser.update({id: room_user.id}, {mute:true, expiredMute: expired});
       console.log("is mute = " + room_user.mute);
       return({status:201})
 
@@ -235,12 +237,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async ban(@Body() body: setUserRoomDto)
    {
       const currentSal = parseInt(body.roomId);
-      const id = parseInt(body.userId)
+      const id = parseInt(body.userId);
+      const dateT = new Date().getTime() + 120000//86400000;
+      const expired = new Date(dateT);
+      console.log('date.now', dateT, expired);
       const room_user = await this.roomUser.findOne(
          {
             where : {roomId: currentSal, userId: id}
          });
-      this.roomUser.update({id:room_user.id}, {ban:true});
+      this.roomUser.update({id:room_user.id}, {ban:true, expireBan: expired});
       console.log("is ban = " + room_user.ban);
       return({status:201})
    }
@@ -298,13 +303,38 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async getUserRooms(@Param('id') id : string) {
       const idUser = parseInt(id);
    const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: idUser }).execute();
-   console.log('rooms = ', rooms);
    let tab = [];
    for (let room of rooms) {
-       var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
-       var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);
-       var roomPrivate = await this.roomService.getRoomPrivateFromId(room.RoomUser_roomId);
-       tab.push({
+   var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
+   var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);
+   var roomPrivate = await this.roomService.getRoomPrivateFromId(room.RoomUser_roomId);
+   console.log('rooms5 = ', room.RoomUser_ban, room.RoomUser_mute, room.RoomUser_expiredMute, room.RoomUser_expireBan);
+   if (room.RoomUser_ban === true) {
+         const date = new Date().getTime();
+         if (room.RoomUser_mute === true){
+            if (date >= room.RoomUser_expiredMute.getTime())
+               await this.roomUserRepo.update({id:room.RoomUser_id}, {mute:false});
+         }
+   if (date >= room.RoomUser_expireBan.getTime()) {
+            await this.roomUserRepo.update({id:room.RoomUser_id}, {ban:false});
+            tab.push({
+               salonName: roomName,
+               dm: false,
+               displayName: roomName,
+               roomId:room.RoomUser_roomId,
+               isAdmin:room.RoomUser_isAdmin,
+               creator:roomCreator, 
+               private:roomPrivate,
+            });
+         }
+      }
+      else if (room.RoomUser_ban === false) {
+         if (room.RoomUser_mute === true){
+            const date = new Date().getTime();
+            if (date >= room.RoomUser_expiredMute.getTime())
+               await this.roomUserRepo.update({id:room.RoomUser_id}, {mute:false});
+         }
+         tab.push({
          salonName: roomName,
          dm: false,
          displayName: roomName,
@@ -313,8 +343,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          creator:roomCreator, 
          private:roomPrivate,
       });
-       /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
-   }
+      }
+      }
    return (tab);
    }
    /* Retourne la liste des utilisateurs presents dans un salon */
@@ -340,7 +370,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          //   console.log(users[0].room.creatorId);
          //   console.log(users[0].room.password);
          //   console.log('quoi');
-
          return (users);
    }
 
