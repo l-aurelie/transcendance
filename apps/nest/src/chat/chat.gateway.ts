@@ -278,8 +278,10 @@ console.log(tab);
         //}
         console.log('addSalon');
         if (infos.length > 4)
-        this.user_joins_room(client, {userId: infos[0], room: infos[3], otherLogin: infos[4], roomId:newRoom.id})
-      //  socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
+            this.user_joins_room(client, {userId: infos[0], room: infos[3], otherLogin: infos[4], roomId:newRoom.id})
+        else 
+            this.user_joins_room(client, {userId: infos[0], room: infos[3], roomId:newRoom.id})
+            //  socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
     }
 
     @SubscribeMessage('changeInfos')

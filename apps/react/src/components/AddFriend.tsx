@@ -57,7 +57,7 @@ const onChange = (event) => {
           <MaterialIcon icon="person add" onClick={toggleAdd} />
           <div style={lists}>
             {friends.map(friends => (
-              <DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} />
+              <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} /></div>
             ))}   
           </div>
           <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
