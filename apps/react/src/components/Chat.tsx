@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { socket } from "./Socket";
 import MySalons from "./MySalons";
-import { markAsUntransferable } from "worker_threads";
-import { defaultIfEmpty } from "rxjs";
+//import { markAsUntransferable } from "worker_threads";
+//import { defaultIfEmpty } from "rxjs";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
 import Defeat from './Defeat';
@@ -88,20 +88,20 @@ const Chat = (props) => {
   const actualUser = props.dataFromParent;
 
   const [message, setMessage] = useState([]);// Message a envoyer au salon
-  const [string, setString] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
   const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
   const [anchorPoint, setAnchorPoint] = useState({x:0, y:0});
   const [show, setShow] = useState(false);
-  const [revele, setRevele] = useState(false);
-  const [revele2, setRevele2] = useState(false);
-  const toggleModal = () => {setRevele(!revele);}
-  const toggleModal2 = () => {setRevele2(!revele2);}
   const [userIdClick, setUserIdClick] = useState(0);
   const [userLogClick, setUserLogClick] = useState('');
   const [defeatUser, setDefeatUser] = useState();
   const [version, setVersion] = useState(0);
   const [same, setSame] = useState(false);
+  
+  const [revele, setRevele] = useState(false);
+  const [revele2, setRevele2] = useState(false);
+  const toggleModal = () => {setRevele(!revele);}
+  const toggleModal2 = () => {setRevele2(!revele2);}
   
   //Emit le message rentre par l'utilisateur a tout le salon
   const sendMessage = (event) => {
