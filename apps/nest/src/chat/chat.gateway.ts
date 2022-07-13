@@ -141,8 +141,14 @@ console.log(tab);
         {
             console.log('user_joins, infos.roomId')
             const roomUser = await this.roomUserRepo.findOne({where: {userId:infos.userId, roomId:infos.roomId}});
-                if (roomUser && roomUser.ban === true)
+            if (roomUser && roomUser.ban === true)
+            {
+                const date = new Date().getTime();
+                if (date >= roomUser.expireBan.getTime())
+                    await this.roomUserRepo.update({id:roomUser.id}, {ban:false});
+                else
                     return;
+            }
         }
     /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
        this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.roomId);
@@ -193,9 +199,14 @@ console.log(tab);
         const time = new Date(Date.now()).toLocaleString();
         if (data.isDm === false)
         {
-             const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
-             if (roomUser.mute === true)
-                 return;
+            const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
+            const date = new Date().getTime();
+            if (roomUser.mute === true){
+               if (date >= roomUser.expiredMute.getTime())
+                  await this.roomUserRepo.update({id:roomUser.id}, {mute:false});
+                else
+                    return;
+            }
         }
         /* on récupère les infos de block */
         /* on fait un array constitué de tous les salons de sockets qui nous ont blouqués pour ne pas leur emit grâce à .except */
