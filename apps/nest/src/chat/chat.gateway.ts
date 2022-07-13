@@ -387,6 +387,7 @@ console.log(tab);
 
     @SubscribeMessage('rejectMatch')
     async rejectMatch(client, infos) {
+        console.log (infos);
         console.log('arrive dans reject');
         this.server.to('sockets' + infos[0].id).emit("opponent-quit");
     }
@@ -678,6 +679,14 @@ this.server.to(infos[0]).emit("game-stop", user.login);
     @SubscribeMessage('defeat')
     async defeat(client, infos) {
         //for block
+        const isBlock = await this.userBlockRepo.find({where: {blockingUserId: infos[0].id, blockedUserId:infos[1]}});
+        const isBlock2 = await this.userBlockRepo.find({where: {blockingUserId: infos[1], blockedUserId:infos[0].id}});
+        const user2 = await this.userRepo.findOne({id: infos[1]});
+        if (isBlock.length > 0 || isBlock2.length > 0 || infos[0].isPlaying === true || user2.isPlaying === true)
+        {
+            this.rejectMatch(client, infos);
+            return ; 
+        }
         //if is block 
         //{
             //this.rejectMatch(infos[1], infos[0], infos[2]);
