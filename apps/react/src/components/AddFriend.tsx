@@ -54,7 +54,7 @@ const onChange = (event) => {
 /* Recherche d'amis a ajouter */
     return(
         <div>
-          <MaterialIcon icon="person add" onClick={toggleAdd} />
+          <MaterialIcon size="large" icon="person_add" onClick={toggleAdd} />
           <div style={lists}>
             {friends.map(friends => (
               <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} /></div>

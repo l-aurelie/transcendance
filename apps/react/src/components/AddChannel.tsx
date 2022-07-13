@@ -71,7 +71,7 @@ const AddChannel = ({user}) => {
 
     return(
         <div>
-            <MaterialIcon icon="chat add on" onClick={toggleAdd} />
+            <MaterialIcon size="large" icon="group_add" onClick={toggleAdd} />
             <p>Join existing channels</p>    
             {salons.map((salon) => ( 
             <button onClick={() => handleClick(salon)}>

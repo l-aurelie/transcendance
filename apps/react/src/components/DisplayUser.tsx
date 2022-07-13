@@ -8,14 +8,36 @@ import { socket } from "./Socket";
 import axios from "axios";
 import Defeat from "./Defeat";
 
-const DisplayUser = ({userConnected, userSelected, isFriend}) => {
+
+const  DisplayUser = ({userConnected, userSelected, isFriend}) => {
     //---
     const [reveleProfil, setReveleProfil] = useState(false);
     const toggleProfil = () => {setReveleProfil(!reveleProfil);}
     //---
     const [reveleDefeat, setReveleDefeat] = useState(false);
     const toggleDefeat = () => {setReveleDefeat(!reveleDefeat);}
-    
+    const [bloc, setBlock] = useState(false);
+
+  //   useEffect(() => {
+     const ret = axios.get("http://localhost:3000/users/isBlock/" +  userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
+      console.log("form submit"); 
+      console.log(res);
+      if (res.data === false)
+      {
+      setBlock(false);
+      console.log("isBlock in false= bloc = ", bloc);
+      return (false);
+      }
+      else{
+      setBlock(true);
+      console.log("isBlock in true= bloc = ", bloc)
+      return(true)
+      }
+      console.log("isBlock = bloc = ", bloc)
+    });
+  //   setBlock(ret);
+  // }, [])
+
     /* Lancer un message prive */
     const beginChat = (friend) => {
       console.log('beginchat', userConnected);
@@ -43,9 +65,47 @@ const DisplayUser = ({userConnected, userSelected, isFriend}) => {
 
 //set version of game whern defeat someone and send the request to other user
 const defeat = () => {
-  socket.emit('defeat', userConnected, userSelected, 0);
+  socket.emit('defeat', userConnected, userSelected.id, 0);
   toggleDefeat();
 }
+const block = () => {
+  //console.log('bloc, bloc = ', bloc);
+ // console.log('bloc, bloc = ', bloc);
+  axios.get("http://localhost:3000/users/setBlock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
+    // const mess = res.data.error;
+    // if (typeof(mess) === 'string')
+    // {
+    //     const str = JSON.stringify(mess);
+    //     alert(str);
+    // }
+    // else
+    //       alert("user blocked" + bloc);
+    })
+   // setBlock(!bloc);
+  console.log('bloc, bloc = ', bloc);
+   
+   setBlock(true);
+  console.log('bloc, bloc = ', bloc);
+}
+
+const  unblock = () => {
+  console.log('unbloc, bloc = ', bloc);
+
+ axios.get("http://localhost:3000/users/setUnblock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
+    // const mess = res.data.error;
+    // if (typeof(mess) === 'string')
+    // {
+    //     const str = JSON.stringify(mess);
+    //     alert(str);
+    // }
+    // else
+    //       alert("user unblocked" + bloc);}
+    })
+    setBlock(false);
+    console.log('unbloc, bloc = ', bloc);
+  }
+
+  
 
     /* Affiche un user et toute les options associee. Regarder le profil, add(si pas amis), chat, etc... */
     if(isFriend)
@@ -60,14 +120,16 @@ const defeat = () => {
         
           <p style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
           | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-          | <MaterialIcon icon="star" onClick={defeat} /> 
-          |Spectate <br></br></p>
+          | <MaterialIcon icon="videogame_asset" onClick={defeat} />  {/*icon="star" <MaterialIcon icon="radio_button_unchecked"  /> <MaterialIcon icon="block/>"*/}
+          | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
+          {/* |Spectate <br></br> */}
+          </p>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
-          <ModalWindow revele={reveleDefeat} setRevele={toggleDefeat}>
-            <Defeat toggle={toggleDefeat} opponent={userSelected} actual={userConnected} version={0}></Defeat>
-          </ModalWindow>
+          {/* <ModalWindow revele={reveleDefeat} setRevele={toggleDefeat}> */}
+            {/* <Defeat toggle={toggleDefeat} revele={reveleDefeat} opponent={userSelected} actual={userConnected} version={0}></Defeat> */}
+          {/* </ModalWindow> */}
         </div>
       );
     }
@@ -82,15 +144,18 @@ const defeat = () => {
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={userSelected.color}></rect></svg>
         
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
-          | <MaterialIcon icon="person add" onClick={sendFriendRequest} /> 
+          | <MaterialIcon icon="person_add" onClick={sendFriendRequest} /> 
           | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-          | <MaterialIcon icon="star" onClick={defeat} /> | Spectate <br></br></p>
+          | <MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}
+          | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
+           {/* | Spectate <br></br> */}
+           </p>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
-          <ModalWindow revele={reveleDefeat} setRevele={toggleDefeat}>
-            <Defeat toggle={toggleDefeat} opponent={userSelected} actual={userConnected} version={0}></Defeat>
-          </ModalWindow>
+          {/* <ModalWindow revele={reveleDefeat} setRevele={toggleDefeat}> */}
+            {/* <Defeat toggle={toggleDefeat} revele={reveleDefeat} opponent={userSelected} actual={userConnected} version={0}></Defeat> */}
+          {/* </ModalWindow> */}
         </div>
       );
     }
