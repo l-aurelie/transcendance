@@ -187,7 +187,9 @@ console.log(tab);
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
-      await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: infos.roomId}).execute();
+   //   await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: infos.roomId}).execute();
+   console.log('passe here user leaves');
+      await this.roomUserRepo.delete({ userId: infos.userId, roomId: infos.roomId})
       this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.roomId);
       /* On emit le nom du salon quitté pour en informer tous les fronts */
       this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)

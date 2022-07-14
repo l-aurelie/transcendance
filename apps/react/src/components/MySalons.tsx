@@ -200,11 +200,17 @@ const MySalons = (props) => {
             console.log('handleclick my salon');    
     };
 
-    const closeSalon = (salon) => {
+    const closeSalon = (event, salon, salon2) => {
         //A la fermeture d'un salon, on en informe le back qui va renvoyer
         // sur le canal leftsalon l'information du leave, pour que tous les sockets soient informés
-        socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon, roomId: salon.roomId});
+        event.stopPropagation();
+        socket.emit('user_leaves_room', {userId: props.actualUser.id, room: salon2, roomId: salon.roomId});
     };
+
+    const alertCreator = () => {
+        alert('Your the creator, choose a successor before leaving the channel')
+                            return;
+    }
 
     const submitPassword = (event) => {
     if (pwd !== "") {
@@ -351,7 +357,12 @@ const MySalons = (props) => {
                 </ModalWindow>
                 {/* Permet de quitter le channel */}
                 <div>
-                    <button style={setting} onClick={(event) => {
+                    {
+                        ((salon[1].owner && salon[1].creator === props.actualUser.id) ) ?
+                        <button onClick={alertCreator}>x</button> : <button onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</button>
+                    }
+                    {/*&& !isEmpty(usersRoom) && !admin(usersRoom)*/}
+                    {/* <button style={setting} onClick={(event) => {
                         if ((salon[1].owner && salon[1].creator === props.actualUser.id) && !isEmpty(usersRoom) && !admin(usersRoom)) {
                             console.log("ICI" + {usersRoom});
                             alert('Your the creator, choose a successor before leaving the channel')
@@ -360,8 +371,9 @@ const MySalons = (props) => {
                         else {
                                 
                                 event.stopPropagation();
-                                closeSalon(salon[0])
-                        }}}> x </button></div>
+                                closeSalon(salon[1], salon[0])
+                        }}}> x </button> */}
+                </div>
                 </div>
             </button>))}
             {/* PlaceHolder 
