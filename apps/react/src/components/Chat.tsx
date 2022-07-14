@@ -195,16 +195,16 @@ const closeMenu = () => {
         {message.map((data) => (
         <div style={messageSent} key={data.id}>
           {/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
-          {show ? (<div key={data.id} style={{
+          {show ? (<div style={{
             fontSize: '14px', backgroundColor:'#D7677E', width : '100px', height:'auto',
             position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
-              <b key={data.id} style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
-              <p key={data.id} style={overLi} onClick={getUserProfil}>Profil</p>
-              { same ?  <></> : (<div key={data.id} ><p key={data.id}style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
-              <p key={data.id} style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
+              <b  style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
+              <p  style={overLi} onClick={getUserProfil}>Profil</p>
+              { same ?  <></> : (<div  ><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
+              <p  style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
             </div>): null }
             {/*affiche les message sous forme nom: message */}
-            <p > { show ? <b key= {data.id} style={over} onClick={closeMenu} >{data.senderLog}</b>: <b key={data.id} style={over} onClick={event => actionUser(event, data)} >id:{data.id}{data.senderLog}</b>} : {data.message}</p>
+            <p > { show ? <b  style={over} onClick={closeMenu} >{data.senderLog}</b>: <b  style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
           </div>
 
       ))}

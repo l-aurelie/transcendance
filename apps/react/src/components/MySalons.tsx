@@ -38,12 +38,15 @@ const channel = {
 
 const buttons = {
     display: "flex",
-    justifyContent: "end",
+    //justifyContent: "space-between",
+    float:'right',
 }
 
 const setting = {
-    display: 'flex',
-    justifyContent: "center",
+// position:'relative' as 'relative',
+    //   display: 'flex',
+ //   justifyContent: "center",
+    cursor: 'pointer',
 }
 
 const body ={
@@ -291,7 +294,8 @@ const MySalons = (props) => {
     return(
         <div style={{overflowY:'scroll' as 'scroll'}}>   
           {Array.from(joinedSalons.entries()).map((salon) => ( 
-            <button key={salon[1].roomId} style={channel} onClick={() => {handleClick(salon)}}>        
+            <button key={salon[1].roomId} style={channel} onClick={() => {handleClick(salon)}}>
+               <div style={{display:"flex", justifyContent:"space-between"}}>
             {
             salon[1].notif ?
                 <div style={channelName}>{salon[1].avatar}</div>
@@ -300,9 +304,9 @@ const MySalons = (props) => {
             }
 
             {/* modale qui va etre un setting avec close dedans et si owner..... */}
-            <div style={buttons}>
-                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <button style={setting} onClick={toggleModal}> ⚙️ </button> : null}
-                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <button style={setting} onClick={toggleModal2}> ⚙️ </button> : null}
+             <div style={buttons}> 
+                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={setting} onClick={toggleModal}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={setting} onClick={toggleModal2}> ⚙️ </div> : null}
                 {/* Setting par channel */}
                 <ModalWindow  revele={revele} setRevele={toggleModal}> 
                     {/* <div style={modalContainer}> */}
@@ -365,7 +369,7 @@ const MySalons = (props) => {
                 <div>
                     {
                         ((salon[1].owner && salon[1].creator === props.actualUser.id) ) ?
-                        <button onClick={alertCreator}>x</button> : <button onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</button>
+                        <div style={{cursor:"pointer"}} onClick={alertCreator}>x</div> : <div style={{cursor:"pointer"}} onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</div>
                     }
                     {/*&& !isEmpty(usersRoom) && !admin(usersRoom)*/}
                     {/* <button style={setting} onClick={(event) => {
@@ -381,6 +385,7 @@ const MySalons = (props) => {
                         }}}> x </button> */}
                 </div>
                 </div>
+                </div> 
             </button>))}
             {/* PlaceHolder 
             <div style={{display: 'flex'}}>
