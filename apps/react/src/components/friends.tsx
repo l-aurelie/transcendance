@@ -35,7 +35,7 @@ const Friends = ({user}) => {
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <h1>My friends</h1>
                 {friends.map(friends => (
-                  <div>
+                  <div key={friends.id}>
                     <DisplayUser userConnected={user} userSelected={friends} isFriend={true} />
                   </div>
                  

@@ -73,12 +73,16 @@ const onChange = (event) => {
 
             <div style={lists}>            
             {allUsers.map(users => (
+              <div key={users.id}>{
               friends.includes(users) === false && users.id !== props.user.id  ? 
-                <div>
                   <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} />
-                </div>
-              : <></>
+              : <></>}
+              </div>
             ))}  
+            {/* <div style={lists}>
+              {allUsers.map(users => (
+                  <div key={users.id}><DisplayUser userConnected={props.user} userSelected={users} isFriend={false} /></div>
+              ))}    */}
             </div>
 
           </ModalWindow>

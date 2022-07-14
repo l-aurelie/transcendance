@@ -29,8 +29,8 @@ const Leaderboard = () => {
               </thead>
               <tbody>
             {leader.map(leader => (
-            <tr>
-            <td><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} alt="profil-avatar" src={leader.avatar}></img>{} {leader.login}</td><td>{leader.total_wins}</td>
+            <tr key={leader.id}>
+            <td ><img style={{maxWidth: '40px', maxHeight: '40px', borderRadius: '100%' }} alt="profil-avatar" src={leader.avatar}></img>{} {leader.login}</td><td>{leader.total_wins}</td>
             </tr>))}
             </tbody>
             </table>

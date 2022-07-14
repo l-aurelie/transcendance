@@ -28,10 +28,10 @@ const FriendReqss = () => {
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <h1>Friend Requests</h1>
                 {reqs.map(reqs => (
-                    <p><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
+                    <div key={reqs.id}><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
                     {reqs.status} request from {reqs.sender.login}
                     <AcceptButton FriendReq = {reqs}></AcceptButton>
-                    <RejectButton FriendReq = {reqs}></RejectButton></p>
+                    <RejectButton FriendReq = {reqs}></RejectButton></div>
                 ))}
             </ModalWindow>
         </div>
