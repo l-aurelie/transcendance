@@ -175,12 +175,14 @@ console.log(tab);
     /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
        const dm = !(!infos.otherLogin);
        let adm = false;
-       var displayName;
-       if (infos.otherLogin.length > 10)
-          displayName = infos.otherLogin.substring(0,9) + "...";
-       else
-          displayName = infos.otherLogin;
-        const theRoom = await this.roomRepo.findOne({ name : infos.room });
+       var displayName;        
+       if(dm) {
+        if (infos.otherLogin.length > 10)
+            displayName = infos.otherLogin.substring(0,9) + "...";
+        else
+            displayName = infos.otherLogin;
+       }
+       const theRoom = await this.roomRepo.findOne({ name : infos.room });
            if (!dm) {
             if (infos.room.length > 10)
                 displayName = infos.room.substring(0,9) + "...";

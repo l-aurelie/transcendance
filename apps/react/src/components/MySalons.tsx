@@ -61,15 +61,34 @@ const MySalons = (props) => {
     const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
     const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
-
+    const [banOption, setBan] = useState({value:0, label:''});
+    const [muteOption, setMute] = useState({value:0, label:''});
+    const [admOption, setAdm] = useState({value:0, label:''});
+    const [unmuteOption, setUnmute] = useState({value:0, label:''});
+    const [unbanOption, setUnban] = useState({value:0, label:''});
+    const [unadmOption, setUnadm] = useState({value:0, label:''});
+  //  const [successorOption, setSuccessor] = useState({value:0, label:''});
     const [usersRoom, setUsersRoom] = useState([]);
+    const [tabAdm, setTabAdm] = useState([]);
+    const [tabBan, setTabBan] = useState([]);
+    const [tabMute, setTabMute] = useState([]);
+    const [tabNonAdm, setTabNonAdm] = useState([]);
+    const [tabNonMute, setTabNonMute] = useState([]);
+    const [tabNonBan, setTabNonBan] = useState([]);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
     const [revele2, setRevele2] = useState(false);
     const [revele3, setRevele3] = useState(false);
-    const toggleModal = () => {setRevele(!revele);} 
-    const toggleModal2 = () => {setRevele2(!revele2);} 
-    const toggleModal3 = (data) => {setRevele3(!revele3);console.log('hheye in revele3 toggle modaaaaaaaaale', data)} 
+    const [revele4, setRevele4] = useState(false);
+    const [roomId, setRoomId] = useState(0);
+    const toggleModal = (salon) => {setRevele(!revele);
+    //    setRoomId(salon.id);
+} 
+    const toggleModal2 = (salon) => {setRevele2(!revele2);
+      //  setRoomId(salon.id);
+    } 
+    const toggleModal3 = (data) => {setRevele3(!revele3);} 
+    const toggleModal4 = () => {setRevele4(!revele4);} 
     /*------*/
     const pwdRef = useRef(null);
     const [pwd, setPwd] = useState([''] as any); 
@@ -87,13 +106,11 @@ const MySalons = (props) => {
         axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
             for (let entry of res.data)
                 setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
-            console.log('after axios userRooms',res.data);
             })
 
     }, [])
 
     useEffect(() => {
-        console.log(joinedSalons);
     }, [joinedSalons])
         
     //Ecoute chat pour afficher tout nouveaux messages
@@ -163,9 +180,10 @@ const MySalons = (props) => {
     }, [joinedSalons])
 
     const handleClick = (salon) => {
-        if (revele|| revele2 ||revele3)
-            return ;
-        console.log('handleclick my salon');
+        setRoomId(salon[1].roomId)
+
+         if ((revele|| revele2 ||revele3) && currentSalon.roomId != 'undefined')
+             return ;
         if (salon[1].avatar !== currentSalon.display) {
             socket.off('leftsalon');           
             setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator, private:salon[1].private})));
@@ -175,7 +193,6 @@ const MySalons = (props) => {
             }
 
             axios.get("http://localhost:3000/users/test/" + currentSalon.roomId, {withCredentials:true}).then((res) => {
-        console.log('RES.DATA ==> ', res.data);
 
         const tab = [];
         var def;
@@ -185,8 +202,90 @@ const MySalons = (props) => {
             tab.push(def);
         }
         setUsersRoom(tab);
+        whichAdm(salon[1].roomId);
+        whichBan(salon[1].roomId);
+        whichMute(salon[1].roomId);
+        whichNonAdm(salon[1].roomId);
+        whichNonBan(salon[1].roomId);
+        whichNonMute(salon[1].roomId);
         console.log('After created a tab user in ROOM ==> ', usersRoom);
         });
+    };
+        const whichBan = (idRoom) => {
+            axios.get("http://localhost:3000/users/whichBan/" + idRoom, {withCredentials:true}).then((res) => {
+            const tab = [];
+            console.log('whichBan', idRoom);
+            var def;
+            for (let entry of res.data) {
+                def= {value:entry.id, label: entry.login}
+                tab.push(def);
+            }
+            setTabBan(tab);
+            console.log('ban', tab);
+        });
+    }
+        const whichNonBan = (idRoom) => {
+            axios.get("http://localhost:3000/users/whichNonBan/" + idRoom, {withCredentials:true}).then((res) => {
+            const tab = [];
+            var def;
+            for (let entry of res.data) {
+                def= {value:entry.id, label: entry.login}
+                tab.push(def);
+            }
+            console.log('nonban', tab);
+            setTabNonBan(tab);
+        });
+    }
+        const whichMute = (idRoom) => {
+            axios.get("http://localhost:3000/users/whichMute/" + idRoom, {withCredentials:true}).then((res) => {
+            const tab = [];
+            var def;
+            for (let entry of res.data) {
+                def= {value:entry.id, label: entry.login}
+                tab.push(def);
+            }
+            console.log('mute', tab);
+            setTabMute(tab);
+        });
+    }
+        const whichNonMute = (idRoom) => {
+            axios.get("http://localhost:3000/users/whichNonMute/" + idRoom, {withCredentials:true}).then((res) => {
+            const tab = [];
+            var def;
+            for (let entry of res.data) {
+                def= {value:entry.id, label: entry.login}
+                tab.push(def);
+            }
+            console.log('nonmute', tab);
+            setTabNonMute(tab);
+        });}
+
+        const whichAdm = (idRoom) => {
+        console.log('in whichAdm roomId = ', idRoom)
+
+            axios.get("http://localhost:3000/users/whichAdm/" + idRoom, {withCredentials:true}).then((res) => {
+            const tab = [];
+            var def;
+            for (let entry of res.data) {
+                def= {value:entry.id, label: entry.login}
+                tab.push(def);
+            }
+            console.log('adm', tab);
+            setTabAdm(tab);
+        });}
+        const whichNonAdm = (idRoom) => {
+        console.log('in whichAdm roomId = ', roomId)
+        axios.get("http://localhost:3000/users/whichNonAdm/" + idRoom, {withCredentials:true}).then((res) => {
+            const tab = [];
+            var def;
+            for (let entry of res.data) {
+                def= {value:entry.id, label: entry.login}
+                tab.push(def);
+            }
+            console.log('nonadm', tab);
+            setTabNonAdm(tab);
+        });
+    }
             /* on recupere le password de la room actuelle */
             // axios.get("http://localhost:3000/users/pwd/" + currentSalon.roomId, {withCredentials: true}).then((res) => {
             //     console.log('PWD', res.data);
@@ -206,8 +305,7 @@ const MySalons = (props) => {
             //         })
             //     }
             // });
-            console.log('handleclick my salon');    
-    };
+   
 
     const closeSalon = (event, salon, salon2) => {
         //A la fermeture d'un salon, on en informe le back qui va renvoyer
@@ -245,40 +343,98 @@ const MySalons = (props) => {
 
         
     };
+
+    const setaMute = (event) => {
+        setMute({value:event.value, label:event.label});
+    }
+    const setanAdm = (event) => {
+        setAdm({value:event.value, label:event.label});
+    }
+    const setaBan = (event) => {
+        setBan({value:event.value, label:event.label});
+    }
+    const setanUnmute = (event) => {
+        setUnmute({value:event.value, label:event.label});
+    }
+    const setanUnban = (event) => {
+        setUnban({value:event.value, label:event.label});
+    }
+    const setanUnadm = (event) => {
+        setUnadm({value:event.value, label:event.label});
+    }
     
-    const addAdmin = (event) => {
-        const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};
-        console.log('add this friend in admin for this salon '  + event.label);
-        console.log('Users in Room ==> ', usersRoom);
+    const addAdmin = () => {
+        const inf = { userId : admOption.value, roomId: currentSalon.roomId, pwd: ''};
         axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
         });
-        alert(event.label + "is now an admin");
-        // console.log("is admin ===>" + currentSalon.roomId, 'event.value =', event.value, event.label);
+        if (admOption.value != 0)
+        alert(admOption.label + " is now an admin");
+        setAdm({value:0, label:''});
+        whichAdm(currentSalon.roomId);
+        whichNonAdm(currentSalon.roomId);
     }
 
-    const muteUser = (event) => {
-        console.log(" currentSalon.creator " + currentSalon.creator)
-        console.log(" event.value " + event.value)
-        const inf = { userId : event.value, roomId: currentSalon.roomId, muteUser: true};
-        console.log('mute this guy'   + event.value);
-        axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
+    const removeAdmin = () => {
+        const inf = { userId :unadmOption.value, roomId: currentSalon.roomId, pwd: ''};
+        axios.post("http://localhost:3000/users/setAdminFalse" , inf, {withCredentials:true}).then((res) => {
         });
-        alert(event.label + " muted!");
+        if (unadmOption.value != 0)
+            alert(unadmOption.label + " is remove of admins");
+        setAdm({value:0, label:''});
+        whichAdm(currentSalon.roomId);
+        whichNonAdm(currentSalon.roomId);
+    }
+   
+    const muteUser = () => {
+        const inf = { userId : muteOption.value, roomId: currentSalon.roomId, muteUser: true};
+        axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
+    });
+        if (muteOption.value != 0)
+            alert(muteOption.label + " muted!");
+        setMute({value:0, label:''});
+        whichMute(currentSalon.roomId);
+        whichNonMute(currentSalon.roomId);
+    }
+    const unmuteUser = () => {
+        const inf = { userId : unmuteOption.value, roomId: currentSalon.roomId, muteUser: true};
+        axios.post("http://localhost:3000/users/unmute/", inf, {withCredentials:true}).then((res) => {
+    });
+        if (unmuteOption.value != 0)
+            alert(unmuteOption.label + " unmuted!");
+        setMute({value:0, label:''});
+        whichMute(currentSalon.roomId);
+        whichNonMute(currentSalon.roomId);
     }
 
-    const banUser = (event) => {
-        const inf = { userId : event.value, roomId: currentSalon.roomId, banUser: true};
+    const banUser = () => {
+        const inf = { userId : banOption.value, roomId: currentSalon.roomId, banUser: true};
         axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
         });
 
-        socket.emit('user_isBan_room', {userId: event.value, room: currentSalon.name, roomId: currentSalon.roomId});
-        alert(event.label + " banned!");
+        socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
+        if (banOption.value != 0)
+           alert(banOption.label + " banned!");
+        setBan({value:0, label:''});
+        whichBan(currentSalon.roomId);
+        whichNonBan(currentSalon.roomId);
+    }
+
+    const unbanUser = () => {
+        const inf = { userId : unbanOption.value, roomId: currentSalon.roomId, banUser: true};
+        axios.post("http://localhost:3000/users/unban/" , inf, {withCredentials:true}).then((res) => {
+        });
+
+        socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
+        if (unbanOption.value != 0)
+            alert(unbanOption.label + " unbanned!");
+        setBan({value:0, label:''});
+        whichBan(currentSalon.roomId);
+        whichNonBan(currentSalon.roomId);
     }
 
     const admin = (obj) => {
         for (let entry of obj)
         {
-            console.log("obj.isAdmin ==> " + entry.admin);
             if (entry.admin === true)
                 return true;
         }
@@ -286,10 +442,9 @@ const MySalons = (props) => {
     }
 
     const isEmpty = (obj)  => {
-        console.log("OBJ ==> ");
-        console.log(obj);
         return Object.keys(obj).length === 0;
     }
+
 
     return(
         <div>
@@ -305,8 +460,8 @@ const MySalons = (props) => {
             }
 
             {/* modale qui va etre un setting avec close dedans et si owner..... */}
-                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={toggleModal}> ⚙️ </div> : null}
-                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={toggleModal2}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={()=>toggleModal(salon[1])}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={() =>toggleModal2(salon[1])}> ⚙️ </div> : null}
                 {/* Setting par channel */}
                 
                 {/* Permet de quitter le channel */}
@@ -315,52 +470,16 @@ const MySalons = (props) => {
                         ((salon[1].owner && salon[1].creator === props.actualUser.id) ) ?
                         <div style={{cursor:"pointer"}} onClick={alertCreator}>x</div> : <div style={{cursor:"pointer"}} onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</div>
                     }
-                    {/*&& !isEmpty(usersRoom) && !admin(usersRoom)*/}
-                    {/* <button style={setting} onClick={(event) => {
-                        if ((salon[1].owner && salon[1].creator === props.actualUser.id) && !isEmpty(usersRoom) && !admin(usersRoom)) {
-                            console.log("ICI" + {usersRoom});
-                            alert('Your the creator, choose a successor before leaving the channel')
-                            return;
-                        }
-                        else {
-                                
-                                event.stopPropagation();
-                                closeSalon(salon[1], salon[0])
-                        }}}> x </button> */}
                 </div>
                 </div>
             </button>))}
-            {/* PlaceHolder 
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div><img style={{maxWidth: '20px', maxHeight: '20px', borderRadius: '100%' }} src={friends.avatar}/><p> | {friends.login} Nom | Spectate | Defeat | Block</div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate | Defeat | Block</div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate | Defeat | Block</div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate  | Profil | Defeat | Block </div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate  | Profil | Defeat | Block </div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate  | Profil | Defeat | Block </div>
-    </div>*/}
+       
     
         </div>
         <ModalWindow  revele={revele} setRevele={toggleModal}> 
                     {/* <div style={modalContainer}> */}
                    
-                        <div style={{display:'flex', justifyContent:'center'}}><div><h1>Owner Settings</h1></div><div style={{marginTop:'10px'}}><button>Leave Chanel</button></div></div>
+                        <div style={{display:'flex', justifyContent:'center'}}><div><h1>Owner Settings</h1></div><div style={{marginTop:'10px'}}><button onClick={toggleModal4}>Leave Chanel</button></div></div>
                         <div style={body}></div>
                         <div style={{display:'flex', justifyContent:'space-around'}}>
                         {currentSalon.private === true ?  <div><h2>Private room</h2>
@@ -386,24 +505,26 @@ const MySalons = (props) => {
                         <h3>Add/Remove admin's channel</h3>
                         {/* <div style={containerSetting}> */}
                            <div style={bar}>
-                            <button>ADD</button><Select onChange={addAdmin} options={usersRoom}/>
-                            <Select onChange={addAdmin} options={usersRoom}/><button>REMOVE</button>
+                            <button onClick={addAdmin}>ADD</button><Select onChange={setanAdm} options={tabNonAdm}/>
+                            <Select onChange={setanUnadm} options={tabAdm}/><button onClick={removeAdmin}>REMOVE</button>
                            </div>
                            
                         {/* </div> */}
                         <h3>Mute/Unmute User</h3>
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
-                            <button>MUTE</button><Select onChange={muteUser} options={usersRoom}/>
-                            <Select onChange={muteUser} options={usersRoom}/><button>UNMUTE</button>
+                            <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute}/>
+                            <Select onChange={setanUnmute} options={tabMute}/><button onClick={unmuteUser}>UNMUTE</button>
                         </div>   
                     <h3>Ban/Unban User</h3>
                     <div style={bar}>
-                    <button>BAN</button><Select onChange={banUser} options={usersRoom}/>
-                        <Select onChange={banUser} options={usersRoom}/><button>UNBAN</button>
+                    <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan}/>
+                        <Select onChange={setanUnban} options={tabBan}/><button onClick={unbanUser}>UNBAN</button>
                     </div>
                 </ModalWindow>
                
+
+
                 <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
                     {/* <div style={modalContainer}> */}
                         <h1>Admin Settings</h1>
