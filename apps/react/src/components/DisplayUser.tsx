@@ -79,7 +79,7 @@ const  unblock = () => {
     {
       return(
         <div>
-          <p><svg width="48" height="40" viewBox='0 0 45 40'>
+          <div><svg width="48" height="40" viewBox='0 0 45 40'>
           <foreignObject x="0" y="0" width="45" height="40" >
             <div><img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/></div>
           </foreignObject>
@@ -90,7 +90,7 @@ const  unblock = () => {
           | <MaterialIcon icon="videogame_asset" onClick={defeat} />  {/*icon="star" <MaterialIcon icon="radio_button_unchecked"  /> <MaterialIcon icon="block/>"*/}
           | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
           {/* |Spectate <br></br> */}
-          </p>
+          </div>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
@@ -104,7 +104,7 @@ const  unblock = () => {
     {
       return(
         <div>
-          <p><svg width="48" height="40" viewBox='0 0 45 40'>
+          <div><svg width="48" height="40" viewBox='0 0 45 40'>
           <foreignObject x="0" y="0" width="45" height="40" >
             <div><img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/></div>
           </foreignObject>
@@ -116,7 +116,7 @@ const  unblock = () => {
           | <MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}
           | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
            {/* | Spectate <br></br> */}
-           </p>
+           </div>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>

@@ -93,7 +93,7 @@ const AddChannel = ({user}) => {
             <MaterialIcon size="large" icon="group_add" onClick={toggleAdd} />
             <p>Join existing channels</p>    
             {salons.map((salon) => ( 
-            <button onClick={() => handleClick(salon)}>
+            <button key={salon.id} onClick={() => handleClick(salon)}>
                 <div key={salon.id}>{salon.name}</div>
             </button>))}
 

@@ -73,9 +73,7 @@ const onChange = (event) => {
 
             <div style={lists}>
               {allUsers.map(users => (
-                <div>
-                  <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} />
-                </div>
+                  <div key={users.id}><DisplayUser userConnected={props.user} userSelected={users} isFriend={false} /></div>
               ))}   
             </div>
 

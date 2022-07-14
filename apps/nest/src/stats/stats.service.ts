@@ -66,7 +66,7 @@ export class StatsService {
         const ordered = await this.userRepository.find(
         {
         order: { total_wins: "DESC", },
-        select: ['avatar', 'login', 'total_wins'],
+        select: ['id', 'avatar', 'login', 'total_wins'],
         });
         return ordered;
     }
