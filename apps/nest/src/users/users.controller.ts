@@ -312,10 +312,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       if (parseInt(arr[0]) === idUser)
       {
          const user2 = await this.userRepo.findOne({id: parseInt(arr[1])});
+         let disp;
+         if (user2.login.length > 10)
+            disp = user2.login.substring(0,9) + "...";
+         else
+            disp = user2.login;
          tab.push({
             salonName : room.name,
             dm: true,
-            displayName: user2.login,
+            displayName: disp,
             roomId :room.id,
             isAdmin: false,
             creator: false,
@@ -325,10 +330,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       else if (parseInt(arr[1]) === idUser)
       {
          const user2 = await this.userRepo.findOne({id: parseInt(arr[0])});
+         let disp;
+         if (user2.login.length > 10)
+            disp = user2.login.substring(0,9) + "...";
+         else
+            disp = user2.login;
          tab.push({
             salonName : room.name,
             dm: true,
-            displayName: user2.login,
+            displayName: disp,
             roomId :room.id,
             isAdmin: false,
             creator: false,
@@ -350,10 +360,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          }
    if (date >= room.RoomUser_expireBan.getTime()) {
             await this.roomUserRepo.update({id:room.RoomUser_id}, {ban:false});
+            let disp;
+            if (roomName.length > 10)
+               disp = roomName.substring(0,9) + "...";
+            else
+               disp = roomName;
             tab.push({
                salonName: roomName,
                dm: false,
-               displayName: roomName,
+               displayName: disp,
                roomId:room.RoomUser_roomId,
                isAdmin:room.RoomUser_isAdmin,
                creator:roomCreator, 
@@ -367,10 +382,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             if (date >= room.RoomUser_expiredMute.getTime())
                await this.roomUserRepo.update({id:room.RoomUser_id}, {mute:false});
          }
+         let disp;
+         if (roomName.length > 10)
+            disp = roomName.substring(0,9) + "...";
+         else
+            disp = roomName;
          tab.push({
          salonName: roomName,
          dm: false,
-         displayName: roomName,
+         displayName: disp,
          roomId:room.RoomUser_roomId,
          isAdmin:room.RoomUser_isAdmin,
          creator:roomCreator, 

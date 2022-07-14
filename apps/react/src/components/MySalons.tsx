@@ -25,7 +25,7 @@ const bar = {
 }
 
 const channelName = {
-    width: "10%",
+    width: "70%",
     display: "flex",
 }
 
@@ -39,7 +39,7 @@ const channel = {
 const buttons = {
     display: "flex",
     //justifyContent: "space-between",
-    float:'right',
+    float:'right' as 'right',
 }
 
 const setting = {
@@ -292,10 +292,11 @@ const MySalons = (props) => {
     }
 
     return(
+        <div>
         <div style={{overflowY:'scroll' as 'scroll'}}>   
           {Array.from(joinedSalons.entries()).map((salon) => ( 
             <button key={salon[1].roomId} style={channel} onClick={() => {handleClick(salon)}}>
-               <div style={{display:"flex", justifyContent:"space-between"}}>
+               <div style={{position:'relative' as 'relative', width:'100%', display:'flex', justifyContent:'space-between'}}>
             {
             salon[1].notif ?
                 <div style={channelName}>{salon[1].avatar}</div>
@@ -304,67 +305,10 @@ const MySalons = (props) => {
             }
 
             {/* modale qui va etre un setting avec close dedans et si owner..... */}
-             <div style={buttons}> 
-                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={setting} onClick={toggleModal}> ⚙️ </div> : null}
-                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={setting} onClick={toggleModal2}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={toggleModal}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={toggleModal2}> ⚙️ </div> : null}
                 {/* Setting par channel */}
-                <ModalWindow  revele={revele} setRevele={toggleModal}> 
-                    {/* <div style={modalContainer}> */}
-                   
-                        <h1>Owner Settings</h1>
-                        {currentSalon.private === true ?  <div><h2>Private room</h2>
-                    <button onClick={toggleModal3}>Add members</button>
-                        <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3}></AddPrivateMember>
-                    </div> : <></> }
-                        <div style={body}></div>
-                        <h3>Define password</h3>
-                            <form onSubmit={submitPassword}>
-                            <input
-                                ref={pwdRef}
-                                id="pwd"
-                                name="pwd"
-                                type="text"
-                            />
-                            <button type="submit">Submit</button>
-                            </form>
-                            <button onClick={resetPassword}>Reset password</button>
-                        {/* </div> */}
-                        <h3>Add admin's channel</h3>
-                        {/* <div style={containerSetting}> */}
-                           <div style={bar}>
-                            <Select onChange={addAdmin} options={usersRoom}/>
-                           </div>   
-                        {/* </div> */}
-                        <h3>MUTE User</h3>
-                        {/* <div style={containerSetting}> */}
-                            <div style={bar}>
-                            <Select onChange={muteUser} options={usersRoom}/>
-                        </div>   
-                    <h3>BAN User</h3>
-                    <div style={bar}>
-                        <Select onChange={banUser} options={usersRoom}/>
-                    </div>
-                </ModalWindow>
-               
-                <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
-                    {/* <div style={modalContainer}> */}
-                        <h1>Admin Settings</h1>
-                        {currentSalon.private === true ? <div><h2>Private room</h2>
-                    <button onClick={toggleModal3}>Add members</button>
-                    
-                    </div> : <></>}
-                        <div style={body}></div>
-                        {/* </div> */}
-                        <h3>MUTE User</h3>
-                        {/* <div style={containerSetting}> */}
-                            <div style={bar}>
-                            <Select onChange={muteUser} options={usersRoom}/>
-                        </div>   
-                    <h3>BAN User</h3>
-                    <div style={bar}>
-                        <Select onChange={banUser} options={usersRoom}/>
-                    </div>
-                </ModalWindow>
+                
                 {/* Permet de quitter le channel */}
                 <div>
                     {
@@ -385,7 +329,6 @@ const MySalons = (props) => {
                         }}}> x </button> */}
                 </div>
                 </div>
-                </div> 
             </button>))}
             {/* PlaceHolder 
             <div style={{display: 'flex'}}>
@@ -414,6 +357,74 @@ const MySalons = (props) => {
     </div>*/}
     
         </div>
+        <ModalWindow  revele={revele} setRevele={toggleModal}> 
+                    {/* <div style={modalContainer}> */}
+                   
+                        <div style={{display:'flex', justifyContent:'center'}}><div><h1>Owner Settings</h1></div><div style={{marginTop:'10px'}}><button>Leave Chanel</button></div></div>
+                        <div style={body}></div>
+                        <div style={{display:'flex', justifyContent:'space-around'}}>
+                        {currentSalon.private === true ?  <div><h2>Private room</h2>
+                    <button onClick={toggleModal3}>Add members</button>
+                        <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3}></AddPrivateMember>
+                    </div> : <></> }
+                    <div>
+                        <h3>Define password</h3>
+                        
+                            <form onSubmit={submitPassword}>
+                            <input
+                                ref={pwdRef}
+                                id="pwd"
+                                name="pwd"
+                                type="text"
+                            />
+                            <button type="submit">Submit</button>
+                            </form>
+                            <button onClick={resetPassword}>Reset password</button>
+                        {/* </div> */}
+                        </div>
+                        </div>
+                        <h3>Add/Remove admin's channel</h3>
+                        {/* <div style={containerSetting}> */}
+                           <div style={bar}>
+                            <button>ADD</button><Select onChange={addAdmin} options={usersRoom}/>
+                            <Select onChange={addAdmin} options={usersRoom}/><button>REMOVE</button>
+                           </div>
+                           
+                        {/* </div> */}
+                        <h3>Mute/Unmute User</h3>
+                        {/* <div style={containerSetting}> */}
+                            <div style={bar}>
+                            <button>MUTE</button><Select onChange={muteUser} options={usersRoom}/>
+                            <Select onChange={muteUser} options={usersRoom}/><button>UNMUTE</button>
+                        </div>   
+                    <h3>Ban/Unban User</h3>
+                    <div style={bar}>
+                    <button>BAN</button><Select onChange={banUser} options={usersRoom}/>
+                        <Select onChange={banUser} options={usersRoom}/><button>UNBAN</button>
+                    </div>
+                </ModalWindow>
+               
+                <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
+                    {/* <div style={modalContainer}> */}
+                        <h1>Admin Settings</h1>
+                        {currentSalon.private === true ? <div><h2>Private room</h2>
+                    <button onClick={toggleModal3}>Add members</button>
+                    
+                    </div> : <></>}
+                        <div style={body}></div>
+                        {/* </div> */}
+                        <h3>MUTE User</h3>
+                        {/* <div style={containerSetting}> */}
+                            <div style={bar}>
+                            <Select onChange={muteUser} options={usersRoom}/>
+                        </div>   
+                    <h3>BAN User</h3>
+                    <div style={bar}>
+                        <Select onChange={banUser} options={usersRoom}/>
+                    </div>
+                </ModalWindow>
+        </div>
+        
     );
  };
 
