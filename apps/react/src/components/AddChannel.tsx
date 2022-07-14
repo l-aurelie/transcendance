@@ -42,17 +42,19 @@ const AddChannel = ({user}) => {
   
     const[message, setMessage] = useState('');
     const [salons, setSalons] = useState([]); //Array de tous les salons a afficher, que l'on peut selectionner
+    const [newSalon, setNewSalon] = useState(0); //Array de tous les salons a afficher, que l'on peut selectionner
   
     const [reveleAdd, setReveleAdd] = useState(false);
     const toggleAdd = () => {setReveleAdd(!reveleAdd);}
 
     useEffect(() => {
-      socket.on('fetchsalon', data => {
-          console.log(data);
-            setSalons(data);
+        setNewSalon(0); 
+        socket.on('fetchsalon', data => {
+        console.log(data);
+        setSalons(data);
        });
       socket.emit('fetchsalon', 'ok');
-      }, [])
+      }, [newSalon])
 
     const handleChange = event => {
         setMessage(event.target.value);
@@ -84,7 +86,9 @@ const AddChannel = ({user}) => {
     const sendNewSalon = (bool, text) => { 
     console.log('user.id = ', user.id);
 
-            socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id);      
+            socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id); 
+            setNewSalon(1);
+            toggleAdd();     
             //           toggle();
         };
 

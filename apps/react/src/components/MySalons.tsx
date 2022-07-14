@@ -387,32 +387,6 @@ const MySalons = (props) => {
                 </div>
                 </div> 
             </button>))}
-            {/* PlaceHolder 
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div><img style={{maxWidth: '20px', maxHeight: '20px', borderRadius: '100%' }} src={friends.avatar}/><p> | {friends.login} Nom | Spectate | Defeat | Block</div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate | Defeat | Block</div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate | Defeat | Block</div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate  | Profil | Defeat | Block </div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate  | Profil | Defeat | Block </div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <div style={imgStyle}></div>
-                <div>Nom | Spectate  | Profil | Defeat | Block </div>
-    </div>*/}
-    
         </div>
     );
  };

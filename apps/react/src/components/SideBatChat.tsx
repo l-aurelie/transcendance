@@ -2,7 +2,7 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import { useState } from 'react';
 import AddNav from './AddNav';
 import Logo from './Logo';
-import { socket } from './Socket';
+import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 const SideBarChat = (props) => {
 
@@ -13,10 +13,9 @@ const SideBarChat = (props) => {
 
     return (
         <div >
-            <button onClick={toggleModal}>+</button>
+            <MaterialIcon icon="add_circle" onClick={toggleModal} />
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <Logo />
-                {console.log('oh he', props.user)};
                 <AddNav user={props.user}/>
             </ModalWindow>
         </div>

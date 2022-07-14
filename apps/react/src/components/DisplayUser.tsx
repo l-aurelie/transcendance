@@ -3,10 +3,9 @@
 import FriendUserProfilExtended from "./FriendUserProfileExtended";
 import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
 import MaterialIcon, {colorPalette} from 'material-icons-react';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { socket } from "./Socket";
 import axios from "axios";
-import Defeat from "./Defeat";
 
 
 const  DisplayUser = ({userConnected, userSelected, isFriend}) => {

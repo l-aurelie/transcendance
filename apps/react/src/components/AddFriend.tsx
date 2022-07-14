@@ -65,18 +65,20 @@ const onChange = (event) => {
             <div className="search bar">
               <input type = "text" value={value} onChange={onChange} />
               {/*When we click on button it opens the FriendUserProfil*/}
-              <button onClick={toggleModal}> Find your friends </button>
+              <button onClick={toggleModal}> Find members </button>
               <ModalWindow revele={revele} setRevele={toggleModal}>
                 <FriendUserProfilExtended Value={value}/>
               </ModalWindow>
             </div>
 
-            <div style={lists}>
-              {allUsers.map(users => (
+            <div style={lists}>            
+            {allUsers.map(users => (
+              friends.includes(users) === false && users.id !== props.user.id  ? 
                 <div>
                   <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} />
                 </div>
-              ))}   
+              : <></>
+            ))}  
             </div>
 
           </ModalWindow>
@@ -85,5 +87,3 @@ const onChange = (event) => {
  };
 
  export default AddFriend;
- 
-  

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserProfilExtended from './UserProfilExtended';
 import { socket } from "./Socket";
+import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 const UserProfil = (props) => {
     //const actual = props.dataFromParent;
@@ -60,8 +61,7 @@ const UserProfil = (props) => {
           <UserProfilExtended user={user} /><br></br>
         </ModalWindow>
         <div>{user.login}</div>
-
-        <button onClick={handleClick}> Logout </button>
+        <MaterialIcon icon="power_settings_new" onClick={handleClick} /> 
       </div>
     ); }
   else {
