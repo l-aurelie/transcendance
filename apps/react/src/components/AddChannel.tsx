@@ -3,6 +3,7 @@ import {socket} from './Socket';
 import {useState, useEffect} from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import MaterialIcon, {colorPalette} from 'material-icons-react';
+import axios from 'axios';
 
 const chatTitle1 = {
     display: "flex",
@@ -57,7 +58,25 @@ const AddChannel = ({user}) => {
         setMessage(event.target.value);
     };
 
-  const handleClick = (salon) => {
+  const handleClick = (salon) => { 
+    axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
+        console.log('PWD', res.data);
+        let goodPwd = false;
+
+        if (res.data === true) {
+            
+         
+           const pwdInput = prompt('Enter the password to join the room');
+        //    setPwd(pwdInput);
+           const inf = {roomId: salon.id, pwd: pwdInput};
+           console.log("PWD === ", pwdInput);
+            axios.post("http://localhost:3000/users/checkpwd/", inf, {withCredentials: true}).then((res) => {
+                goodPwd = res.data;
+                if(!goodPwd)
+                alert('Wrong password');
+            })
+        }
+    })
       socket.emit('user_joins_room', {userId: user.id, room: salon.name, roomId:salon.id});
       //toggle();
     };

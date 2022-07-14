@@ -125,6 +125,12 @@ const MySalons = (props) => {
     //Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
     //TODO: est-ce que rejoindre un salon le met en salon courant? (commentaires)
     useEffect(() => {
+    socket.on('just-block', data => {
+        const map2 = new Map(joinedSalons);
+        setJoinedSalons(map2);
+            setMessage([]);
+            setCurrentSalon([]);
+    })
     socket.on('joinedsalon', data => {
         socket.off('leftsalon');
         setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator, private: data.private})));
@@ -179,24 +185,24 @@ const MySalons = (props) => {
         console.log('After created a tab user in ROOM ==> ', usersRoom);
         });
             /* on recupere le password de la room actuelle */
-            axios.get("http://localhost:3000/users/pwd/" + currentSalon.roomId, {withCredentials: true}).then((res) => {
-                console.log('PWD', res.data);
-                let goodPwd = false;
+            // axios.get("http://localhost:3000/users/pwd/" + currentSalon.roomId, {withCredentials: true}).then((res) => {
+            //     console.log('PWD', res.data);
+            //     let goodPwd = false;
     
-                if (res.data === true) {
+            //     if (res.data === true) {
                     
                  
-                   const pwdInput = prompt('Enter the password to join the room');
-                //    setPwd(pwdInput);
-                   const inf = {roomId: currentSalon.roomId, pwd: pwdInput};
-                   console.log("PWD === ", pwdInput);
-                    axios.post("http://localhost:3000/users/checkpwd/", inf, {withCredentials: true}).then((res) => {
-                        goodPwd = res.data;
-                        if(!goodPwd)
-                        alert('Wrong password');
-                    })
-                }
-            });
+            //        const pwdInput = prompt('Enter the password to join the room');
+            //     //    setPwd(pwdInput);
+            //        const inf = {roomId: currentSalon.roomId, pwd: pwdInput};
+            //        console.log("PWD === ", pwdInput);
+            //         axios.post("http://localhost:3000/users/checkpwd/", inf, {withCredentials: true}).then((res) => {
+            //             goodPwd = res.data;
+            //             if(!goodPwd)
+            //             alert('Wrong password');
+            //         })
+            //     }
+            // });
             console.log('handleclick my salon');    
     };
 

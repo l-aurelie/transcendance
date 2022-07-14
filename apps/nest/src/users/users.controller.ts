@@ -384,7 +384,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       if (already.length > 0)
          return ;
       const create = await this.blockRepo.create({blockingUserId:userBlocking, blockedUserId:userBlocked});
-      this.blockRepo.save(create);
+      await this.blockRepo.save(create);
    }
 
    @Get('isBlock/:idBlocking/:idBlocked')

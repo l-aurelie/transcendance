@@ -61,12 +61,14 @@ const defeat = () => {
 const block = () => {
   axios.get("http://localhost:3000/users/setBlock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
     setBlock(true);
+    socket.emit("just-block", userConnected);
   })
 }
 
 const  unblock = () => {
   axios.get("http://localhost:3000/users/setUnblock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
     setBlock(false);
+    socket.emit("just-block", userConnected);
   })
   }
 

@@ -133,10 +133,11 @@ console.log(tab);
       }
     
      @SubscribeMessage('just-block')
-     async justBlock(client)
+     async justBlock(client, user)
      {
+        this.server.to('sockets' + user.id).emit('just-block');
         console.log("here just block back")
-        client.emit('just_block');
+       // client.emit('just_block');
      }
       
 
