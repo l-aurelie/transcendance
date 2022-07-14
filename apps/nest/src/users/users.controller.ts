@@ -303,8 +303,40 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    @Get('userRooms/:id')
    async getUserRooms(@Param('id') id : string) {
       const idUser = parseInt(id);
-   const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: idUser }).execute();
    let tab = [];
+
+   const dm = await this.roomRepo.find({directMessage:true});
+   for (let room of dm)
+   {
+      const arr = (room.name).split('.');
+      if (parseInt(arr[0]) === idUser)
+      {
+         const user2 = await this.userRepo.findOne({id: parseInt(arr[1])});
+         tab.push({
+            salonName : room.name,
+            dm: true,
+            displayName: user2.login,
+            roomId :room.id,
+            isAdmin: false,
+            creator: false,
+            private: false
+         })
+      }
+      else if (parseInt(arr[1]) === idUser)
+      {
+         const user2 = await this.userRepo.findOne({id: parseInt(arr[0])});
+         tab.push({
+            salonName : room.name,
+            dm: true,
+            displayName: user2.login,
+            roomId :room.id,
+            isAdmin: false,
+            creator: false,
+            private: false
+         })
+      }
+   }
+   const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: idUser }).execute();
    for (let room of rooms) {
    var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
    var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);

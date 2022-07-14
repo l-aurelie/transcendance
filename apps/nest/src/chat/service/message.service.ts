@@ -16,6 +16,6 @@ export class MessageService {
        // const newRoom = await this.addCreatorInRoom(room, creator);
        const roomId = await this.roomServ.getRoomIdFromRoomName(roomName);
        const mess = {senderId: idUser, roomID: roomId, content: content};
-       this.messageRepo.save(mess);
+       return (await this.messageRepo.save(mess));
      }
 }

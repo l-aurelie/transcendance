@@ -222,7 +222,7 @@ console.log(tab);
         }
         /* on récupère les infos de block */
         /* on fait un array constitué de tous les salons de sockets qui nous ont blouqués pour ne pas leur emit grâce à .except */
-        await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
+        const newMes = await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
         let bannedMe = await this.userBlockRepo.createQueryBuilder().where({ blockedUserId: data.whoAmI.id }).execute();
         bannedMe.forEach(function(el, id, arr) {
             arr[id] = 'sockets' + arr[id].UserBlock_blockingUserId;
@@ -233,8 +233,8 @@ console.log(tab);
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
           //  this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
           //  this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit,sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
-            this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.whoAmI.login, roomId:data.roomId, creator:data.creator});
-            this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
+            this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {id:newMes.id, emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message,dontNotif: false, displayName: data.whoAmI.login, roomId:data.roomId, creator:data.creator});
+            this.server.to('sockets' + data.whoAmI.id).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
         }
         else {
             bannedMe.push('sockets' + data.whoAmI.id);
@@ -247,8 +247,8 @@ console.log(tab);
                      //   this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
             //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
          //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
-         this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, roomId:data.roomId, creator:data.creator});
-         this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
+         this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, dontNotif: false,roomId:data.roomId, creator:data.creator});
+         this.server.to('sockets' + data.whoAmI.id).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: data.roomToEmit, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
         }
     }
 
