@@ -624,7 +624,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             // }
         }
         if (newSleep === true) {
-            let ball = {x : infos[1].width/2, y: infos[1].height/2, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
+            let ball = {x : infos[1].width/2, y: infos[1].height, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
             this.server.to(infos[0]).emit("updatedBall", ball);
             await sleep(500);
