@@ -497,7 +497,7 @@ const MySalons = (props) => {
                                 ref={pwdRef}
                                 id="pwd"
                                 name="pwd"
-                                type="text"
+                                type="password"
                             />
                             <button type="submit">Submit</button>
                             </form>

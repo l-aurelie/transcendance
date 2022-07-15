@@ -598,6 +598,9 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       @UseGuards(AuthenticatedGuard)
       @Post('/checkpwd')
       async checkpwd(@Body() body: setUserRoomDto) {
+         console.log(body.pwd);
+         if (!body.pwd)
+            return(false);
          const currentSal = parseInt(body.roomId);
          const room = await this.roomRepo.findOne(currentSal);
          const pwdHashed = room.password;
