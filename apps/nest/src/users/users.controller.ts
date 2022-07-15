@@ -51,7 +51,7 @@ export class UsersController {
    getUser(@Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
 //     console.log('===getUser', user);
-return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
+return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email, first: user.first});
 //  return (user);
      }
 
@@ -256,6 +256,18 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       return({status:201})
 
    }
+
+   @UseGuards(AuthenticatedGuard)
+   @Post('/firstFalse')
+   async forstFalse(@Body() body: setUserRoomDto)
+   {
+      if (parseInt(body.userId) === 0)
+         return ({status:404});
+      const id = parseInt(body.userId);
+      this.userRepo.update({id: id}, {first:false});
+      return({status:201})
+   }
+
    @UseGuards(AuthenticatedGuard)
    @Post('/unmute')
    async unmute(@Body() body: setUserRoomDto)

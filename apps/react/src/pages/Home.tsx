@@ -11,6 +11,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
 import SideBarChat from '../components/SideBatChat';
+import { ModalWindow } from '../components/ModaleWindow/LogiqueModale2';
+import UserFormAvatar from '../components/UserFormAvatar';
+import UserForm from '../components/UserForm';
+import FirstConnect from '../components/FirstConnect';
 
 
 /* Style (insere dans la div jsx) */
@@ -90,6 +94,7 @@ const Home = () => {
    
     const [profil, setProfil/*, setlogins*/] = useState([] as any);
     const [login, setLogin] = useState(false);
+    const [first, setFirst] = useState(false);
     //DECOMMENTER POUR AFFICHER L'AVATAR + deccomment ligne 114
     /*
     const [avatar, setAvatar] = useState([] as any);
@@ -111,12 +116,15 @@ const Home = () => {
             //};
         })
     }, [])*/ 
-    
+    const [reveleForm, setRevele] = useState(false);
+    const toggleForm = () => {setRevele(!reveleForm)};
     
     useEffect(() => {        
        axios.get("http://localhost:3000/users", { withCredentials:true })
        .then((res) =>{ 
-        setProfil(res.data); 
+        setProfil(res.data);
+        setFirst(res.data.first); 
+        console.log('ress', res.data, 'reeees')
         setLogin(true);
         socket.emit('whoAmI', res.data);
     })
@@ -133,6 +141,7 @@ const Home = () => {
         socket.on("changeInfos", data => {
           axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
           setProfil(res.data);
+          
           });
        });
     }, [])
@@ -145,7 +154,8 @@ const Home = () => {
         return (
          <div>
            {/* <div><img src={avatar} alt="rien" /></div> */} 
-           
+          
+               
             <div style={headStyle}>
                 <Logo></Logo>
                 <UserProfil dataFromParent={profil}></UserProfil>
@@ -155,6 +165,7 @@ const Home = () => {
                 <Game style={gameStyle} dataFromParent={profil}/>
                 <SideBarChat user={profil}/>
                 <Chat style={chatStyle} dataFromParent={profil}></Chat>
+            
             </div>
         </div>
     );

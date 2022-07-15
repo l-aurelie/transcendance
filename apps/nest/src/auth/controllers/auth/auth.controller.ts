@@ -97,7 +97,7 @@ export class AuthController {
         res.redirect('http://localhost:4200/Verify');
       else
         res.redirect('http://localhost:4200/Home');
-      await this.userRepo.update( { id:request.user.id }, {isConnected:true});
+      await this.userRepo.update( { id:request.user.id }, {isConnected:true}, );
     }
 
     /*If we have authentifcated via login we can access this page*/

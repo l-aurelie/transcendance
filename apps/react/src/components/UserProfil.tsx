@@ -6,6 +6,7 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserProfilExtended from './UserProfilExtended';
 import { socket } from "./Socket";
 import MaterialIcon, {colorPalette} from 'material-icons-react';
+import FirstConnect from './FirstConnect';
 
 const UserProfil = (props) => {
     //const actual = props.dataFromParent;
@@ -17,6 +18,9 @@ const UserProfil = (props) => {
     const [connected, setConnected] = useState([false] as any);
 
     /* Outils d'affichage de la modale */
+    const [revele2, setRevele2] = useState(false);
+    console.log('revele2 =', revele2, user, props.dataFromParent)
+      const toggleModal2 = () => {setRevele2(!revele2)};
     const [revele, setRevele] = useState(false);
     const toggleModal = () => {setRevele(!revele);
       
@@ -29,6 +33,7 @@ const UserProfil = (props) => {
     useEffect(() => {
       axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
             setUser(res.data);
+            setRevele2(res.data.first);
         });
       socket.on("changeInfos", data => {
         axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
@@ -55,6 +60,8 @@ const UserProfil = (props) => {
     return(
    // <h2>{props.dataFromParent}</h2>
       <div>
+        <FirstConnect revele={revele2} toggle={toggleModal2} user={user}></FirstConnect>
+
         {/* Bonton pour display profilExtended */}
         <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/>
         <ModalWindow revele={revele} setRevele={toggleModal}>
