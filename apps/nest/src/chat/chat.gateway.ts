@@ -215,6 +215,16 @@ console.log(tab);
       this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
 
+    @SubscribeMessage('delete_room')
+    async deleteRoom(client, infos) {
+        const allMembers = await this.roomUserRepo.find({roomId: infos.roomId});
+        for(let entry of allMembers) {
+            let infoMember = {userId:entry.userId, roomId:infos.roomId, room:infos.room};
+            await this.user_leaves_room(client, infoMember);
+        }
+      //  await this.roomRepo.delete({id:infos.roomId});
+    }
+
     @SubscribeMessage('user_isBan_room')
     async user_isBan_room(client, infos) {
       this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.roomId);

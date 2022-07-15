@@ -26,6 +26,11 @@ export class setProfilDto {
    twoFA: boolean;
 }
 
+export class setNewCreatorDto {
+  newCreator: string;
+  roomId : string;
+}
+
 export class setImgDto {
    login: string;
    email:string;
@@ -304,6 +309,19 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       return({status:201})
    }
 
+   @UseGuards(AuthenticatedGuard)
+   @Post('/setNewCreator')
+   async setNewCreator(@Body() body: setNewCreatorDto)
+   {
+      if (body.roomId === "undefined" || parseInt(body.newCreator) === -1)
+         return ({status:404});
+      const id = parseInt(body.newCreator);
+      const idRoom = parseInt(body.roomId);
+      await this.roomRepo.update({id:idRoom}, {creatorId:id});
+      const relation = await this.roomUserRepo.find({roomId:idRoom, userId:id});
+      await this.roomUserRepo.update({id: relation[0].id}, {isAdmin:true});
+      return({status:201})
+   }
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')
    async getUsers() {

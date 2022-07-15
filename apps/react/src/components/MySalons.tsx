@@ -8,6 +8,7 @@ import { useResolvedPath, useRoutes } from 'react-router-dom';
 import { isBooleanObject } from 'util/types';
 import { ConsoleLogger } from '@nestjs/common';
 import AddPrivateMember from './AddPrivateMember';
+import OwnerLeave from './OwnerLeave';
 
 
 /* John aurelie */
@@ -480,6 +481,8 @@ const MySalons = (props) => {
                     {/* <div style={modalContainer}> */}
                    
                         <div style={{display:'flex', justifyContent:'center'}}><div><h1>Owner Settings</h1></div><div style={{marginTop:'10px'}}><button onClick={toggleModal4}>Leave Chanel</button></div></div>
+                        <OwnerLeave idRoom={currentSalon.roomId} idUser={props.actualUser.id} roomName={currentSalon.name} revele={revele4} toggle={toggleModal4} toggle2={toggleModal} revele2={revele}></OwnerLeave>
+                        
                         <div style={body}></div>
                         <div style={{display:'flex', justifyContent:'space-around'}}>
                         {currentSalon.private === true ?  <div><h2>Private room</h2>
@@ -534,14 +537,16 @@ const MySalons = (props) => {
                     </div> : <></>}
                         <div style={body}></div>
                         {/* </div> */}
-                        <h3>MUTE User</h3>
+                        <h3>Mute/Unmute User</h3>
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
-                            <Select onChange={muteUser} options={usersRoom}/>
+                            <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute}/>
+                            <Select onChange={setanUnmute} options={tabMute}/><button onClick={unmuteUser}>UNMUTE</button>
                         </div>   
-                    <h3>BAN User</h3>
+                    <h3>Ban/Unban User</h3>
                     <div style={bar}>
-                        <Select onChange={banUser} options={usersRoom}/>
+                    <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan}/>
+                        <Select onChange={setanUnban} options={tabBan}/><button onClick={unbanUser}>UNBAN</button>
                     </div>
                 </ModalWindow>
                 {/* Permet de quitter le channel */}

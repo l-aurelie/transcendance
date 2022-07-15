@@ -1,6 +1,9 @@
 # compiled output
 nest/dist
 **/node_modules
+package-lock.json
+nest/package-lock.json
+react/package-lock.json
 
 # Logs
 logs
