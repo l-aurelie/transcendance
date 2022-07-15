@@ -57,7 +57,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async handleDisconnect(client) {
-        const the_date = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
+        const the_date = new Date(Date.now()).toLocaleString();// moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
 console.log('handleDisconnect');
         // A client has disconnected
         this.users--;
@@ -363,6 +363,7 @@ console.log(tab);
     @SubscribeMessage('initGame')
     async initGame( client, user)
     {
+        console.log('iniiiit game')
         for (let entry of gameQueue) {
         if (entry.user.id === user) {
           this.server.to(client.id).emit("already-ask");
@@ -394,6 +395,7 @@ console.log(tab);
 
     async launchMatch(userL, userR, v)
     {
+        console.log('launchmatch')
         let roomName;
         const details = {
             playerLeft: userL.id,
@@ -403,6 +405,7 @@ console.log(tab);
             smash : v,
         }
         const newGame = await this.gameRepo.save(details);
+
         await this.userRepo.update({id:userL.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9'});
         await this.userRepo.update({id:userR.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9'});
         this.server.emit('changeColor');
@@ -506,7 +509,7 @@ console.log(tab);
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName , infos[1] = allPos
         /*date for game table*/
-        const the_date: string = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
+        const the_date= new Date(Date.now()).toLocaleString();//string = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
       
         let width = infos[1].width; 
         let height = infos[1].height; 
@@ -621,7 +624,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             // }
         }
         if (newSleep === true) {
-            let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
+            let ball = {x : infos[1].width/2, y: infos[1].height/2, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
             this.server.to(infos[0]).emit("updatedBall", ball);
             await sleep(500);

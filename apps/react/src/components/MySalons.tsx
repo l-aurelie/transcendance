@@ -487,7 +487,7 @@ const MySalons = (props) => {
                         <div style={{display:'flex', justifyContent:'space-around'}}>
                         {currentSalon.private === true ?  <div><h2>Private room</h2>
                     <button onClick={toggleModal3}>Add members</button>
-                        <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3}></AddPrivateMember>
+                        <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal}></AddPrivateMember>
                     </div> : <></> }
                     <div>
                         <h3>Define password</h3>
@@ -531,10 +531,10 @@ const MySalons = (props) => {
                 <ModalWindow  revele={revele2} setRevele={toggleModal2}> 
                     {/* <div style={modalContainer}> */}
                         <h1>Admin Settings</h1>
-                        {currentSalon.private === true ? <div><h2>Private room</h2>
+                        {currentSalon.private === true ?  <div><h2>Private room</h2>
                     <button onClick={toggleModal3}>Add members</button>
-                    
-                    </div> : <></>}
+                        <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal2}></AddPrivateMember>
+                    </div> : <></> }
                         <div style={body}></div>
                         {/* </div> */}
                         <h3>Mute/Unmute User</h3>

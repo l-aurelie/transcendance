@@ -50,7 +50,7 @@ const button: CSS.Properties = {
 }
 
   
-const AddPrivateMember = ({idRoom, roomName, revele, toggle}) => {
+const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
     const [allUser, setAllUsers] = useState([]);
     const [members, setMembers] = useState([]);
     useEffect(() => { 
@@ -76,6 +76,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle}) => {
     const reset = () => {
         setOption(-1);
         toggle();
+        toggle2();
     }
 
 

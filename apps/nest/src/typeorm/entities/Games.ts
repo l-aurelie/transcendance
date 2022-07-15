@@ -26,7 +26,7 @@ export class Games implements IGames {
     looser: number;
 
     @Column({nullable:true})
-    date: string;
+    date: String;
 
     /*Plusiers matchs mais chaque fois un jouer gauche/droite donc ManyToOne()*/
     @ManyToOne(() => User, User => User.userLeft)
