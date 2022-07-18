@@ -10,7 +10,7 @@ export class RoomEntity implements IRoom {
     id: number;
  
     @Column({nullable: true})
-    name:string;
+    name: string;
 
     @Column({default: false})
     private: boolean;

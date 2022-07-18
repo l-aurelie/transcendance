@@ -19,7 +19,7 @@ export class UsersService {
         private readonly friendRequestRepository: Repository<FriendRequest>) {}
   
     async findUserById(idnum: number){ //getter pour trouver user par id
-        return await this.userRepo.findOne( {id: idnum} );
+        return await this.userRepo.findOne({where: {id: idnum}} );
     };
     /*findUserById(idnum: number){ //getter pour trouver user par id
         return this.userRepo.findOne( {id: idnum} );
@@ -28,7 +28,7 @@ export class UsersService {
    /* Retourne l'utilisateur [login] */
     findUserByLogin(login: string): Promise<User> {
         //console.log("USER SEARCHING", login);
-        return this.userRepo.findOne(login);//TODO: findOne or fail
+        return this.userRepo.findOne({where:{login:login}});//TODO: findOne or fail
         //return this.userRepo.findOne( {login} );
     };   
     /* Retourne tous les utilisateurs present dans la table users */
@@ -42,6 +42,6 @@ export class UsersService {
 export class SocketService {
     constructor (@InjectRepository(Socket) private socketRepo: Repository<Socket>) {}
     findSocketById(id_socket: string){ //getter pour trouver user par id
-        return this.socketRepo.findOne( {name: id_socket} );
+        return this.socketRepo.findOne({where: {name: id_socket} });
     };
 }

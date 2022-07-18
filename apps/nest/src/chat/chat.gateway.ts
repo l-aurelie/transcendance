@@ -182,7 +182,7 @@ console.log(tab);
         else
             displayName = infos.otherLogin;
        }
-       const theRoom = await this.roomRepo.findOne({ name : infos.room });
+       const theRoom = await this.roomRepo.findOne({where :{ name : infos.room }});
            if (!dm) {
             if (infos.room.length > 10)
                 displayName = infos.room.substring(0,9) + "...";
@@ -190,7 +190,7 @@ console.log(tab);
                 displayName = infos.room;
            const theUser = await this.userService.findUserById(infos.userId);
         //   const joinedRoomId = await this.roomService.getRoomIdFromRoomName(infos.room);
-           let myUserRoom = await this.roomUserRepo.findOne({userId: infos.userId, user: theUser, roomId: infos.roomId});
+           let myUserRoom = await this.roomUserRepo.findOne({where:{userId: infos.userId, roomId: infos.roomId}});
            if (!myUserRoom)
            {
                const getNewUserRoom = {id: null, userId: infos.userId, user: theUser, room: theRoom, roomId: infos.roomId, mute: false,
@@ -217,7 +217,7 @@ console.log(tab);
 
     @SubscribeMessage('delete_room')
     async deleteRoom(client, infos) {
-        const allMembers = await this.roomUserRepo.find({roomId: infos.roomId});
+        const allMembers = await this.roomUserRepo.find({where:{roomId: infos.roomId}});
         for(let entry of allMembers) {
             let infoMember = {userId:entry.userId, roomId:infos.roomId, room:infos.room};
             await this.user_leaves_room(client, infoMember);
@@ -589,9 +589,9 @@ console.log(tab);
             await this.gameRepo.update( {id : infos[0]}, {scoreRight:sR});
         }
         if (sL >= 11 && sR < sL - 1) {
-            const idGame = await this.gameRepo.findOne({id:infos[0]});
+            const idGame = await this.gameRepo.findOne({where:{id:infos[0]}});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
-            const user = await this.userRepo.findOne({id: idGame.playerLeft});
+            const user = await this.userRepo.findOne({where:{id: idGame.playerLeft}});
 login = user.login;
 this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
 this.server.to(infos[0]).emit("game-stop", user.login);
@@ -606,9 +606,9 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         }
         if (sR >= 11 && sL < sR - 1) {
 
-            const idGame = await this.gameRepo.findOne({id:infos[0]});
+            const idGame = await this.gameRepo.findOne({where:{id:infos[0]}});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerRight, looser: idGame.playerLeft, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
-            const user = await this.userRepo.findOne({id: idGame.playerRight});
+            const user = await this.userRepo.findOne({where:{id: idGame.playerRight}});
 
             login = user.login;
         this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
@@ -695,7 +695,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             this.server.to('sockets'+ infos[1]).emit("restart");
             return;
         }
-        const idGame = await this.gameRepo.findOne({id:infos[0]});
+        const idGame = await this.gameRepo.findOne({where:{id:infos[0]}});
         this.gameRepo.update( {id : infos[0]}, {scoreLeft:idGame.scoreLeft, scoreRight:idGame.scoreRight, finish: true});
         await this.userRepo.update({id: idGame.playerLeft}, {isPlaying:false, color:'rgba(0,255,0,0.9)'});
         await this.userRepo.update({id: idGame.playerRight}, {isPlaying:false, color:'rgba(0,255,0,0.9)'});
@@ -731,7 +731,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         //for block
         const isBlock = await this.userBlockRepo.find({where: {blockingUserId: infos[0].id, blockedUserId:infos[1]}});
         const isBlock2 = await this.userBlockRepo.find({where: {blockingUserId: infos[1], blockedUserId:infos[0].id}});
-        const user2 = await this.userRepo.findOne({id: infos[1]});
+        const user2 = await this.userRepo.findOne({where:{id: infos[1]}});
         if (isBlock.length > 0 || isBlock2.length > 0 || infos[0].isPlaying === true || user2.isPlaying === true)
         {
             this.rejectMatch(client, infos);

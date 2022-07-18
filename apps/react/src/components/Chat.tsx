@@ -107,7 +107,7 @@ const Chat = (props) => {
   const sendMessage = (event) => {
     if(event.key === 'Enter') {
       console.log(currentSalon);
-      if (currentSalon.length !== 0)
+      if (currentSalon.length != 0)
         socket.emit('chat', {roomId: currentSalon.roomId, creator: currentSalon.creator, private:currentSalon.private, roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
       event.target.value = "";
       console.log(joinedSalons);

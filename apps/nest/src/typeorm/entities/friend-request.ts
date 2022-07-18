@@ -9,6 +9,12 @@ export class FriendRequest {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    senderId: number;
+
+    @Column()
+    receiverId:number;
+    
     @ManyToOne(() => User, User => User.RequestsSent)
     sender: User;
 
