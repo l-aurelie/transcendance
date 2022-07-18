@@ -1,6 +1,6 @@
 /* aurel */
 import CSS from 'csstype';
-import { socket } from '../Socket';
+import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 const modaleWindow: CSS.Properties = {
     height: '500px',
@@ -10,7 +10,7 @@ const modaleWindow: CSS.Properties = {
     top: '50%',
     left: '50%',
     zIndex: '9999',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
 }
 
 const modaleSide: CSS.Properties = {
@@ -18,7 +18,7 @@ const modaleSide: CSS.Properties = {
     flexDirection: 'column',
     borderStyle: 'solid',
     borderWidth: '1px',
-    borderColor: 'dark',
+    borderColor: 'grey',
     width: '250px',
     zIndex: '9999'
   }
@@ -49,7 +49,7 @@ export function ModalWindow({children, revele, setRevele}) {
             <div>
             <div style={background} />
             <div className="modal" style={modaleWindow}>
-                <button style={button} onClick={setRevele}>X</button>
+                <div style={button}><MaterialIcon icon="close" onClick={setRevele} /></div>
                 {children}
             </div>
             </div>
@@ -65,7 +65,6 @@ export function ModalSide({children, revele, setRevele}) {
     if (revele) {
         return (
             <div className="modal" style={modaleSide}>
-                {/*<button onClick={setRevele}>X</button>*/}
                 {children}
             </div>
         );
@@ -74,25 +73,3 @@ export function ModalSide({children, revele, setRevele}) {
         <></>
     )
 }
-
-
-/*
-export function Component({revele, setRevele}) {
-
-    return (
-        <ModalWindow revele={revele} setRevele={setRevele}>
-            <h1>ok</h1>
-        </ModalWindow>
-    );
-
-}
-
-const [revele, setRevele] = useState(false);
-const toggleModal = () => {setRevele(!revele);}
-return(
-        <div>
-            <button onClick={toggleModal}>ClickForModal</button>
-            <Component revele={revele} setRevele={closeModale}/>
-        </div>
-
-    );*/

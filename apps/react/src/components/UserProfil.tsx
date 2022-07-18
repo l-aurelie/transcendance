@@ -74,7 +74,7 @@ const UserProfil = (props) => {
   else {
     return(
       <div>
-        <button onClick={handleClick}> Login </button>
+        <MaterialIcon icon="power_settings_new" onClick={handleClick} /> 
       </div>
     ); }
   }

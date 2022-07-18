@@ -6,6 +6,7 @@ import AddNav from '../AddNav';
 import Select from 'react-select';
 import { socket } from "../Socket";
 import CSS from 'csstype';
+import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 const log: CSS.Properties = {
     position : 'relative',
@@ -84,7 +85,8 @@ const WatchModale = ({user, revele, toggle, game}) => {
                 <div style={watchButton}>
                     <button style={button} type='button' onClick={watch}>watch</button>
                 </div>
-                <button style={button} type='button' onClick={reset}>x</button>
+
+                <div style={button}><MaterialIcon icon="close" onClick={reset} /></div>
             </div>
         </div>
     )

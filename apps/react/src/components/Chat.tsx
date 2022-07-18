@@ -21,7 +21,7 @@ const mySalonStyle = {
   flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
-  borderColor: 'dark',
+  borderColor: 'grey',
 }
 
 const messageStyle = {
@@ -29,7 +29,7 @@ const messageStyle = {
   flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
-  borderColor: 'dark',
+  borderColor: 'grey',
   width: '60%',
 
 }

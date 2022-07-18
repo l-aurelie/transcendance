@@ -9,6 +9,7 @@ import RejectButton from './RejectButton';
 const FriendReqss = () => {
 
     const [reqs, setreqs] = useState([]);
+    const [refresh, setRefresh] = useState(false);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
     const toggleModal = () => {setRevele(!revele);} 
@@ -16,11 +17,12 @@ const FriendReqss = () => {
 
 
     useEffect(() => {
+        setRefresh(false);
         console.log('in friend request');
         axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
             setreqs(res.data);
         })
-    },[]);
+    },[refresh]);
 
     return(
         <div>
@@ -30,8 +32,8 @@ const FriendReqss = () => {
                 {reqs.map(reqs => (
                     <div key={reqs.id}><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
                     {reqs.status} request from {reqs.sender.login}
-                    <AcceptButton FriendReq = {reqs}></AcceptButton>
-                    <RejectButton FriendReq = {reqs}></RejectButton></div>
+                    <AcceptButton FriendReq = {reqs} setRefresh={setRefresh}></AcceptButton>
+                    <RejectButton FriendReq = {reqs} setRefresh={setRefresh}></RejectButton></div>
                 ))}
             </ModalWindow>
         </div>
