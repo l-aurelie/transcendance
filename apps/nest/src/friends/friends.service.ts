@@ -23,8 +23,8 @@ async hasRequestBeenSentOrReceived(
        
         const check = await this.friendRequestRepository.findOne({
             where: [
-            { sender: sender, receiver: receiver },
-            { sender: receiver, receiver: sender },
+            { senderId: sender.id, receiverId: receiver.id },
+            { senderId: receiver.id, receiverId: sender.id },
         ],
         });
         if (!check)
@@ -40,7 +40,7 @@ async hasRequestBeenSentOrReceived(
            
             const check = await this.friendRequestRepository.findOne({
                 where: [
-                { sender: User, receiver: Me },
+                { senderId: User.id, receiverId: Me.id },
             ],
             });
             /*si on trouve pas, on retourne un error: string*/
@@ -61,7 +61,7 @@ async sendFriendRequest(receiverId: number, sender: User): Promise<FriendRequest
         return {error: "You have already sent a request, chill"};
     /*si ca rentre pas dans les cas d'exceptions, on change le status a 'pending' dans le db pour "envoyer une requete"*/
     let MyFriendRequest: FriendRequest = {
-        id: null, sender, receiver, status: 'pending'
+        id: null, senderId:sender.id, receiverId:receiverId, sender:sender, receiver:receiver, status: 'pending'
     }
     return this.friendRequestRepository.save(MyFriendRequest);
 }
@@ -71,7 +71,7 @@ async getFriendRequestStatus(receiverId: number, sender: User): Promise<FriendRe
     const receiver = await this.usersServ.findUserById(receiverId);
     const MyReq = await this.friendRequestRepository.findOne({
         where: [
-        { sender: sender, receiver: receiver },
+        { senderId: sender.id, receiverId: receiverId },
     ],
     });
     return MyReq.status;
@@ -79,7 +79,7 @@ async getFriendRequestStatus(receiverId: number, sender: User): Promise<FriendRe
 
 /*retourne la requete en cherchant l'ID de la requete*/ 
 async getFriendRequestUserById(FriendRequestId: number) : Promise<FriendRequest>{
-    return this.friendRequestRepository.findOne( {id: FriendRequestId} );
+    return this.friendRequestRepository.findOne({where: {id: FriendRequestId}} );
 }
 
 /*change le status d'une requete (FriendRequestID) a la valeur de {newStatus}-> accepted/pending/rejected*/
@@ -94,7 +94,7 @@ async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestSt
 async getReceivedFriendRequests(currentUser: User) : Promise<any> {
     const temp = await this.friendRequestRepository.find({
         relations: ["sender"],
-        where: [ {receiver: currentUser, status: "pending"}],
+        where: [ {receiverId: currentUser.id, status: "pending"}],
     });
     return temp;
 }
@@ -113,7 +113,7 @@ async getAllLogins() : Promise<string[]>{
 
 /*retourne tous les requetes envoyes par cet utilisateur*/
 async getSentFriendRequests(currentUser: User) : Promise<FriendRequest[]> {
-    return this.friendRequestRepository.find({sender: currentUser });
+    return this.friendRequestRepository.find({where:{senderId: currentUser.id }});
 }
 
 /*Trouver tous les requetes dans le db de requetes qui sont "accepte" et etaient soit envoye ou recu par cet utilisateur*/
@@ -123,7 +123,7 @@ async getFriendList(currentUser: User) : Promise<User[]> {
     let group_one = await this.friendRequestRepository.find( 
         { relations: ["sender", "receiver"],
         where: [
-            { sender: currentUser, status: "accepted" },
+            { senderId: currentUser.id, status: "accepted" },
         ],
     }
     );
@@ -133,7 +133,7 @@ async getFriendList(currentUser: User) : Promise<User[]> {
         { relations: 
             ["sender", "receiver"],
         where: [
-            { receiver: currentUser, status: "accepted" },
+            { receiverId: currentUser.id, status: "accepted" },
         ],
     }
     );

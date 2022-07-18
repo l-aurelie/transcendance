@@ -73,7 +73,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const already = await this.userRepo.findOne({where:{login: req.body.login}});
       if (already)
       {
-         if (already.id !== req.body.id)
+         if (already.id != req.body.id)
             return false;
       }
      // console.log('req.user', req.user);
@@ -330,7 +330,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const id = parseInt(body.newCreator);
       const idRoom = parseInt(body.roomId);
       await this.roomRepo.update({id:idRoom}, {creatorId:id});
-      const relation = await this.roomUserRepo.find({roomId:idRoom, userId:id});
+      const relation = await this.roomUserRepo.find({where:{roomId:idRoom, userId:id}});
       await this.roomUserRepo.update({id: relation[0].id}, {isAdmin:true});
       return({status:201})
    }
@@ -388,13 +388,13 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const idUser = parseInt(id);
    let tab = [];
 
-   const dm = await this.roomRepo.find({directMessage:true});
+   const dm = await this.roomRepo.find({where:{directMessage:true}});
    for (let room of dm)
    {
       const arr = (room.name).split('.');
       if (parseInt(arr[0]) === idUser)
       {
-         const user2 = await this.userRepo.findOne({id: parseInt(arr[1])});
+         const user2 = await this.userRepo.findOne({where:{id: parseInt(arr[1])}});
          let disp;
          if (user2.login.length > 10)
             disp = user2.login.substring(0,9) + "...";
@@ -412,7 +412,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       }
       else if (parseInt(arr[1]) === idUser)
       {
-         const user2 = await this.userRepo.findOne({id: parseInt(arr[0])});
+         const user2 = await this.userRepo.findOne({where:{id: parseInt(arr[0])}});
          let disp;
          if (user2.login.length > 10)
             disp = user2.login.substring(0,9) + "...";
@@ -495,11 +495,11 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
            // console.log('undef');
             return([]);
          }
-         const room = this.roomRepo.findOne({where: {id:currentSalon}});
+         const room = this.roomRepo.findOne({where: {id:parseInt(currentSalon)}});
       
          const users = await this.roomUser.find({
             relations: ["user", "room"],
-            where : {roomId: currentSalon, userId:Not((await room).creatorId),}});
+            where : {roomId: parseInt(currentSalon), userId:Not((await room).creatorId),}});
          //   console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
          //   console.log(users[0].user.login);
          //   console.log(users[0].user.avatar);
@@ -577,7 +577,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          }
          var currentSal = parseInt(currentSalon);
          console.log('current SAL: ' + currentSal);
-         const room = await this.roomRepo.findOne(currentSal);
+         const room = await this.roomRepo.findOne({where: {id:currentSal}});
          console.log("ROOM +++> ", room);
          console.log("PWD +++> ", room.password);
          const pwd = room.password;
@@ -602,7 +602,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          if (!body.pwd)
             return(false);
          const currentSal = parseInt(body.roomId);
-         const room = await this.roomRepo.findOne(currentSal);
+         const room = await this.roomRepo.findOne({where:{id:currentSal}});
          const pwdHashed = room.password;
          const isMatch = await bcrypt.compare(body.pwd, pwdHashed);
          console.log("MATCH === ", isMatch);
@@ -618,11 +618,11 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
-         const room = await this.roomRepo.findOne({id:id});
-         const repo = await this.roomUserRepo.find({roomId:id, ban:true});
+         const room = await this.roomRepo.findOne({where:{id:id}});
+         const repo = await this.roomUserRepo.find({where:{roomId:id, ban:true}});
          let tab = [];
          for (let entry of repo) {
-            const user = await this.userRepo.findOne({id:entry.userId});
+            const user = await this.userRepo.findOne({where:{id:entry.userId}});
             if (user.id != room.creatorId)
                tab.push(user);
          }
@@ -637,11 +637,11 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
-         const room = await this.roomRepo.findOne({id:id});
-         const repo = await this.roomUserRepo.find({roomId:id, mute:true});
+         const room = await this.roomRepo.findOne({where:{id:id}});
+         const repo = await this.roomUserRepo.find({where:{roomId:id, mute:true}});
          let tab = [];
          for (let entry of repo) {
-            const user = await this.userRepo.findOne({id:entry.userId});
+            const user = await this.userRepo.findOne({where:{id:entry.userId}});
             if (user.id != room.creatorId)
                tab.push(user);
          }
@@ -656,11 +656,11 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
-         const room = await this.roomRepo.findOne({id:id});
-         const repo = await this.roomUserRepo.find({roomId:id, isAdmin:true});
+         const room = await this.roomRepo.findOne({where:{id:id}});
+         const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
          let tab = [];
          for (let entry of repo) {
-            const user = await this.userRepo.findOne({id:entry.userId});
+            const user = await this.userRepo.findOne({where:{id:entry.userId}});
             if (user.id != room.creatorId)
                tab.push(user);
          }
@@ -675,12 +675,12 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
            // console.log('undef');
             return([]);
          }
-         const room = await this.roomRepo.findOne({id:id});
-         const repo = await this.roomUserRepo.find({roomId:id, isAdmin:false});
+         const room = await this.roomRepo.findOne({where:{id:id}});
+         const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:false}});
          
          let tab = [];
          for (let entry of repo) {
-            const user = await this.userRepo.findOne({id:entry.userId});
+            const user = await this.userRepo.findOne({where:{id:entry.userId}});
             console.log("nonAdm",user.login, user.id)
             if (user.id != room.creatorId)
                tab.push(user);
@@ -696,11 +696,11 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
-         const room = await this.roomRepo.findOne({id:id});
-         const repo = await this.roomUserRepo.find({roomId:id, mute:false});
+         const room = await this.roomRepo.findOne({where:{id:id}});
+         const repo = await this.roomUserRepo.find({where:{roomId:id, mute:false}});
          let tab = [];
          for (let entry of repo) {
-            const user = await this.userRepo.findOne({id:entry.userId});
+            const user = await this.userRepo.findOne({where:{id:entry.userId}});
             console.log("nonmute",user.login, user.id)
             if (user.id != room.creatorId)
                tab.push(user);
@@ -717,11 +717,11 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
-         const room = await this.roomRepo.findOne({id:id});
-         const repo = await this.roomUserRepo.find({roomId:id, ban:false});
+         const room = await this.roomRepo.findOne({where:{id:id}});
+         const repo = await this.roomUserRepo.find({where:{roomId:id, ban:false}});
          let tab = [];
          for (let entry of repo) {
-            const user = await this.userRepo.findOne({id:entry.userId});
+            const user = await this.userRepo.findOne({where:{id:entry.userId}});
             console.log("nonban",user.login, user.id)
             if (user.id != room.creatorId)
                tab.push(user);

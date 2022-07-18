@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { getRepository } from 'typeorm';
+import { DataSource, getRepository } from 'typeorm';
 import { AppModule } from './app.module';
 import { TypeORMSession } from './typeorm/entities/Session';
 import * as session from 'express-session';
@@ -15,13 +15,12 @@ import { ConfigService } from '@nestjs/config';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
      bodyParser: true});
-  const sessionRepo = getRepository(TypeORMSession);
   const configService = app.get(ConfigService);
   /*set up cookies so we remember users are logged in*/
   app.use(
     session({
       cookie: {
-        maxAge: 86400000,
+       maxAge: 86400000,
       },
       //used to encrypt cookie, can be anything but keep secret
       secret: configService.get('SESSION_SECRET'),

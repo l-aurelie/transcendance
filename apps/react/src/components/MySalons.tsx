@@ -124,7 +124,7 @@ const MySalons = (props) => {
     //Ecoute chat pour afficher tout nouveaux messages
     useEffect(() => {
         socket.off('chat');
-        if (currentSalon.length !== 0) {
+        if (currentSalon.length != 0) {
             socket.on('fetchmessage', data => {
                 setMessage(data);
             });
@@ -143,7 +143,7 @@ const MySalons = (props) => {
                 return (message);
             else {
                 socket.off('leftsalon');
-                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
+                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom != data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
                 return (message);
             }
             });
@@ -192,7 +192,7 @@ const MySalons = (props) => {
 
          if ((revele|| revele2 ||revele3) && currentSalon.roomId != 'undefined')
              return ;
-        if (salon[1].avatar !== currentSalon.display) {
+        if (salon[1].avatar != currentSalon.display) {
             socket.off('leftsalon');           
             setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator, private:salon[1].private})));
             socket.off('chat');
@@ -328,7 +328,7 @@ const MySalons = (props) => {
     }
 
     const submitPassword = (event) => {
-    if (pwd !== "") {
+    if (pwd != "") {
         setPwd(pwdRef.current.value);
         event.preventDefault();
         const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
@@ -469,7 +469,7 @@ const MySalons = (props) => {
 
             {/* modale qui va etre un setting avec close dedans et si owner..... */}
                 {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={()=>toggleModal(salon[1])}> ⚙️ </div> : null}
-                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={() =>toggleModal2(salon[1])}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator != props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={() =>toggleModal2(salon[1])}> ⚙️ </div> : null}
                 {/* Setting par channel */}
                 
                 {/* Permet de quitter le channel */}

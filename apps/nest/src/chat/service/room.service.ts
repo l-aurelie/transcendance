@@ -22,7 +22,7 @@ export class RoomService {
      async createRoom(idUser: number, isPrivate:boolean, isDm:boolean, nameRoom: string): Promise<IRoom> {
        // const newRoom = await this.addCreatorInRoom(room, creator);
        const room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
-       const does_exist = await this.roomRepo.findOne( {name: nameRoom} );
+       const does_exist = await this.roomRepo.findOne({where: {name: nameRoom} });
        console.log('does room exist ?', does_exist);
        return does_exist ? does_exist : this.roomRepo.save(room);
      }
@@ -61,28 +61,28 @@ export class RoomService {
         if (entry.id === idCreator)
           idRoomCreate = newRoomUser.id;
       }
-        return (await this.roomUserRepo.findOne({id:idRoomCreate}));
+        return (await this.roomUserRepo.findOne({where:{id:idRoomCreate}}));
     }
 
     async getRoomIdFromRoomName(name: string) {
       console.log(name);
-      const retRoom = await this.roomRepo.findOne( {name: name} );
+      const retRoom = await this.roomRepo.findOne( {where:{name: name} });
       console.log(retRoom);
       return retRoom ? retRoom.id : null;
     }
 
     async getRoomNameFromId(idRoom: number) {
-      const retRoom = await this.roomRepo.findOne( {id: idRoom} );
+      const retRoom = await this.roomRepo.findOne( {where:{id: idRoom} });
       console.log(retRoom);
       return retRoom ? retRoom.name : null;
     }
     async getRoomCreatorFromId(idRoom: number) {
-      const retRoom = await this.roomRepo.findOne( {id: idRoom} );
+      const retRoom = await this.roomRepo.findOne( {where:{id: idRoom}} );
       console.log(retRoom);
       return retRoom ? retRoom.creatorId : null;
     }
     async getRoomPrivateFromId(idRoom: number) {
-      const retRoom = await this.roomRepo.findOne( {id: idRoom} );
+      const retRoom = await this.roomRepo.findOne( {where:{id: idRoom} });
       console.log(retRoom);
       return retRoom ? retRoom.private : null;
     }
