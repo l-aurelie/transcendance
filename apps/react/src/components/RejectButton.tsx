@@ -5,7 +5,7 @@ const RejectButton = ({FriendReq, setRefresh}) => {
 const RejectRequest = event => {
     axios.get("http://localhost:3000/friends/friendRequest/reject/" + FriendReq.id, {withCredentials:true}).then((res) => {
     })
-    socket.emit('friendrequestnotif', {id: FriendReq.FriendReq.receiverId , new: false});
+    socket.emit('friendrequestnotif', {id: FriendReq.receiverId , new: false});
     alert("Request Rejected");
     setRefresh(true);
 }   
