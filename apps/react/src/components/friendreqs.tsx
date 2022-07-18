@@ -6,7 +6,7 @@ import AcceptButton from './AcceptButton';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import RejectButton from './RejectButton';
 
-const FriendReqss = () => {
+const FriendReqss = ({reqnotif}) => {
 
     const [reqs, setreqs] = useState([]);
     /* Outils d'affichage de la modale */

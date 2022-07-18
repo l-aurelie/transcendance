@@ -356,6 +356,12 @@ console.log(tab);
         this.server.to('sockets'+ userId).emit('changeInfos');
     }
 
+    @SubscribeMessage('friendrequestnotif')
+    async sendFriendRequest(client, data) {
+        console.log('inHere heyy', data.id);
+        this.server.to('sockets' + data.id).emit('newfriendrequest', data.new);
+    }
+
     //--------------------------------------------------------------------------------------------//
     //----------------------------------GAME------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
