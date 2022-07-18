@@ -8,6 +8,8 @@ export interface FriendRequestStatusInter {
 
 export interface FriendRequest {
     id ?: number;
+    senderId?: number;
+    receiverId?: number;
     sender ?: User;
     receiver ?: User;
     Status ?: FriendRequestStatus;

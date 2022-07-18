@@ -71,9 +71,11 @@ useEffect(() => {
             /*affiche l'erreur*/
             alert(str);
         }
-        else
+        else {
         /*sinon, tout s'est bien passe et on affiche le suivant:*/
+            socket.emit('friendrequestnotif', {id: ThisUser.id, new: true});
             alert("Friend request sent");
+        }
         })
     }
 

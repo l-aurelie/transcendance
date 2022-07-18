@@ -4,7 +4,7 @@ WORKDIR /src/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
@@ -23,5 +23,3 @@ EXPOSE 3000
 # COPY --from=development /src/app/ .
 
 # EXPOSE 3000
-
-# CMD ["node", "dist/main"]

@@ -46,9 +46,11 @@ const  DisplayUser = ({userConnected, userSelected, isFriend}) => {
             /*affiche l'erreur*/
             alert(str);
         }
-        else
+        else {
+            socket.emit('friendrequestnotif', {id: userSelected.id, new: true});
         /*sinon, tout s'est bien passe et on affiche le suivant:*/
             alert("Friend request sent");
+        }
         })
     }
 

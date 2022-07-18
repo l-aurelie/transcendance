@@ -4,10 +4,10 @@
 echo -e "\e[1;35m Helper mission is ago... \e[0m"
 #download missing dependencies
 cd ./nest
-[ ! -d "./node_modules/" ] && echo -e "\e[1;32m downloading nest dependencies \e[0m" && npm install
+[ ! -d "./node_modules/" ] && echo -e "\e[1;32m downloading nest dependencies \e[0m" && npm install --legacy-peer-deps
 cd ..
 cd ./react
-[ ! -d "./node_modules/" ] && echo -e "\e[1;32m downloading react dependencies \e[0m" && npm install
+[ ! -d "./node_modules/" ] && echo -e "\e[1;32m downloading react dependencies \e[0m" && npm install --legacy-peer-deps
 cd ..
 
 

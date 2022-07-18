@@ -92,7 +92,7 @@ const Game = (props) => {
 
  // ask to quit game or queue
  const quitGame = () => {
-  if (waitingFor !== 0)
+  if (waitingFor != 0)
     socket.emit('warnOpponent', waitingFor);
   setWait(false);
   setPresentation(false); 

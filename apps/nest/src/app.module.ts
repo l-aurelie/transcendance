@@ -19,7 +19,9 @@ import { UsersService } from './users/users.service';
 import { GameModule } from './game/game.module';
 
 @Module({
+  
   imports: [
+    
     /*session refers to cookie session*/
     PassportModule.register({ session: true }), 
     ConfigModule.forRoot({envFilePath: '.env'}),

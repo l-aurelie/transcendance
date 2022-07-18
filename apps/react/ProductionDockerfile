@@ -1,11 +1,11 @@
-FROM node:lts-alpine AS development
+FROM node:lts-alpine AS production
 
 WORKDIR /react/src/app
 
 COPY package*.json ./
 
-# ENV PATH /react/src/app/node_modules/.bin:$PATH
-
 RUN npm install --legacy-peer-deps
 
 COPY . ./
+
+EXPOSE 4200
