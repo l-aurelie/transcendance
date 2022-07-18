@@ -13,7 +13,7 @@ function UserFormAvatar2({user, toggle}) {
         const formData = new FormData();
         formData.append("file", data.file[0]);
 
-        const res = await fetch("http://localhost:3000/users/setimg/" + user.id, {
+        await fetch("http://localhost:3000/users/setimg/" + user.id, {
             method: "POST",
             body: formData,
             credentials: 'include',
@@ -47,11 +47,5 @@ function UserFormAvatar2({user, toggle}) {
     );
 }
 
-{/* <form  onSubmit={this.handleSubmit}>
-<label>
-  Please, check your mail and enter your secret number : <br></br><br></br>
-  <input type="text" value={this.state.value} onChange={this.handleChange} />
-  </label>
-<input type="submit" value="Send" />
-</form> */}
+
 export default UserFormAvatar2;

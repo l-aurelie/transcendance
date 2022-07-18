@@ -39,9 +39,9 @@ const chatBox = {
   border: '2px',
 }
 
-const scrollBox = {
-  overflowY: 'scroll' as 'scroll',
-}
+// const scrollBox = {
+//   overflowY: 'scroll' as 'scroll',
+// }
 const chatTitle = {
   display: "flex",
   justifyContent: "center",
@@ -52,14 +52,14 @@ const chatTitle = {
 const messageSent = {
   textAlign: 'right' as 'right',
 }
-const salonName = {
-  marginTop: "auto", 
+// const salonName = {
+//   marginTop: "auto", 
 
-}
-const notifSalon = {
-  marginTop: "auto", 
-  backgroundColor: 'pink',
-}
+// }
+// const notifSalon = {
+//   marginTop: "auto", 
+//   backgroundColor: 'pink',
+// }
 const over = {
   cursor: 'pointer',
 }
@@ -68,20 +68,20 @@ const overLi = {
   padding: '0',
   textAlign: 'left' as 'left',
 }
-const menu = {
-  fontSize: '14px',
-  backgroundColor:'#fff',
-  borderRadius:'2px',
-  padding: '5px 0 5px 0',
-  width : '150px',
-  height:'auto',
-  margin:'0',
-  position:'absolute' as 'absolute',
-  listStyle: 'none',
-  boxShadow: '0 0 20px 0 #ccc',
-  opacity:'1',
-  transition: 'opacity 0.5s linear',
-}
+// const menu = {
+//   fontSize: '14px',
+//   backgroundColor:'#fff',
+//   borderRadius:'2px',
+//   padding: '5px 0 5px 0',
+//   width : '150px',
+//   height:'auto',
+//   margin:'0',
+//   position:'absolute' as 'absolute',
+//   listStyle: 'none',
+//   boxShadow: '0 0 20px 0 #ccc',
+//   opacity:'1',
+//   transition: 'opacity 0.5s linear',
+// }
 
 const Chat = (props) => {
 
@@ -89,7 +89,7 @@ const Chat = (props) => {
 
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
-  const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
+  //const joinedSalons= useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
   const [anchorPoint, setAnchorPoint] = useState({x:0, y:0});
   const [show, setShow] = useState(false);
   const [userIdClick, setUserIdClick] = useState(0);
@@ -107,15 +107,15 @@ const Chat = (props) => {
   const sendMessage = (event) => {
     if(event.key === 'Enter') {
       console.log(currentSalon);
-      if (currentSalon.length != 0)
+      if (currentSalon.length !== 0)
         socket.emit('chat', {roomId: currentSalon.roomId, creator: currentSalon.creator, private:currentSalon.private, roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
       event.target.value = "";
-      console.log(joinedSalons);
+     // console.log(joinedSalons);
     }
   }
 
 //if user that ask to play quit window for accept or reject the request disappear
-  useEffect(() => {
+  //useEffect(() => {
     // socket.on('just-block', data => {
     //   console.log("here in socketOn just blooooooooooooooooooock")
     //   socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: actualUser.id, roomId:currentSalon.roomId});
@@ -129,7 +129,7 @@ const Chat = (props) => {
         setVersion(data.version);
         toggleModal();
     });
-},[actualUser])
+//},[actualUser])
 
 //open user profil when clic on profil on menu
 const getUserProfil = () => {

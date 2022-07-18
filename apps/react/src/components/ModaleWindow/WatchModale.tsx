@@ -1,8 +1,8 @@
 /* sam */
 import React, { useState } from 'react';
 import Logo from '../Logo';
-import CreateSalon from '../AddChannel';
-import AddNav from '../AddNav';
+//import CreateSalon from '../AddChannel';
+//import AddNav from '../AddNav';
 import Select from 'react-select';
 import { socket } from "../Socket";
 import CSS from 'csstype';
