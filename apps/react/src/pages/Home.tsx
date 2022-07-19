@@ -45,16 +45,14 @@ const background = {
 const bodyLogoutStyle = {
     display: 'flex',
     width:"100%",
-    height: "100vh",
+    // height: "80vh",
     justifyContent:'center',
 }
 const bodyStyle = {
     display: 'flex',
     width:"100%",
-    height: "100vh",
-    // objectFit: "contain",
-    justifyContent: 'center',
-    //justifyContent: 'flex-end',
+    height: "85vh",
+    justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'grey',

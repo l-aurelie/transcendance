@@ -12,19 +12,18 @@ import axios from 'axios';
 */
 
 const divStyle = {
-  width:"80%",
+  width:"70%",
   //backgroundColor : "rgb(238, 229, 229)"
   // objectFit: "contain",
 }
 const canvasStyle = {
-  width:"100%",
+  width:"90%",
   // objectFit: "contain",
 }
 
 const playButton = {
   
   width: "70%",
-  // objectFit: "contain",
   fontSize: "20px",
   borderRadius: "5px",
   color: "white",
