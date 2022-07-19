@@ -153,6 +153,14 @@ const MySalons = (props) => {
     //Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
     //TODO: est-ce que rejoindre un salon le met en salon courant? (commentaires)
     useEffect(() => {
+        socket.on('new-owner', data => {
+            console.log('new-Owner');
+            axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
+                for (let entry of res.data)
+                    setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
+                })
+            
+        })
     socket.on('just-block', data => {
         const map2 = new Map(joinedSalons);
         setJoinedSalons(map2);
@@ -475,7 +483,7 @@ const MySalons = (props) => {
                 {/* Permet de quitter le channel */}
                 <div>
                     {
-                        ((salon[1].owner && salon[1].creator === props.actualUser.id) ) ?
+                        ((salon[1].creator === props.actualUser.id) ) ?
                         <div style={{cursor:"pointer"}} onClick={alertCreator}>x</div> : <div style={{cursor:"pointer"}} onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</div>
                     }
                 </div>
@@ -496,8 +504,9 @@ const MySalons = (props) => {
                     <button onClick={toggleModal3}>Add members</button>
                         <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal}></AddPrivateMember>
                     </div> : <></> }
+                    {currentSalon.private === false ?
                     <div>
-                        <h3>Define password</h3>
+                        <h3>Public Room - Define password</h3>
                         
                             <form onSubmit={submitPassword}>
                             <input
@@ -510,7 +519,7 @@ const MySalons = (props) => {
                             </form>
                             <button onClick={resetPassword}>Reset password</button>
                         {/* </div> */}
-                        </div>
+                        </div> : <></>}
                         </div>
                         <h3>Add/Remove admin's channel</h3>
                         {/* <div style={containerSetting}> */}
