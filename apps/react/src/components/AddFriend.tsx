@@ -20,6 +20,7 @@ const onChange = (event) => {
   const [friends, setFriends] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [value, setValue] = useState([]);
+  const [userChoose, setUserChoose] = useState([]);
   //const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
   
   /* Outils d'affichage de la modale */
@@ -55,6 +56,19 @@ const togglePlay = () => {
   toggleAdd();
 
 }
+
+/*const searchFriend = () => {
+  console.log( "val = " , value);
+    //axios.get("http://localhost:3000/users/" + value, {withCredentials:true}).then((res) => { 
+    //  setUserChoose(res.data);
+    //})
+  //console.log(userChoose);
+  console.log(allUsers);
+  const res = allUsers.find(element => value === element.login);
+  if(res) 
+    toggleModal();
+  console.log('res =', res);
+}*/
 
 /* Recherche d'amis a ajouter */
     return(

@@ -25,6 +25,7 @@ const FriendUserProfilExtended = ({Value}) => {
     const [losses, setLosses] = useState([]);
 
 useEffect(() => {
+    //console.log("value here- ", Value);
     /*get user*/
     axios.get("http://localhost:3000/users/" + Value, {withCredentials:true}).then((res) => { 
       setThisUser(res.data);

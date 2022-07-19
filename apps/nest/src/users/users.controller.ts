@@ -395,6 +395,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    /* Retourne le user [id] */
    @Get(':id')
    async getUserByID(@Param() userStringId: string) {
+      console.log("---------------getBYID");
       const userId = parseInt(userStringId);
       const user = await this.userServ.findUserById(userId);
       //return (user);
