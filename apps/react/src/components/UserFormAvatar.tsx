@@ -10,7 +10,10 @@ function UserFormAvatar({user, toggle}) {
         console.log('submit avatar');
         if (!data.file[0])
             return;
+        if (data.file[0] > 1000)
+            alert("Image too large!");
         const formData = new FormData();
+        
         formData.append("file", data.file[0]);
 
         await fetch("http://localhost:3000/users/setimg/" + user.id, {

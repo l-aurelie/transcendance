@@ -516,7 +516,8 @@ const MySalons = (props) => {
                         {/* <div style={containerSetting}> */}
                            <div style={bar}>
                             <button onClick={addAdmin}>ADD</button><Select onChange={setanAdm} options={tabNonAdm}/>
-                            <Select onChange={setanUnadm} options={tabAdm}/><button onClick={removeAdmin}>REMOVE</button>
+                            {tabAdm.length  === 0 ? null :<Select onChange={setanUnadm} options={tabAdm}/>}
+                            {tabAdm.length  === 0 ? null :<button onClick={removeAdmin}>REMOVE</button>}
                            </div>
                            
                         {/* </div> */}
@@ -524,12 +525,14 @@ const MySalons = (props) => {
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
                             <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute}/>
-                            <Select onChange={setanUnmute} options={tabMute}/><button onClick={unmuteUser}>UNMUTE</button>
+                            {tabMute.length  === 0 ? null :<Select onChange={setanUnmute} options={tabMute}/>}
+                            {tabMute.length  === 0 ? null : <button onClick={unmuteUser}>UNMUTE</button>}
                         </div>   
                     <h3>Ban/Unban User</h3>
                     <div style={bar}>
                     <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan}/>
-                        <Select onChange={setanUnban} options={tabBan}/><button onClick={unbanUser}>UNBAN</button>
+                    {tabBan.length  === 0 ? null : <Select onChange={setanUnban} options={tabBan}/>} 
+                    {tabBan.length  === 0 ? null :<button onClick={unbanUser}>UNBAN</button>}
                     </div>
                 </ModalWindow>
                
