@@ -61,7 +61,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
             console.log('meembers in front', members);   
                 })
     
-        }, [idRoom, members])
+        }, [idRoom])
   
     const [option, setOption] = useState(-1);
     const [lab, setLab] = useState("");
@@ -81,6 +81,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
             return ;
         else
         {
+            console.log("test");
             socket.emit('user_joins_room', {userId: option, room: roomName, roomId: idRoom});
             let tabU = allUser.filter(element => element.value !== option)
             setAllUsers(tabU);

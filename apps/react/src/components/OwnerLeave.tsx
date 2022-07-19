@@ -55,7 +55,7 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
             console.log('meembers in front', members);   
                 })
     
-        }, [idRoom, members])
+        }, [idRoom])
   
     const [option, setOption] = useState(-1);
  //   const [lab, setLab] = useState("");

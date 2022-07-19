@@ -91,9 +91,11 @@ console.log('handleDisconnect');
 
     /* Recupere tous les salon publics existants dans la db */
     @SubscribeMessage('fetchsalon')
-    async fetch_salon(client) {
+    async fetch_salon(client, userId) {
         const salons = await this.roomRepo.find({where: { private : false }});
         let tab = []
+        const userRooms = await this.roomUserRepo.find({where: {userId: userId}});
+        const userRoomIds = userRooms.map((it) => it.roomId);
         for (let entry of salons)
         {
             var displayName;
@@ -101,7 +103,8 @@ console.log('handleDisconnect');
                 displayName = entry.name.substring(0,9) + "...";
             else
                displayName = entry.name;
-               tab.push({id:entry.id, name:displayName});
+            if (!userRoomIds.includes(entry.id))
+                tab.push({id:entry.id, name:displayName});
         }
         client.emit('fetchsalon', tab);
      }

@@ -26,7 +26,12 @@ const FriendReqss = ({reqnotif}) => {
 
     return(
         <div>
+        {
+            reqnotif ?
+            <button onClick={toggleModal} style={{backgroundColor:'pink'}}>Friend Reqs</button>
+            :
             <button onClick={toggleModal}>Friend Reqs</button>
+        }
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <h1>Friend Requests</h1>
                 {reqs.map(reqs => (
