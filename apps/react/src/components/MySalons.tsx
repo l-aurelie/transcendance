@@ -153,6 +153,14 @@ const MySalons = (props) => {
     //Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
     //TODO: est-ce que rejoindre un salon le met en salon courant? (commentaires)
     useEffect(() => {
+        socket.on('new-owner', data => {
+            console.log('new-Owner');
+            axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
+                for (let entry of res.data)
+                    setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
+                })
+            
+        })
     socket.on('just-block', data => {
         const map2 = new Map(joinedSalons);
         setJoinedSalons(map2);
@@ -475,7 +483,7 @@ const MySalons = (props) => {
                 {/* Permet de quitter le channel */}
                 <div>
                     {
-                        ((salon[1].owner && salon[1].creator === props.actualUser.id) ) ?
+                        ((salon[1].creator === props.actualUser.id) ) ?
                         <div style={{cursor:"pointer"}} onClick={alertCreator}>x</div> : <div style={{cursor:"pointer"}} onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</div>
                     }
                 </div>

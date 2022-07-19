@@ -214,6 +214,10 @@ console.log(tab);
       /* On emit le nom du salon quitté pour en informer tous les fronts */
       this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
+    @SubscribeMessage('new-owner')
+    async newOwner(client, infos) {
+      this.server.to('sockets' + infos[0]).emit('new-owner', infos[1]);
+    }
 
     @SubscribeMessage('delete_room')
     async deleteRoom(client, infos) {
