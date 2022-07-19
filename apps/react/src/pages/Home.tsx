@@ -11,10 +11,6 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
 import SideBarChat from '../components/SideBatChat';
-//import { ModalWindow } from '../components/ModaleWindow/LogiqueModale2';
-//import UserFormAvatar from '../components/UserFormAvatar';
-//import UserForm from '../components/UserForm';
-//import FirstConnect from '../components/FirstConnect';
 
 
 /* Style (insere dans la div jsx) */
@@ -23,7 +19,8 @@ const headStyle = {
     justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
-    borderColor: 'dark',
+    borderColor: 'grey',
+    boxShadow: '0px 3px 10px grey'
 }
 const allStyle = {
     display: 'flex',
@@ -58,7 +55,7 @@ const bodyStyle = {
     //justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
-    borderColor: 'dark',
+    borderColor: 'grey',
 }
 
 const thankStyle = {

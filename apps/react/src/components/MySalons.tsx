@@ -30,6 +30,13 @@ const channelName = {
     display: "flex",
 }
 
+const channelNameNotif = {
+    width: "70%",
+    display: "flex",
+    backgroundColor: 'pink',
+
+}
+
 const channel = {
     width: "100%",
     // backgroundColor: 'green',
@@ -455,7 +462,7 @@ const MySalons = (props) => {
                <div style={{position:'relative' as 'relative', width:'100%', display:'flex', justifyContent:'space-between'}}>
             {
             salon[1].notif ?
-                <div style={channelName}>{salon[1].avatar}</div>
+                <div style={channelNameNotif}>{salon[1].avatar}</div>
                 :
                 <div style={channelName}>{salon[1].avatar}</div>
             }
