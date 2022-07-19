@@ -206,7 +206,7 @@ const MySalons = (props) => {
         var def;
     
         for (let entry of res.data) {
-            def= {value:entry.user.id, label: entry.user.login, admin:entry.isAdmin}
+            def= {value:entry.useId, label: entry.userLogin, admin:entry.isAdmin}
             tab.push(def);
         }
         setUsersRoom(tab);
