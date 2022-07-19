@@ -95,7 +95,7 @@ const UserProfil = (props) => {
           </foreignObject>
           <g>
           <rect width="11" height="11" x="34" y="34" rx="5" ry="5" fill='pink'></rect>
-          <text x="34" y="34" font-family="Verdana" font-size="100" fill="black">{friendNotif}</text>
+          {/*<text x="38" y="43" font-family="Verdana" font-size="8" fill="black">{friendNotif}</text>*/}
           </g></svg>
           :
           <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/>

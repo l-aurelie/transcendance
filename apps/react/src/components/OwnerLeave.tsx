@@ -48,14 +48,14 @@ const button: CSS.Properties = {
 const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}) => {
    // const [allUser, setAllUsers] = useState([]);
     const [members, setMembers] = useState([]);
-    useEffect(() => { 
-     
+  
+    useEffect(() => {
             axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
             setMembers(res.data)
-            console.log('meembers in front', members);   
+            //console.log('meembers in front', members);   
                 })
     
-        }, [idRoom, members])
+        }, [idRoom])
   
     const [option, setOption] = useState(-1);
  //   const [lab, setLab] = useState("");
@@ -85,6 +85,7 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
         {
             const info = { newCreator : option, roomId:idRoom};
             axios.post("http://localhost:3000/users/setNewCreator", info, {withCredentials:true}).then((res) =>{   
+                socket.emit('new-owner', option, idUser);
                 socket.emit('user_leaves_room', {userId: idUser, room: roomName, roomId: idRoom});
                 toggle();
                 toggle2();

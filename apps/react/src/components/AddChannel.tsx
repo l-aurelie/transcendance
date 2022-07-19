@@ -58,7 +58,7 @@ const AddChannel = ({user}) => {
         console.log(data);
         setSalons(data);
        });
-      socket.emit('fetchsalon', 'ok');
+      socket.emit('fetchsalon', user.id);
       }, [newSalon])
 
     const handleChange = event => {

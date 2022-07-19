@@ -91,9 +91,11 @@ console.log('handleDisconnect');
 
     /* Recupere tous les salon publics existants dans la db */
     @SubscribeMessage('fetchsalon')
-    async fetch_salon(client) {
+    async fetch_salon(client, userId) {
         const salons = await this.roomRepo.find({where: { private : false }});
         let tab = []
+        const userRooms = await this.roomUserRepo.find({where: {userId: userId}});
+        const userRoomIds = userRooms.map((it) => it.roomId);
         for (let entry of salons)
         {
             var displayName;
@@ -101,7 +103,8 @@ console.log('handleDisconnect');
                 displayName = entry.name.substring(0,9) + "...";
             else
                displayName = entry.name;
-               tab.push({id:entry.id, name:displayName});
+            if (!userRoomIds.includes(entry.id))
+                tab.push({id:entry.id, name:displayName});
         }
         client.emit('fetchsalon', tab);
      }
@@ -214,6 +217,10 @@ console.log(tab);
       /* On emit le nom du salon quitté pour en informer tous les fronts */
       this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
+    @SubscribeMessage('new-owner')
+    async newOwner(client, infos) {
+      this.server.to('sockets' + infos[0]).emit('new-owner', infos[1]);
+    }
 
     @SubscribeMessage('delete_room')
     async deleteRoom(client, infos) {
@@ -222,7 +229,7 @@ console.log(tab);
             let infoMember = {userId:entry.userId, roomId:infos.roomId, room:infos.room};
             await this.user_leaves_room(client, infoMember);
         }
-      //  await this.roomRepo.delete({id:infos.roomId});
+        await this.roomRepo.delete({id:infos.roomId});
     }
 
     @SubscribeMessage('user_isBan_room')
@@ -336,18 +343,18 @@ console.log(tab);
         // await this.roomRepo.update({id:newRoom.id}, {creatorId:infos[0]})
       //  if (!infos[1]) //{
         let disp;
-        if (infos[3].length > 10)
-            disp = infos[3].substring(0,9) + "...";
+        if ((newRoom.name).length > 10)
+            disp = (newRoom.name).substring(0,9) + "...";
         else
-            disp = infos[3];
-            this.server.emit('newsalon', infos[3]);
-        this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: infos[3], dm: false, displayName: disp, roomId:newRoom.id, creator:infos[0], isAdmin:true, private:infos[1]}); // add owner = true;
+            disp = (newRoom.name);
+            this.server.emit('newsalon', (newRoom.name));
+        this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: (newRoom.name), dm: false, displayName: disp, roomId:newRoom.id, creator:infos[0], isAdmin:true, private:infos[1]}); // add owner = true;
         //}
         console.log('addSalon');
         if (infos.length > 4)
-            this.user_joins_room(client, {userId: infos[0], room: infos[3], otherLogin: infos[4], roomId:newRoom.id})
+            this.user_joins_room(client, {userId: infos[0], room: (newRoom.name), otherLogin: infos[4], roomId:newRoom.id})
         else 
-            this.user_joins_room(client, {userId: infos[0], room: infos[3], roomId:newRoom.id})
+            this.user_joins_room(client, {userId: infos[0], room: (newRoom.name), roomId:newRoom.id})
             //  socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
     }
 

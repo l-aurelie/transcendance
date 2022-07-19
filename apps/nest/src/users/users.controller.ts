@@ -385,9 +385,9 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
 
    /* Retourne le user [login] */
    @Get(':login')
-   async getUserByLogin(@Param() params) {
+   async getUserByLogin(@Param('login') params : string) {
       const user = await this.userServ.findUserByLogin(params);
-      //console.log('=====getUserByLogin()', user);
+      //console.log('=====getUserByLogin()', user, params);
       //return (user);
       return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
    }
@@ -723,11 +723,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          const id = parseInt(currentSalon);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, mute:false}});
+         const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
+         const adminIdsArray = admins.map((it) => it.userId);
+         console.log(adminIdsArray);
          let tab = [];
          for (let entry of repo) {
             const user = await this.userRepo.findOne({where:{id:entry.userId}});
             console.log("nonmute",user.login, user.id)
-            if (user.id != room.creatorId)
+            console.log('hereers', user.id);
+            if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
                tab.push(user);
          }
          return tab;
@@ -744,11 +748,14 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          const id = parseInt(currentSalon);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, ban:false}});
+         const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
+         const adminIdsArray = admins.map((it) => it.userId);
+         console.log(adminIdsArray);
          let tab = [];
          for (let entry of repo) {
             const user = await this.userRepo.findOne({where:{id:entry.userId}});
             console.log("nonban",user.login, user.id)
-            if (user.id != room.creatorId)
+            if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
                tab.push(user);
          }
          return tab;

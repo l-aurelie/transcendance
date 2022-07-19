@@ -92,12 +92,14 @@ const AcceptRequest = event => {
     axios.get("http://localhost:3000/friends/friendRequest/accept/" + InboundReq.id, {withCredentials:true}).then((res) => {
     })
     alert("Request accepted");
+    socket.emit('friendrequestnotif', {id: ThisUser.id, new: false});
 }   
 
 const RejectRequest = event => {
     axios.get("http://localhost:3000/friends/friendRequest/reject/" + InboundReq.id, {withCredentials:true}).then((res) => {
     })
     alert("Request rejected");
+    socket.emit('friendrequestnotif', {id: ThisUser.id, new: false});
 }   
 
 /****************************************/
