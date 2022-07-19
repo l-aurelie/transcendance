@@ -16,12 +16,12 @@ const chatStyle = {
 const mySalonStyle = {
   display: 'flex',
   width: "40%",
-  //maxWidth: "40%",
-  height: '100vh',
   flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
-  borderColor: 'grey',
+  borderColor: "rgba(230, 206, 200, 0.8)",
+  backgroundColor : "rgba(230, 206, 200, 0.5)",
+  boxShadow: '-15px 0 15px -15px lightgrey'
 }
 
 const messageStyle = {
@@ -29,8 +29,9 @@ const messageStyle = {
   flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
-  borderColor: 'grey',
+  borderColor: "rgba(230, 206, 200, 0.8)",
   width: '60%',
+  backgroundColor : "rgba(230, 206, 200, 0.7)"
 
 }
 const chatBox = {
@@ -188,37 +189,32 @@ const closeMenu = () => {
       <ModalWindow revele={revele2} setRevele={toggleModal2}>
         <FriendUserProfilExtended Value={userLogClick}/>
       </ModalWindow>
-    <div style={messageStyle}>
-    <div><p style={chatTitle}>{currentSalon.display}</p></div>
+      <div style={messageStyle}>
+        <div><p style={chatTitle}>{currentSalon.display}</p></div>
         <div style={chatBox} >
-        {/* Affichage de la variable message detenant tout l'historique des messages*/}
-        {message.map((data) => (
-        <div style={messageSent} key={data.id}>
-          {/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
-          {show ? (<div style={{
-            fontSize: '14px', backgroundColor:'#D7677E', width : '100px', height:'auto',
-            position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
-              <b  style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
-              <p  style={overLi} onClick={getUserProfil}>Profil</p>
-              { same ?  <></> : (<div  ><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
-              <p  style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
-            </div>): null }
-            {/*affiche les message sous forme nom: message */}
-            <p > { show ? <b  style={over} onClick={closeMenu} >{data.senderLog}</b>: <b  style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
-          </div>
-
-      ))}
-      {/*permet de scroll au dernier message*/}
-      <div ref={messagsEndRef}></div> 
-        {/* Barre d'input pour ajouter un message */}
+          {/* Affichage de la variable message detenant tout l'historique des messages*/}
+          {message.map((data) => (
+            <div style={messageSent} key={data.id}>
+              {/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
+              {show ? (<div style={{
+                fontSize: '14px', backgroundColor:'#D7677E', width : '100px', height:'auto',
+                position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
+                <b  style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
+                <p  style={overLi} onClick={getUserProfil}>Profil</p>
+                { same ?  <></> : (<div  ><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
+                <p  style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
+              </div>): null }
+              {/*affiche les message sous forme nom: message */}
+              <p > { show ? <b  style={over} onClick={closeMenu} >{data.senderLog}</b>: <b  style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
+            </div>
+          ))}
+          {/*permet de scroll au dernier message*/}
+          <div ref={messagsEndRef}></div> 
+          {/* Barre d'input pour ajouter un message */}
         </div>
-            
-
         <input type='text' onKeyPress={sendMessage} />
-      
-      
-   </div>
-   </div>
+      </div>
+    </div>
   );
 }
 export default Chat

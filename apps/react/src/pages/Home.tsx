@@ -20,8 +20,9 @@ const headStyle = {
     justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
-    borderColor: 'grey',
-    boxShadow: '0px 3px 10px grey',
+    borderColor: 'lightgrey',
+   // boxShadow: '0px 5px 5px grey',
+    boxShadow: '0 15px 15px -15px grey',
     zIndex: "10"
 } as React.CSSProperties;
 const allStyle = {
@@ -45,19 +46,17 @@ const background = {
 const bodyLogoutStyle = {
     display: 'flex',
     width:"100%",
-    height: "100vh",
+    // height: "80vh",
     justifyContent:'center',
 }
 const bodyStyle = {
     display: 'flex',
     width:"100%",
-    height: "100vh",
-    // objectFit: "contain",
-    justifyContent: 'center',
-    //justifyContent: 'flex-end',
+    height: "85vh",
+    justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
-    borderColor: 'grey',
+    borderColor: 'lightgrey',
 }
 
 const thankStyle = {

@@ -15,6 +15,9 @@ import { RoomEntity, RoomUser, UserBlock } from 'src/typeorm';
 import { RoomService } from 'src/chat/service/room.service';
 import * as bcrypt from 'bcrypt';
 
+const fs = require('fs');
+const resizeImg = require('resize-image-buffer');
+
 export class setUserRoomDto {
    userId: string;
    roomId:string;
@@ -102,20 +105,35 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
    //   console.log('===setImg()')
-    //  console.log('file', file);
+
+      console.log('file', file);
       //const ActualUser = await this.userRepo.findOne({id : 1});
+      try {
       console.log('passe in img');
       if (!file || !file.buffer)
          return;
-      const buf64 = (file.buffer).toString('base64');
+
+      let buf64;
+      buf64 = (file.buffer).toString('base64');
       let newUrl;
+      if (file.size >= 500000)
+      {
+         console.log ('trop grand');
+         const image = await resizeImg(file.buffer, {width:150, height:150});
+         buf64 = (image).toString('base64');
+      }
+      // const newIm = fs.writeFileSync('new', image);
       if (file.mimetype === 'image/jpeg')
          newUrl = "data:image/jpeg;base64,"+buf64;
       else if (file.mimetype === 'image/png')
          newUrl = "data:image/png;base64,"+buf64;
       await this.userRepo.update({id:userId}, {avatar:newUrl});
-      const data = '{"status":"200"}';
+      const data = '{"status":"200", "message":"ok"}';
       return(JSON.parse(data));
+      } catch(e) {
+         const data = '{"status":"500", "message": "invalid photo or size"}';
+         return(JSON.parse(data));
+      }
     /*  const ActualUser = await this.userRepo.findOne({id : 1})
       //-* Enregistre l'avatar en format bytea dans Avatar2 une relation one avec le user
       if(!ActualUser.Avatar2)
@@ -506,7 +524,13 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          //   console.log(users[0].room.creatorId);
          //   console.log(users[0].room.password);
          //   console.log('quoi');
-         return (users);
+         let tab = [];
+         for (let entry of users)
+         {
+            const details = {userId: entry.user.id, userLogin: entry.user.login, isAdmin:entry.isAdmin};
+            tab.push(details);
+         }
+         return (tab);
    }
 
    //set a userBlock instance
