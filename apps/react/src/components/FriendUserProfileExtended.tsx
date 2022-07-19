@@ -56,6 +56,12 @@ useEffect(() => {
     axios.get("http://localhost:3000/stats/getRankingFriend/" + Value, {withCredentials:true}).then((res) =>{
     setRanking(res.data);
     })
+    socket.on("changeFriends", data => {
+        axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+         setFriends(res.data);
+         console.log('ACCEPTED A REQ, ', res.data);
+         });
+      })
 },[Value]);
 
 /****************************************/

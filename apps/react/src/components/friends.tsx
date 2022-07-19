@@ -23,6 +23,12 @@ const Friends = ({user, toggleProfil}) => {
          console.log('after socket on, ', res.data);
          });
       });
+      socket.on("changeFriends", data => {
+        axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+         setFriends(res.data);
+         console.log('ACCEPTED A REQ, ', res.data);
+         });
+      });
     /*get friendlist*/
     useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{

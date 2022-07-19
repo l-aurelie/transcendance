@@ -1,17 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { User } from "src/typeorm";
+import { User, Socket } from "src/typeorm";
 import { FriendRequest } from "src/typeorm/entities/friend-request";
 import { FriendRequestStatus } from "src/typeorm/entities/friend-request-interface";
-import { UsersService } from '../users/users.service';
+import { UsersService, SocketService } from '../users/users.service';
+import { WebSocketGateway, WebSocketServer, OnGatewayConnection } from '@nestjs/websockets';
 
+
+// this decorator will allow us to make use of the socket.io functionnalitu
+@WebSocketGateway({ cors: 'http://localhost:4200' })
 @Injectable()
 export class FriendsService {
+    @WebSocketServer() server;
+    users: number = 0;
+
     constructor (
         private usersServ : UsersService,
         @InjectRepository(User)
         private userRepo: Repository<User>,
+        private socketService: SocketService,
+        @InjectRepository(Socket) private socketRepo : Repository<Socket>,
         @InjectRepository(FriendRequest)
         private readonly friendRequestRepository: Repository<FriendRequest>) {}
 
@@ -63,6 +72,7 @@ async sendFriendRequest(receiverId: number, sender: User): Promise<FriendRequest
     let MyFriendRequest: FriendRequest = {
         id: null, senderId:sender.id, receiverId:receiverId, sender:sender, receiver:receiver, status: 'pending'
     }
+    this.server.emit('changeReqs');
     return this.friendRequestRepository.save(MyFriendRequest);
 }
 
@@ -87,6 +97,11 @@ async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestSt
     const friendReq = await this.getFriendRequestUserById(FriendRequestId);
     friendReq.status = newStatus;
     const ret = await this.friendRequestRepository.save(friendReq);
+    if (newStatus == "accepted")
+    {
+        console.log("EMITTING");
+        this.server.emit('changeFriends');
+    }
     return ret.status;
 }
 

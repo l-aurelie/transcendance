@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import AcceptButton from './AcceptButton';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import RejectButton from './RejectButton';
+import { socket } from './Socket';
 
 const FriendReqss = ({reqnotif}) => {
 
@@ -15,13 +16,20 @@ const FriendReqss = ({reqnotif}) => {
     const toggleModal = () => {setRevele(!revele);} 
     /*------*/
 
-
     useEffect(() => {
         setRefresh(false);
         console.log('in friend request');
         axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
             setreqs(res.data);
         })
+
+        socket.on("changeReqs", data => {
+            axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
+             setreqs(res.data);
+             console.log('A REQUEST SENT, ', res.data);
+             });
+          })
+
     },[refresh]);
 
     return(

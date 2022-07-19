@@ -20,7 +20,7 @@ const onChange = (event) => {
   const [friends, setFriends] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [value, setValue] = useState([]);
-  const [userChoose, setUserChoose] = useState([]);
+  //const [userChoose, setUserChoose] = useState([]);
   //const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
   
   /* Outils d'affichage de la modale */
@@ -42,19 +42,26 @@ const onChange = (event) => {
     setAllUsers(res.data);
     });
 
+    
+
     socket.on("changeColor", data => {
       axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
        setFriends(res.data);
        console.log('after socket on, ', res.data);
        });
     });
+    socket.on("changeFriends", data => {
+      axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+       setFriends(res.data);
+       console.log('ACCEPTED A REQ, ', res.data);
+       });
+    })
   }, [])
 
 
 const togglePlay = () => {
   props.toggleAddNav();
   toggleAdd();
-
 }
 
 /*const searchFriend = () => {
