@@ -85,11 +85,13 @@ export class AuthController {
     constructor(@InjectRepository(User) private userRepo: Repository<User>, private userServ : UsersService) {} //la classe utilise un repertoire de user et les usersServices
 /*Define what happens at: localhost:3000/auth/login*/    
 /*routes*/
+
     @Get('login') /*takes us to Intra login*/
     /*Page protected by authentification defined in IntradAuthGuard -> redirect vers localhost:3000/verify*/ 
     @UseGuards(IntraAuthGuard)
  //   @Redirect('http://localhost:4200/Home')
     async login(@Req() request: RequestWithUser, @Response() res) {
+      console.log('here')
    //  console.log(request.user);
         //on retourne quoi ?
      //   return {login:"yoooooooo"};

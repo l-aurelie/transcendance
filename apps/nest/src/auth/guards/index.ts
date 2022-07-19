@@ -9,9 +9,14 @@ import { Response } from 'express';
 export class IntraAuthGuard extends AuthGuard('intra-oauth') {
     async canActivate(context: ExecutionContext): Promise<any> {
         console.log('AuthGuard');
-        
+        if (context.getArgByIndex(0).query.error=== 'access_denied')
+        {
+          const response = context.switchToHttp().getResponse<Response>();
+          response.redirect('http://localhost:4200/Denied');
+          return false;
+        }
         const activate = (await super.canActivate(context)) as boolean;
-        console.log('activate  ');
+        console.log('activate  ', activate);
         /*get request object*/
         const request = context.switchToHttp().getRequest();
         /*print out request in console*/
