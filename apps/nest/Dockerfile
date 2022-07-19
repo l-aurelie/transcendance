@@ -1,15 +1,24 @@
-FROM node:lts-alpine AS production
+FROM node:lts-alpine AS development
 
-RUN mkdir /build-dir
-WORKDIR /build-dir
-COPY package.json /build-dir
+WORKDIR /src/app
+
+COPY package*.json ./
+
 RUN npm install --location=global npm@8.14.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps
+COPY . .
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-RUN ln -s /build-dir/node_modules node_modules
-COPY . /usr/src/app
+RUN npm run build 
 
 EXPOSE 3000
-CMD ["npm", "start"]
+
+
+# FROM node:lts-alpine AS production
+
+# ARG NODE_ENV=production
+# ENV NODE_ENV=${NODE_ENV}
+
+# WORKDIR /src/app
+
+# COPY --from=development /src/app/ .
+
+# EXPOSE 3000
