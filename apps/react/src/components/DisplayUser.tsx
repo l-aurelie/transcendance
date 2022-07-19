@@ -2,7 +2,7 @@
 
 import FriendUserProfilExtended from "./FriendUserProfileExtended";
 import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import MaterialIcon from 'material-icons-react';
 import { useState } from "react";
 import { socket } from "./Socket";
 import axios from "axios";

@@ -2,22 +2,22 @@ import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
 import { socket } from "./Socket";
 import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
-import CSS from 'csstype';
+//import CSS from 'csstype';
 import Select from 'react-select';
-import { useResolvedPath, useRoutes } from 'react-router-dom';
-import { isBooleanObject } from 'util/types';
-import { ConsoleLogger } from '@nestjs/common';
+//import { useResolvedPath, useRoutes } from 'react-router-dom';
+//import { isBooleanObject } from 'util/types';
+//import { ConsoleLogger } from '@nestjs/common';
 import AddPrivateMember from './AddPrivateMember';
 import OwnerLeave from './OwnerLeave';
 
 
 /* John aurelie */
-const imgStyle = {
-    height: '45px',
-    width: '45px',
-    backgroundColor: 'grey',
-    borderRadius: '100%'
-}
+// const imgStyle = {
+//     height: '45px',
+//     width: '45px',
+//     backgroundColor: 'grey',
+//     borderRadius: '100%'
+// }
 
 const bar = {
     display: "flex",
@@ -44,18 +44,18 @@ const channel = {
     justifyContent: "space-between",
 }
 
-const buttons = {
-    display: "flex",
-    //justifyContent: "space-between",
-    float:'right' as 'right',
-}
+// const buttons = {
+//     display: "flex",
+//     //justifyContent: "space-between",
+//     float:'right' as 'right',
+// }
 
-const setting = {
-// position:'relative' as 'relative',
-    //   display: 'flex',
- //   justifyContent: "center",
-    cursor: 'pointer',
-}
+// const setting = {
+// // position:'relative' as 'relative',
+//     //   display: 'flex',
+//  //   justifyContent: "center",
+//     cursor: 'pointer',
+// }
 
 const body ={
 
@@ -65,7 +65,7 @@ const body ={
 const MySalons = (props) => {
 
     
-    const [friends, setFriends] = useState([] as any);
+    //const [friends, setFriends] = useState([] as any);
     const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
     const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
@@ -104,19 +104,19 @@ const MySalons = (props) => {
     useEffect(() => {
         //setMessage(message.sort((a, b) => (a.id > b.id) ? 1 : -1));
         props.callBack({msg: message, curSal: currentSalon});
-    }, [message, currentSalon])
+    }, [message, currentSalon, props])
 
     /*get friendlist*/
     useEffect(() => {
-    axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-        setFriends(res.data);
-        })
+    // axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+    //     setFriends(res.data);
+    //     })
         axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
             for (let entry of res.data)
                 setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
             })
 
-    }, [])
+    }, [props.actualUser.id])
 
     useEffect(() => {
     }, [joinedSalons])
@@ -124,7 +124,7 @@ const MySalons = (props) => {
     //Ecoute chat pour afficher tout nouveaux messages
     useEffect(() => {
         socket.off('chat');
-        if (currentSalon.length != 0) {
+        if (currentSalon.length !== 0) {
             socket.on('fetchmessage', data => {
                 setMessage(data);
             });
@@ -143,12 +143,12 @@ const MySalons = (props) => {
                 return (message);
             else {
                 socket.off('leftsalon');
-                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom != data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
+                setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
                 return (message);
             }
             });
         });
-    }, [currentSalon])
+    }, [currentSalon, props.actualUser.id])
 
     //Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
     //TODO: est-ce que rejoindre un salon le met en salon courant? (commentaires)
@@ -185,14 +185,14 @@ const MySalons = (props) => {
             socket.off('fetchmessage');
         }
         });
-    }, [joinedSalons])
+    }, [joinedSalons, currentSalon.name])
 
     const handleClick = (salon) => {
         setRoomId(salon[1].roomId)
 
-         if ((revele|| revele2 ||revele3) && currentSalon.roomId != 'undefined')
+         if ((revele|| revele2 ||revele3) && currentSalon.roomId !== 'undefined')
              return ;
-        if (salon[1].avatar != currentSalon.display) {
+        if (salon[1].avatar !== currentSalon.display) {
             socket.off('leftsalon');           
             setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator, private:salon[1].private})));
             socket.off('chat');
@@ -328,7 +328,7 @@ const MySalons = (props) => {
     }
 
     const submitPassword = (event) => {
-    if (pwd != "") {
+    if (pwd !== "") {
         setPwd(pwdRef.current.value);
         event.preventDefault();
         const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
@@ -375,7 +375,7 @@ const MySalons = (props) => {
         const inf = { userId : admOption.value, roomId: currentSalon.roomId, pwd: ''};
         axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
         });
-        if (admOption.value != 0)
+        if (admOption.value !== 0)
         alert(admOption.label + " is now an admin");
         setAdm({value:0, label:''});
         whichAdm(currentSalon.roomId);
@@ -386,7 +386,7 @@ const MySalons = (props) => {
         const inf = { userId :unadmOption.value, roomId: currentSalon.roomId, pwd: ''};
         axios.post("http://localhost:3000/users/setAdminFalse" , inf, {withCredentials:true}).then((res) => {
         });
-        if (unadmOption.value != 0)
+        if (unadmOption.value !== 0)
             alert(unadmOption.label + " is remove of admins");
         setAdm({value:0, label:''});
         whichAdm(currentSalon.roomId);
@@ -397,7 +397,7 @@ const MySalons = (props) => {
         const inf = { userId : muteOption.value, roomId: currentSalon.roomId, muteUser: true};
         axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
     });
-        if (muteOption.value != 0)
+        if (muteOption.value !== 0)
             alert(muteOption.label + " muted!");
         setMute({value:0, label:''});
         whichMute(currentSalon.roomId);
@@ -407,7 +407,7 @@ const MySalons = (props) => {
         const inf = { userId : unmuteOption.value, roomId: currentSalon.roomId, muteUser: true};
         axios.post("http://localhost:3000/users/unmute/", inf, {withCredentials:true}).then((res) => {
     });
-        if (unmuteOption.value != 0)
+        if (unmuteOption.value !== 0)
             alert(unmuteOption.label + " unmuted!");
         setMute({value:0, label:''});
         whichMute(currentSalon.roomId);
@@ -420,7 +420,7 @@ const MySalons = (props) => {
         });
 
         socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
-        if (banOption.value != 0)
+        if (banOption.value !== 0)
            alert(banOption.label + " banned!");
         setBan({value:0, label:''});
         whichBan(currentSalon.roomId);
@@ -433,25 +433,25 @@ const MySalons = (props) => {
         });
 
         socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
-        if (unbanOption.value != 0)
+        if (unbanOption.value !== 0)
             alert(unbanOption.label + " unbanned!");
         setBan({value:0, label:''});
         whichBan(currentSalon.roomId);
         whichNonBan(currentSalon.roomId);
     }
 
-    const admin = (obj) => {
-        for (let entry of obj)
-        {
-            if (entry.admin === true)
-                return true;
-        }
-        return false;
-    }
+    // const admin = (obj) => {
+    //     for (let entry of obj)
+    //     {
+    //         if (entry.admin === true)
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
-    const isEmpty = (obj)  => {
-        return Object.keys(obj).length === 0;
-    }
+    // const isEmpty = (obj)  => {
+    //     return Object.keys(obj).length === 0;
+    // }
 
 
     return(
@@ -469,7 +469,7 @@ const MySalons = (props) => {
 
             {/* modale qui va etre un setting avec close dedans et si owner..... */}
                 {(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={()=>toggleModal(salon[1])}> ⚙️ </div> : null}
-                {(salon[1].owner && salon[1].creator != props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={() =>toggleModal2(salon[1])}> ⚙️ </div> : null}
+                {(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={() =>toggleModal2(salon[1])}> ⚙️ </div> : null}
                 {/* Setting par channel */}
                 
                 {/* Permet de quitter le channel */}

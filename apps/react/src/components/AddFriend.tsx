@@ -4,7 +4,7 @@ import axios from 'axios';
 import {socket} from './Socket';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import MaterialIcon from 'material-icons-react';
 import DisplayUser from './DisplayUser';
 
 const lists = {
@@ -74,7 +74,7 @@ const onChange = (event) => {
             <div style={lists}>            
             {allUsers.map(users => (
               <div key={users.id}>{
-              friends.includes(users) === false && users.id != props.user.id  ? 
+              friends.includes(users) === false && users.id !== props.user.id  ? 
                   <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} />
               : <></>}
               </div>

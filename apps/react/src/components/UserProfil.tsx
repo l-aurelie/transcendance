@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserProfilExtended from './UserProfilExtended';
 import { socket } from "./Socket";
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import MaterialIcon from 'material-icons-react';
 import FirstConnect from './FirstConnect';
 
 const UserProfil = (props) => {

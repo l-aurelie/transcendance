@@ -6,6 +6,6 @@ COPY package*.json ./
 
 # ENV PATH /react/src/app/node_modules/.bin:$PATH
 
-RUN npm install --legacy-peer-deps
+RUN npm install --location=global npm@8.14.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps
 
 COPY . ./
