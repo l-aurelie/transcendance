@@ -102,8 +102,10 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
    //   console.log('===setImg()')
+
     //  console.log('file', file);
       //const ActualUser = await this.userRepo.findOne({id : 1});
+      try {
       console.log('passe in img');
       if (!file || !file.buffer)
          return;
@@ -114,8 +116,12 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       else if (file.mimetype === 'image/png')
          newUrl = "data:image/png;base64,"+buf64;
       await this.userRepo.update({id:userId}, {avatar:newUrl});
-      const data = '{"status":"200"}';
+      const data = '{"status":"200", "message":"ok"}';
       return(JSON.parse(data));
+      } catch(e) {
+         const data = '{"status":"500", "message": "invalid photo or size"}';
+         return(JSON.parse(data));
+      }
     /*  const ActualUser = await this.userRepo.findOne({id : 1})
       //-* Enregistre l'avatar en format bytea dans Avatar2 une relation one avec le user
       if(!ActualUser.Avatar2)

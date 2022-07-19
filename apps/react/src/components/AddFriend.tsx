@@ -79,7 +79,7 @@ const togglePlay = () => {
             <div style={lists}>            
             {allUsers.map(users => (
               <div key={users.id}>{
-              friends.includes(users) === false && users.id != props.user.id  ? 
+              friends.includes(users) === false && users.id !== props.user.id  ? 
                   <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} togglePlay={togglePlay} />
               : <></>}
               </div>
