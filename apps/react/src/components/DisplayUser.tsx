@@ -8,13 +8,11 @@ import { socket } from "./Socket";
 import axios from "axios";
 
 
-const  DisplayUser = ({userConnected, userSelected, isFriend}) => {
+const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay}) => {
     //---
     const [reveleProfil, setReveleProfil] = useState(false);
     const toggleProfil = () => {setReveleProfil(!reveleProfil);}
     //---
-    const [reveleDefeat, setReveleDefeat] = useState(false);
-    const toggleDefeat = () => {setReveleDefeat(!reveleDefeat);}
     const [bloc, setBlock] = useState(false);
 
      axios.get("http://localhost:3000/users/isBlock/" +  userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
@@ -57,7 +55,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend}) => {
 //set version of game whern defeat someone and send the request to other user
 const defeat = () => {
   socket.emit('defeat', userConnected, userSelected.id, 0);
-  toggleDefeat();
+  togglePlay();
 }
 const block = () => {
   axios.get("http://localhost:3000/users/setBlock/" + userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
@@ -88,16 +86,13 @@ const  unblock = () => {
         
           <p style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
           | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-          | <MaterialIcon icon="videogame_asset" onClick={defeat} />  {/*icon="star" <MaterialIcon icon="radio_button_unchecked"  /> <MaterialIcon icon="block/>"*/}
+          | <MaterialIcon icon="videogame_asset" onClick={defeat} />
           | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
           {/* |Spectate <br></br> */}
           </div>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
-          {/* <ModalWindow revele={reveleDefeat} setRevele={toggleDefeat}> */}
-            {/* <Defeat toggle={toggleDefeat} revele={reveleDefeat} opponent={userSelected} actual={userConnected} version={0}></Defeat> */}
-          {/* </ModalWindow> */}
         </div>
       );
     }
@@ -121,9 +116,6 @@ const  unblock = () => {
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
-          {/* <ModalWindow revele={reveleDefeat} setRevele={toggleDefeat}> */}
-            {/* <Defeat toggle={toggleDefeat} revele={reveleDefeat} opponent={userSelected} actual={userConnected} version={0}></Defeat> */}
-          {/* </ModalWindow> */}
         </div>
       );
     }

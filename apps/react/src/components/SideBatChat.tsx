@@ -12,14 +12,17 @@ const SideBarChat = (props) => {
     /*------*/
 
     return (
-        <div >
+        <div>
             <MaterialIcon icon="add_circle" onClick={toggleModal} />
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <Logo />
-                <AddNav user={props.user}/>
+                <AddNav user={props.user} toggleAddNav={setRevele}/>
             </ModalWindow>
         </div>
     );
 };
 
 export default SideBarChat;
+
+
+        //<div {/*style={{backgroundColor: "rgb(238, 229, 229)"}}*/} ></div>

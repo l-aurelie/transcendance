@@ -10,7 +10,7 @@ import UserFormAvatar from "./UserFormAvatar";
 import UserForm from "./UserForm";
 
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
-const UserProfilExtended = ({user, reqnotif}) => {
+const UserProfilExtended = ({user, reqnotif, toggleProfil}) => {
     
    // const [user, setUser] = useState([] as any);
     const [wins, setWins] = useState([]);
@@ -70,7 +70,7 @@ const UserProfilExtended = ({user, reqnotif}) => {
                 <div>Ranking: {ranking} </div>
             </div>
             <div style={{display:'flex', justifyContent:'space-around'}}>
-                <div><Friends user={user}></Friends></div>
+                <div><Friends user={user} toggleProfil={toggleProfil}></Friends></div>
                 <div><FriendReqs reqnotif={reqnotif}></FriendReqs></div>
                 <div><Leaderboard></Leaderboard></div>
                 <div><button onClick={toggleHistory}>Match History</button></div>

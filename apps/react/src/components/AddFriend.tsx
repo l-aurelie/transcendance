@@ -50,6 +50,11 @@ const onChange = (event) => {
   }, [])
 
 
+const togglePlay = () => {
+  props.toggleAddNav();
+  toggleAdd();
+
+}
 
 /* Recherche d'amis a ajouter */
     return(
@@ -57,7 +62,7 @@ const onChange = (event) => {
           <MaterialIcon size="large" icon="person_add" onClick={toggleAdd} />
           <div style={lists}>
             {friends.map(friends => (
-              <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} /></div>
+              <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav}/></div>
             ))}   
           </div>
           <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
@@ -75,7 +80,7 @@ const onChange = (event) => {
             {allUsers.map(users => (
               <div key={users.id}>{
               friends.includes(users) === false && users.id != props.user.id  ? 
-                  <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} />
+                  <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} togglePlay={togglePlay} />
               : <></>}
               </div>
             ))}  

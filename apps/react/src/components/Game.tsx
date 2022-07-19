@@ -13,6 +13,7 @@ import axios from 'axios';
 
 const divStyle = {
   width:"80%",
+  //backgroundColor : "rgb(238, 229, 229)"
   // objectFit: "contain",
 }
 const canvasStyle = {

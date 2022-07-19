@@ -101,7 +101,7 @@ const UserProfil = (props) => {
           <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/>
         }
         <ModalWindow revele={revele} setRevele={toggleModal}>
-          <UserProfilExtended user={user} reqnotif={friendNotif} /><br></br>
+          <UserProfilExtended user={user} reqnotif={friendNotif} toggleProfil={toggleModal} /><br></br>
         </ModalWindow>
         <div>{user.login}</div>
         <MaterialIcon icon="power_settings_new" onClick={handleClick} /> 

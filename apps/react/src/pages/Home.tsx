@@ -14,14 +14,16 @@ import SideBarChat from '../components/SideBatChat';
 
 
 /* Style (insere dans la div jsx) */
-const headStyle = {
+const headStyle = {    
+   // position: 'relative',
     display: 'flex',
     justifyContent: 'flex-end',
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: 'grey',
-    boxShadow: '0px 3px 10px grey'
-}
+    boxShadow: '0px 3px 10px grey',
+    zIndex: "10"
+} as React.CSSProperties;
 const allStyle = {
     display: 'flex',
     justifyContent: 'flex-end',

@@ -11,7 +11,7 @@ const hello = {
   //  overflowY: 'scroll',
 } as React.CSSProperties;
 
-const Friends = ({user}) => {
+const Friends = ({user, toggleProfil}) => {
     const [friends, setFriends] = useState([]);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
@@ -29,6 +29,14 @@ const Friends = ({user}) => {
         setFriends(res.data);
         })
 }, [])
+
+
+const togglePlay = () => {
+  toggleProfil();
+  toggleModal();
+
+}
+
     return(
         <div style ={hello}>
             <button onClick={toggleModal}>Friends</button>
@@ -36,7 +44,7 @@ const Friends = ({user}) => {
                 <h1>My friends</h1>
                 {friends.map(friends => (
                   <div key={friends.id}>
-                    <DisplayUser userConnected={user} userSelected={friends} isFriend={true} />
+                    <DisplayUser userConnected={user} userSelected={friends} isFriend={true} togglePlay={togglePlay}/>
                   </div>
                  
                 ))}

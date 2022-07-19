@@ -18,7 +18,7 @@ import AddChannel from "./AddChannel";
         <div>
             <button onClick={switchToFriend}>Friend</button>
             <button onClick={switchToChannel}>Channel</button>
-            {reveleFriend ? <AddFriend user={props.user}/> : <AddChannel user={props.user} />}
+            {reveleFriend ? <AddFriend user={props.user} toggleAddNav={props.toggleAddNav}/> : <AddChannel user={props.user} />}
         </div>    
      );  
  }
