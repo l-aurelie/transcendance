@@ -93,6 +93,7 @@ const Home = () => {
    
     const [profil, setProfil/*, setlogins*/] = useState([] as any);
     const [login, setLogin] = useState(false);
+    const [charging, setCharging] = useState(true);
     //const [first, setFirst] = useState(false);
     //DECOMMENTER POUR AFFICHER L'AVATAR + deccomment ligne 114
     /*
@@ -124,6 +125,7 @@ const Home = () => {
         setProfil(res.data);
      //   setFirst(res.data.first); 
         console.log('ress', res.data, 'reeees')
+        setCharging(false);
         setLogin(true);
         socket.emit('whoAmI', res.data);
     })
@@ -147,8 +149,11 @@ const Home = () => {
   /*      axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 
         setlogins(res.data); 
       })*/
-
-    if (login)
+    if (charging)
+    {
+        return null;
+    }
+    else if (login)
     {
         return (
          <div>
