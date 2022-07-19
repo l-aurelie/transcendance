@@ -4,6 +4,7 @@ import Error404 from "./pages/Error404";
 import Home from "./pages/Home";
 import Verify from "./pages/Verify";
 import Login from "./pages/Login";
+import Error403 from "./pages/Error403";
 // import { FC } from "react";
 
 
@@ -20,6 +21,7 @@ const App = () => {
 			<Route path="Home" element={<Home></Home>} />
 			{/* path="*" fonctionne si l'url ne correpond a rien declare au dessus*/}
 			<Route path="*" element={<Error404></Error404>} />
+			<Route path="Denied" element={<Error403></Error403>} />
 			<Route path="Verify" element={<Verify></Verify>}/>	
 	  </Routes>
 	  </BrowserRouter>

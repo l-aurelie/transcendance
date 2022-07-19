@@ -16,8 +16,6 @@ const chatStyle = {
 const mySalonStyle = {
   display: 'flex',
   width: "40%",
-  //maxWidth: "40%",
-  height: '100vh',
   flexDirection: 'column' as 'column',
   borderStyle: 'solid',
   borderWidth: '1px',
