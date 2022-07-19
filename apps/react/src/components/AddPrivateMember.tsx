@@ -57,11 +57,10 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
             setAllUsers(tab);
             })
             axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
-            setMembers(res.data)
-            console.log('meembers in front', members);   
+            setMembers(res.data) 
                 })
     
-        }, [idRoom, members])
+        }, [idRoom])
   
     const [option, setOption] = useState(-1);
     const [lab, setLab] = useState("");

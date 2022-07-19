@@ -52,10 +52,10 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
      
             axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
             setMembers(res.data)
-            console.log('meembers in front', members);   
+            //console.log('meembers in front', members);   
                 })
     
-        }, [idRoom, members])
+        }, [idRoom])
   
     const [option, setOption] = useState(-1);
  //   const [lab, setLab] = useState("");

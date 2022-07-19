@@ -496,8 +496,9 @@ const MySalons = (props) => {
                     <button onClick={toggleModal3}>Add members</button>
                         <AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal}></AddPrivateMember>
                     </div> : <></> }
+                    {currentSalon.private === false ?
                     <div>
-                        <h3>Define password</h3>
+                        <h3>Public Room - Define password</h3>
                         
                             <form onSubmit={submitPassword}>
                             <input
@@ -510,7 +511,7 @@ const MySalons = (props) => {
                             </form>
                             <button onClick={resetPassword}>Reset password</button>
                         {/* </div> */}
-                        </div>
+                        </div> : <></>}
                         </div>
                         <h3>Add/Remove admin's channel</h3>
                         {/* <div style={containerSetting}> */}
