@@ -21,8 +21,6 @@ services:
     command: npm run start:dev
     depends_on:
       - postgres
-    env_file:
-      - .env
     #environment:
     #  DATABASE_URL: postgres://user:password@postgres:5432/db
     #  NODE_ENV: development

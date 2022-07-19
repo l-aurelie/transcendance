@@ -93,7 +93,7 @@ const Game = (props) => {
 
  // ask to quit game or queue
  const quitGame = () => {
-  if (waitingFor != 0)
+  if (waitingFor !== 0)
     socket.emit('warnOpponent', waitingFor);
   setWait(false);
   setPresentation(false); 
@@ -160,8 +160,8 @@ useEffect(() => {
     var smachX = -(height/60);
     var smachY = -(height/60);
     if (smach === 1) {
-      var smachX = width/2;
-      var smachY = height/4;
+      smachX = width/2;
+      smachY = height/4;
     }
     else {
       smachX = -(height/60);

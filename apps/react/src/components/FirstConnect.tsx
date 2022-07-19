@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+//import  { useState } from 'react';
 import Logo from './Logo';
-import CreateSalon from './AddChannel';
-import AddNav from './AddNav';
-import Select from 'react-select';
-import { socket } from "./Socket";
+//import CreateSalon from './AddChannel';
+//import AddNav from './AddNav';
+//import Select from 'react-select';
+//import { socket } from "./Socket";
 import CSS from 'csstype';
 import axios from 'axios';
-import UserFormAvatar from './UserFormAvatar';
-import UserForm from './UserForm';
+//import UserFormAvatar from './UserFormAvatar';
+//import UserForm from './UserForm';
 import UserForm2 from './LogFirst';
 import UserFormAvatar2 from './LogAvtarFirst';
 
@@ -16,16 +16,16 @@ const log: CSS.Properties = {
     top : '5%',
    // left: '50%'
 }
-const bar: CSS.Properties = {
-    position : 'absolute',
-    top : '20%',
-    width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'
-}
-const watchButton: CSS.Properties = {
-    position : 'relative',
-    top : '40%',
-    //left : '10%'
-}
+// const bar: CSS.Properties = {
+//     position : 'absolute',
+//     top : '20%',
+//     width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'
+// }
+// const watchButton: CSS.Properties = {
+//     position : 'relative',
+//     top : '40%',
+//     //left : '10%'
+// }
 /* Assombri l'arriere plan */
 const background: CSS.Properties = {
     background: 'rgba(0,0,0,0.5)',
@@ -47,16 +47,16 @@ const modale: CSS.Properties = {
     transform: 'translate(-50%, -50%)'
 }
 
-const button: CSS.Properties = {
-    position: 'absolute',
-    right: '15px',
-    top: '15px'
-}
+// const button: CSS.Properties = {
+//     position: 'absolute',
+//     right: '15px',
+//     top: '15px'
+// }
 
   
 const FirstConnect = ({revele, toggle, user}) => {
-    const [allUser, setAllUsers] = useState([]);
-    const [members, setMembers] = useState([]);
+   // const [allUser, setAllUsers] = useState([]);
+   // const [members, setMembers] = useState([]);
     const toggleForm = () => {}
     console.log(revele, '= revele');
 

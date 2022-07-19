@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Logo from './Logo';
-import CreateSalon from './AddChannel';
-import AddNav from './AddNav';
+//import CreateSalon from './AddChannel';
+//import AddNav from './AddNav';
 import Select from 'react-select';
 import { socket } from "./Socket";
 import CSS from 'csstype';
@@ -12,11 +12,7 @@ const log: CSS.Properties = {
     top : '5%',
    // left: '50%'
 }
-const bar: CSS.Properties = {
-    position : 'absolute',
-    top : '20%',
-    width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'
-}
+
 const watchButton: CSS.Properties = {
     position : 'relative',
     top : '40%',
@@ -65,7 +61,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
             console.log('meembers in front', members);   
                 })
     
-        }, [])
+        }, [idRoom, members])
   
     const [option, setOption] = useState(-1);
     const [lab, setLab] = useState("");
@@ -86,7 +82,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
         else
         {
             socket.emit('user_joins_room', {userId: option, room: roomName, roomId: idRoom});
-            let tabU = allUser.filter(element => element.value != option)
+            let tabU = allUser.filter(element => element.value !== option)
             setAllUsers(tabU);
             let tab = members;
             tab.push({value:option, label:lab});

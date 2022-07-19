@@ -1,6 +1,6 @@
 #!/bin/bash
 #Laura file
-
+export npm_config_loglevel=silent
 echo -e "\e[1;35m Helper mission is ago... \e[0m"
 #download missing dependencies
 cd ./nest

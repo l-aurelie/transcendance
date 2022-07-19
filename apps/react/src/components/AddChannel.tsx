@@ -2,7 +2,7 @@
 import {socket} from './Socket';
 import {useState, useEffect} from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import MaterialIcon from 'material-icons-react';
 import axios from 'axios';
 
 const chatTitle1 = {
@@ -93,7 +93,7 @@ const AddChannel = ({user}) => {
   const handleClick = (salon) => { 
     axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
         console.log('PWD', res.data);
-        let goodPwd = false;
+        //let goodPwd = false;
 
         if (res.data === true) {
             setCurrentSal(salon.id);

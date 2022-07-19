@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Logo from './Logo';
-import CreateSalon from './AddChannel';
-import AddNav from './AddNav';
+//import CreateSalon from './AddChannel';
+//import AddNav from './AddNav';
 import Select from 'react-select';
 import { socket } from "./Socket";
 import CSS from 'csstype';
@@ -10,13 +10,8 @@ import axios from 'axios';
 const log: CSS.Properties = {
     position : 'relative',
     top : '5%',
-   // left: '50%'
 }
-const bar: CSS.Properties = {
-    position : 'absolute',
-    top : '20%',
-    width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'
-}
+
 const watchButton: CSS.Properties = {
     position : 'relative',
     top : '40%',
@@ -51,27 +46,22 @@ const button: CSS.Properties = {
 
   
 const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}) => {
-    const [allUser, setAllUsers] = useState([]);
+   // const [allUser, setAllUsers] = useState([]);
     const [members, setMembers] = useState([]);
     useEffect(() => { 
-        axios.get("http://localhost:3000/users/allNoMembers/" + idRoom, {withCredentials:true}).then((res) =>{
-            let tab = [];
-            for (let entry of res.data)
-                tab.push({value: entry.id, label:entry.login});
-            setAllUsers(tab);
-            })
+     
             axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
             setMembers(res.data)
             console.log('meembers in front', members);   
                 })
     
-        }, [])
+        }, [idRoom, members])
   
     const [option, setOption] = useState(-1);
-    const [lab, setLab] = useState("");
+ //   const [lab, setLab] = useState("");
     const handleChange = (e) => {
         setOption(e.value);
-        setLab(e.label);
+   //     setLab(e.label);
     }
     const reset = () => {
         setOption(-1);

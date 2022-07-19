@@ -4,7 +4,7 @@ import axios from 'axios';
 import {socket} from './Socket';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import MaterialIcon from 'material-icons-react';
 import DisplayUser from './DisplayUser';
 
 const lists = {

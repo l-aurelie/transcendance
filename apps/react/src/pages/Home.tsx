@@ -93,7 +93,7 @@ const Home = () => {
    
     const [profil, setProfil/*, setlogins*/] = useState([] as any);
     const [login, setLogin] = useState(false);
-    const [first, setFirst] = useState(false);
+    //const [first, setFirst] = useState(false);
     //DECOMMENTER POUR AFFICHER L'AVATAR + deccomment ligne 114
     /*
     const [avatar, setAvatar] = useState([] as any);
@@ -115,14 +115,14 @@ const Home = () => {
             //};
         })
     }, [])*/ 
-    const [reveleForm, setRevele] = useState(false);
-    const toggleForm = () => {setRevele(!reveleForm)};
+    //const [reveleForm, setRevele] = useState(false);
+    //const toggleForm = () => {setRevele(!reveleForm)};
     
     useEffect(() => {        
        axios.get("http://localhost:3000/users", { withCredentials:true })
        .then((res) =>{ 
         setProfil(res.data);
-        setFirst(res.data.first); 
+     //   setFirst(res.data.first); 
         console.log('ress', res.data, 'reeees')
         setLogin(true);
         socket.emit('whoAmI', res.data);
