@@ -10,7 +10,6 @@ import axios from 'axios';
 const log: CSS.Properties = {
     position : 'relative',
     top : '5%',
-   // left: '50%'
 }
 
 const watchButton: CSS.Properties = {

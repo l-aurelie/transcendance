@@ -7,7 +7,6 @@ import { useState } from "react";
 import { socket } from "./Socket";
 import axios from "axios";
 
-
 const  DisplayUser = ({userConnected, userSelected, isFriend}) => {
     //---
     const [reveleProfil, setReveleProfil] = useState(false);

@@ -6,7 +6,7 @@ import Logo from '../Logo';
 import Select from 'react-select';
 import { socket } from "../Socket";
 import CSS from 'csstype';
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+import MaterialIcon from 'material-icons-react';
 
 const log: CSS.Properties = {
     position : 'relative',

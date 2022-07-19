@@ -12,11 +12,7 @@ const log: CSS.Properties = {
     top : '5%',
    // left: '50%'
 }
-// const bar: CSS.Properties = {
-//     position : 'absolute',
-//     top : '20%',
-//     width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'
-// }
+
 const watchButton: CSS.Properties = {
     position : 'relative',
     top : '40%',

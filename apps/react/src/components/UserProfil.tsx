@@ -1,7 +1,7 @@
 /*aurelie john*/
 
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import UserProfilExtended from './UserProfilExtended';
 import { socket } from "./Socket";
