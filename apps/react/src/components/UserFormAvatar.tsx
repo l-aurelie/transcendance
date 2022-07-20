@@ -8,10 +8,14 @@ function UserFormAvatar({user, toggle}) {
 
     const onSubmit = async (data) => {
         console.log('submit avatar');
+        console.log('file = ', data.file[0]);
         if (!data.file[0])
             return;
-        if (data.file[0] > 1000)
-            alert("Image too large!");
+        if(data.file[0].name.search('.jpg')  === -1 && data.file[0].name.search('.jpeg')  === -1 && data.file[0].name.search('.png') === -1)
+        {
+            alert("Please choose jpeg/jpg or pgn format !");
+            return;
+        }
         const formData = new FormData();
         
         formData.append("file", data.file[0]);

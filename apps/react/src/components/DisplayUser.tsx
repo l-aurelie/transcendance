@@ -127,7 +127,7 @@ const  unblock = () => {
           | <MaterialIcon icon="person_add" onClick={sendFriendRequest} /> 
           | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
           | <MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}
-          | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
+          |{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
           | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
            {/* | Spectate <br></br> */}
            </div>
