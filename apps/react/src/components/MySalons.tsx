@@ -382,9 +382,11 @@ const MySalons = (props) => {
     const addAdmin = () => {
         const inf = { userId : admOption.value, roomId: currentSalon.roomId, pwd: ''};
         axios.post("http://localhost:3000/users/setAdminTrue" , inf, {withCredentials:true}).then((res) => {
-        });
+            socket.emit('new-owner', admOption.value);
         if (admOption.value !== 0)
-        alert(admOption.label + " is now an admin");
+            alert(admOption.label + " is now an admin");
+    });
+        
         setAdm({value:0, label:'Select...'});
         whichAdm(currentSalon.roomId);
         whichNonAdm(currentSalon.roomId);
@@ -393,9 +395,11 @@ const MySalons = (props) => {
     const removeAdmin = () => {
         const inf = { userId :unadmOption.value, roomId: currentSalon.roomId, pwd: ''};
         axios.post("http://localhost:3000/users/setAdminFalse" , inf, {withCredentials:true}).then((res) => {
-        });
-        if (unadmOption.value !== 0)
-            alert(unadmOption.label + " is remove of admins");
+            socket.emit('new-owner', unadmOption.value);
+            if (unadmOption.value !== 0)
+                alert(unadmOption.label + " is remove of admins");
+            });
+       
         setUnadm({value:0, label:'Select...'});
         whichAdm(currentSalon.roomId);
         whichNonAdm(currentSalon.roomId);

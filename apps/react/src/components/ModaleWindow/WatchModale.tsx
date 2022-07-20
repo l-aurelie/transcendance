@@ -65,7 +65,7 @@ const WatchModale = ({user, revele, toggle, game}) => {
             return ;
         else
         {
-            socket.emit('watch-match', option, user);
+            socket.emit('watch-match', {idGame:option, user:user});
             setOption(-1);
             toggle();
         }

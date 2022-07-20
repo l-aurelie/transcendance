@@ -31,7 +31,10 @@ const UserProfil = (props) => {
         axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
             setUser(res.data);
         })
-      ;} 
+      ;}
+      const toggleModalBis = () => {
+        setRevele(!revele);
+        ;} 
     /*------*/
     useEffect(() => {
       axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
@@ -101,7 +104,7 @@ const UserProfil = (props) => {
           <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/>
         }
         <ModalWindow revele={revele} setRevele={toggleModal}>
-          <UserProfilExtended user={user} reqnotif={friendNotif} toggleProfil={toggleModal} /><br></br>
+          <UserProfilExtended user={user} reqnotif={friendNotif} toggleProfil={toggleModal} toggleProfil2={toggleModalBis}/><br></br>
         </ModalWindow>
         <div>{user.login}</div>
         <MaterialIcon icon="power_settings_new" onClick={handleClick} /> 

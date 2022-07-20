@@ -44,12 +44,7 @@ const onChange = (event) => {
 
     
 
-    socket.on("changeColor", data => {
-      axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-       setFriends(res.data);
-       console.log('after socket on, ', res.data);
-       });
-    });
+
     socket.on("changeFriends", data => {
       axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
        setFriends(res.data);
@@ -83,7 +78,7 @@ const togglePlay = () => {
           <MaterialIcon size="large" icon="person_add" onClick={toggleAdd} />
           <div style={lists}>
             {friends.map(friends => (
-              <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav}/></div>
+              <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav} togglePlay2={props.toggleAddNav}/></div>
             ))}   
           </div>
           <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
@@ -101,7 +96,7 @@ const togglePlay = () => {
             {allUsers.map(users => (
               <div key={users.id}>{
               friends.includes(users) === false && users.id !== props.user.id  ? 
-                  <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} togglePlay={togglePlay} />
+                  <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} togglePlay={togglePlay} togglePlay2={togglePlay}/>
               : <></>}
               </div>
             ))}  

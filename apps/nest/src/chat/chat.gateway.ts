@@ -219,6 +219,7 @@ console.log(tab);
     }
     @SubscribeMessage('new-owner')
     async newOwner(client, info) {
+        console.log('in new owner');
       this.server.to('sockets' + info).emit('new-owner');
     }
 
@@ -306,9 +307,9 @@ console.log(tab);
       sock.idUser = user.id;
       await this.socketRepo.save(sock);
       if (user.isPlaying === true)
-        await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9'});
+        await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9)'});
       else
-        await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(0, 255, 0, 0.9'});
+        await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(0, 255, 0, 0.9)'});
       this.server.emit('changeColor');
       /* on join la room avec tous les sockets du user, elle s'appelera par exemple sockets7 pour l'userId 7 */
       client.join('sockets' + user.id);
@@ -398,7 +399,7 @@ console.log(tab);
             const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight, smash :entry.smash};
             this.server.to(entry.id).emit("game-start", data);
             this.server.to(entry.id+'-watch').emit("game-start", data);
-            await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9'});
+            await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9)'});
             this.server.emit('changeColor');
             console.log('passe dans init');
             return;
@@ -419,8 +420,8 @@ console.log(tab);
         }
         const newGame = await this.gameRepo.save(details);
 
-        await this.userRepo.update({id:userL.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9'});
-        await this.userRepo.update({id:userR.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9'});
+        await this.userRepo.update({id:userL.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9)'});
+        await this.userRepo.update({id:userR.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9)'});
         this.server.emit('changeColor');
         roomName = newGame.id;
         this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("joinroom",  roomName);
@@ -719,12 +720,22 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         this.server.to(infos[0]).emit("leaveroom", infos[0]); //a la fin d' un match, tout les joueurs quittent la room qu'ils ecoutaient
     }
 
+    @SubscribeMessage('watch-friend')
+    async watchFriend(client, infos) {
+        const findGame = await this.gameRepo.find({
+            where: [
+                {playerLeft:infos[0], finish:false},
+                {playerRight:infos[0], finish:false}
+            ]});
+            this.watchMatch(client, {idGame:findGame[0].id, user:infos[1]});
+    }
+
     @SubscribeMessage('watch-match')
-    async watchMatch(client, infos) {
+    async watchMatch(client, infos) { //infos[0] = idRoom of game infos[1] == user ask for watch
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
-        const idGame = await this.gameRepo.findOne({relations: ["userLeft", "userRight"], where : {id:infos[0]}});
+        const idGame = await this.gameRepo.findOne({relations: ["userLeft", "userRight"], where : {id:infos.idGame}});
         if (idGame.finish === true)
         {
             this.server.to(client.id).emit("end-before-watch");
@@ -734,7 +745,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         }
         const userL = idGame.userLeft.login;
         const userR = idGame.userRight.login;
-        const watchRoom = infos[0] + '-watch';
+        const watchRoom = infos.idGame + '-watch';
         this.joinRoom(client, watchRoom);
         const data = {watchRoom: watchRoom, loginL:userL, loginR:userR}
         this.server.to(watchRoom).emit('watch', data);
@@ -809,7 +820,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
             if (isUser.length === 1)
             {
-                await this.userRepo.update({id:whichuser.idUser}, {isConnected:false, color:'rgba(255, 0, 0, 0.9'});
+                await this.userRepo.update({id:whichuser.idUser}, {isConnected:false, color:'rgba(255, 0, 0, 0.9)'});
                 this.server.emit('changeColor');
                 console.log('only one socket');
                 this.deleteQueue(gameQueue, whichuser.idUser);

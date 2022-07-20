@@ -737,6 +737,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          return tab;
          
       }
+      @Get('getColor/:userId')
+      async getColor(@Param('userId') userId:string) {
+         let color = "rgba(0,0,0,1)";
+         const user = await this.userRepo.findOne({where:{id:parseInt(userId)}});
+         if (user)
+            color = user.color;
+         return (color);
+      }
+
       @Get('whichNonBan/:currentSalon')
       async whichNonBan(@Param('currentSalon') currentSalon: string) {
          console.log('nonban', currentSalon)

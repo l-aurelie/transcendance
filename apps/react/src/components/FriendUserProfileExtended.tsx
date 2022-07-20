@@ -87,10 +87,9 @@ useEffect(() => {
     }
 
 socket.on("changeColor", data => {
-    axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-     setFriends(res.data);
-     console.log('after socket on, ', res.data);
-     });
+    axios.get("http://localhost:3000/users/" + Value, {withCredentials:true}).then((res) => { 
+        setThisUser(res.data);
+      })
   });
 
 
