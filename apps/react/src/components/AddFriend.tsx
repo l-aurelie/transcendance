@@ -15,12 +15,14 @@ const lists = {
 const AddFriend = (props) => {
 const onChange = (event) => {
     setValue(event.target.value);
+    setUserNotFound(false);
   }
 
   const [friends, setFriends] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [value, setValue] = useState([]);
-  //const [userChoose, setUserChoose] = useState([]);
+  const [userChoose, setUserChoose] = useState([] as any);
+  const [userNotFound, setUserNotFound] = useState(false);
   //const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
   
   /* Outils d'affichage de la modale */
@@ -58,24 +60,25 @@ const onChange = (event) => {
     })
   }, [])
 
-
+//-* Ferme toutes les modales pour jouer apres une invitation
 const togglePlay = () => {
   props.toggleAddNav();
   toggleAdd();
 }
 
-/*const searchFriend = () => {
-  console.log( "val = " , value);
-    //axios.get("http://localhost:3000/users/" + value, {withCredentials:true}).then((res) => { 
-    //  setUserChoose(res.data);
-    //})
-  //console.log(userChoose);
+//-* Regarde si l'ami entre en barre de recherche existe 
+const searchFriend = () => {
   console.log(allUsers);
   const res = allUsers.find(element => value === element.login);
-  if(res) 
+  setValue([]);
+  if(res)
+  {
+    setUserChoose(res);
     toggleModal();
-  console.log('res =', res);
-}*/
+  }
+  else 
+    setUserNotFound(true);
+}
 
 /* Recherche d'amis a ajouter */
     return(
@@ -91,16 +94,18 @@ const togglePlay = () => {
             <div className="search bar">
               <input type = "text" value={value} onChange={onChange} />
               {/*When we click on button it opens the FriendUserProfil*/}
-              <button onClick={toggleModal}> Find members </button>
+              <button onClick={searchFriend}> Find members </button>
+              { userNotFound === true ? <p style={{display: 'inline'}}>User doesn't exists</p> : <></>}
               <ModalWindow revele={revele} setRevele={toggleModal}>
-                <FriendUserProfilExtended Value={value}/>
+                <FriendUserProfilExtended Value={userChoose.login}/>
               </ModalWindow>
             </div>
 
             <div style={lists}>            
             {allUsers.map(users => (
-              <div key={users.id}>{
-              friends.includes(users) === false && users.id !== props.user.id  ? 
+              <div key={users.id}>
+              {
+              friends.includes(users) === false && users.id !== props.user.id ? 
                   <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} togglePlay={togglePlay} />
               : <></>}
               </div>

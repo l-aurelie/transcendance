@@ -112,6 +112,7 @@ const AddChannel = ({user}) => {
 
             socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id); 
             setNewSalon(1);
+            setMessage('');
             toggleAdd();     
             //           toggle();
         };

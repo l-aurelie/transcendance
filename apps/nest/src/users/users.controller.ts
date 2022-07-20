@@ -58,13 +58,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
 //  return (user);
      }
 
-  /* @UseGuards(AuthenticatedGuard)
-   @Get('set')
-   setUser(@Req() request: RequestWithUser) {//TODO: async ? 
-      const user = request.user;
-  //     console.log('===getUser', user);
-       return (user);
-   }*/
 
    /* WIP: set le profil avec le formulaire envoye */
    @UseGuards(AuthenticatedGuard)
