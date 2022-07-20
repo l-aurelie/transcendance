@@ -1,19 +1,16 @@
 FROM node:lts-alpine AS production
 
-WORKDIR /react/src/app
+RUN mkdir /build-dir
+WORKDIR /build-dir
+COPY package.json /build-dir
+COPY ./webpackDevServer.config.js /build-dir
+RUN npm install --location=global npm@8.14.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps && rm -rf /build-dir/node_modules/react-scripts/config/webpackDevServer.config.js \
+    && cp /build-dir/webpackDevServer.config.js /build-dir/node_modules/react-scripts/config/webpackDevServer.config.js
 
-COPY package*.json ./
-COPY ./webpackDevServer.config.js ./
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-RUN npm install --location=global npm@8.14.0 \
-    && chown -R node:node /react \
-    && export npm_config_loglevel=silent \
-    && npm install --legacy-peer-deps \
-    && rm -rf /react/src/app/node_modules/react-scripts/config/webpackDevServer.config.js \
-    && cp /react/src/app/webpackDevServer.config.js /react/src/app/node_modules/react-scripts/config/webpackDevServer.config.js
+RUN ln -s /build-dir/node_modules node_modules
+COPY . /usr/src/app
 
-COPY . ./
-
-
-USER node
 EXPOSE 4200

@@ -14,6 +14,7 @@ import { Readable } from 'typeorm/platform/PlatformTools';
 import { RoomEntity, RoomUser, UserBlock } from 'src/typeorm';
 import { RoomService } from 'src/chat/service/room.service';
 import * as bcrypt from 'bcrypt';
+import { validate } from 'class-validator';
 
 const fs = require('fs');
 const resizeImg = require('resize-image-buffer');
@@ -64,17 +65,34 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    //@UseGuards(IntraAuthGuard)
    @Post('set')
    async setUsers(@Req() req: RequestWithUser, @Body() body: setProfilDto) {
-      console.log('SetUser===()');
-      console.log('BODY1', body);
-      const already = await this.userRepo.findOne({where:{login: req.body.login}});
-      if (already)
-      {
-         if (already.id != req.body.id)
-            return false;
-      }
-     // console.log('req.user', req.user);
-      await this.userRepo.update({ id: req.body.id }, {login: req.body.login, email: req.body.email, twoFA: req.body.twoFA});
-      return (true);
+      try {
+         const user = await this.userRepo.findOne({where:{id:req.body.id}});
+         const already = await this.userRepo.findOne({where:{login: req.body.login}}); 
+         if (already)
+         {
+            if (already.id != req.body.id)
+               return {bool:false, msg: "login already use by someone else!"};
+         }
+         const already2 = await this.userRepo.findOne({where:{email: req.body.email}});
+         if (already2)
+         {
+            if (already2.id != req.body.id)
+               return {bool:false, msg: "email already use by someone else!"};
+         }
+      user.login = req.body.login;
+      const error = await validate(user);
+      if (error.length > 0)
+         return {bool:false, msg: "invalide login!"};
+      user.email = req.body.email;
+      const error2 = await validate(user);
+      if (error2.length > 0)
+         return {bool:false, msg: "invalide email!"};
+      else
+         await this.userRepo.update({ id: req.body.id }, {login: req.body.login, email: req.body.email, twoFA: req.body.twoFA});
+   } catch(e) {
+      return {bool:false, msg: "update impossible, check your informations"};
+     }
+     return ({bool:true, msg:""});
    }
 
    //-* A DECOMMENTER pour obtenir l'img
@@ -107,14 +125,14 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          return;
 
       let buf64;
-      buf64 = (file.buffer).toString('base64');
+    //  buf64 = (file.buffer).toString('base64');
       let newUrl;
-      if (file.size >= 500000)
-      {
+     // if (file.size >= 500000)
+     // {
          console.log ('trop grand');
          const image = await resizeImg(file.buffer, {width:150, height:150});
          buf64 = (image).toString('base64');
-      }
+     // }
       // const newIm = fs.writeFileSync('new', image);
       if (file.mimetype === 'image/jpeg')
          newUrl = "data:image/jpeg;base64,"+buf64;
