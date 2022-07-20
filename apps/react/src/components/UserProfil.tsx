@@ -75,6 +75,7 @@ const UserProfil = (props) => {
       axios.get("http://localhost:3000/auth/logout", { withCredentials:true })
       socket.emit('logout', {userId:user.id});
       setConnected(false);
+      setUser(0);
     }
     else {
       setConnected(true);
@@ -83,7 +84,7 @@ const UserProfil = (props) => {
   };
 
   // return conditionnel selon l'etat de connection de l'utilisateur
-  if (connected) {
+  if (connected && user !== 0) {
     return(
    // <h2>{props.dataFromParent}</h2>
       <div>

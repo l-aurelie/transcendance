@@ -57,7 +57,7 @@ export class AuthService implements AuthenticationProvider {
     };
 
     async sendCode(user: User, newCode: Number) { // fonction qui permet d'envoyer le mail avec le code de verification
-    console.log('sendMail');  
+    console.log('sendMail useremail =',user.email);  
     await this.mailerService.sendMail({
         to: user.email, // get l' email de l'utilisateur
         subject: 'Welcome to Nice App! Confirm Email', 

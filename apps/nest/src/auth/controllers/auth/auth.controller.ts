@@ -1,5 +1,5 @@
 /*laura samantha*/
-import { Body, Controller, Get, Post, Response ,Header, Res, Param, Req, UseFilters, Render } from '@nestjs/common';
+import { Body, Controller, Get, Post, Response ,Header, Res, Param, Req, UseFilters, Render, Next } from '@nestjs/common';
 import { IntraAuthGuard, AuthenticatedGuard, redirToLogin } from 'src/auth/guards';
 import { UseGuards } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -143,7 +143,7 @@ async logOut(@Req() request,@Res() res ) {
 //request.user.isConnected = false;
 await this.userRepo.update( { id:request.user.id }, {isConnected:false, isVerified:false});
 //request.user.isVerified = false;
-request.logOut();
+request.logOut(function(err) {return err;});
 request.session.cookie.maxAge = 0;
 
 //return res.redirect('http://localhost:3000/auth/login');
