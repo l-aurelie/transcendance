@@ -11,18 +11,13 @@ const hello = {
   //  overflowY: 'scroll',
 } as React.CSSProperties;
 
-const Friends = ({user, toggleProfil}) => {
+const Friends = ({user, toggleProfil, toggleProfil2}) => {
     const [friends, setFriends] = useState([]);
     /* Outils d'affichage de la modale */
     const [revele, setRevele] = useState(false);
     const toggleModal = () => {setRevele(!revele);} 
     /*------*/
-    socket.on("changeColor", data => {
-        axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-         setFriends(res.data);
-         console.log('after socket on, ', res.data);
-         });
-      });
+  
       socket.on("changeFriends", data => {
         axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
          setFriends(res.data);
@@ -43,6 +38,12 @@ const togglePlay = () => {
 
 }
 
+const togglePlay2 = () =>
+{
+  toggleProfil2();
+  toggleModal()
+}
+
     return(
         <div style ={hello}>
             <button onClick={toggleModal}>Friends</button>
@@ -50,7 +51,7 @@ const togglePlay = () => {
                 <h1>My friends</h1>
                 {friends.map(friends => (
                   <div key={friends.id}>
-                    <DisplayUser userConnected={user} userSelected={friends} isFriend={true} togglePlay={togglePlay}/>
+                    <DisplayUser userConnected={user} userSelected={friends} isFriend={true} togglePlay={togglePlay} togglePlay2={togglePlay2}/>
                   </div>
                  
                 ))}
