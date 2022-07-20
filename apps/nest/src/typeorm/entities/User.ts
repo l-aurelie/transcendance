@@ -1,12 +1,13 @@
 /*samantha laura*/
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, OneToMany, OneToOne, Check } from 'typeorm';
 import { RoomEntity } from './Room';
 import { Socket } from './Socket';
 import { FriendRequest } from './friend-request';
 import { Games } from '..';
 import { Message } from './message';
 import { RoomUser } from './RoomUser';
+import { IsAlphanumeric, IsEmail, IsNotEmpty } from 'class-validator';
 
 
 @Entity({ name: 'users' })
@@ -18,12 +19,16 @@ export class User implements IUser { // donne la composition de User, permet de 
     intraId: string;
 
     @Column({ name: 'Intra_login', nullable: true } )
+    @IsAlphanumeric()
+    @IsNotEmpty()
     login: string;
 
     @Column({ name: 'Avatar_url', nullable: true })
     avatar: string;
 
     @Column({unique: true, nullable: true})
+    @IsEmail()
+    @IsNotEmpty()
     email: string;
 
     @OneToMany(() => FriendRequest, FriendRequest => FriendRequest.sender)
