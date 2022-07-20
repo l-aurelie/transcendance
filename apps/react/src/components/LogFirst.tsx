@@ -16,7 +16,8 @@ class UserForm2 extends React.Component<any, any, any> {
           twoFA: props.user.twoFA,
           toggle: props.toggle,
           ok: true,
-          message:false
+          message:false,
+          display: "",
         };
  console.log('props 2fa',props.twoFa, this.state.twoFA, "yo");
       //this.fileInput = React.createRef();
@@ -30,7 +31,8 @@ class UserForm2 extends React.Component<any, any, any> {
         const type = e.target.type;
         const value = type === 'checkbox' ? e.target.checked : e.target.value;
         this.setState({
-          [name]: value
+          [name]: value,
+          display:"",
         });
     }
     handleChangePhoto(e) {
@@ -60,10 +62,10 @@ class UserForm2 extends React.Component<any, any, any> {
       axios.post("http://localhost:3000/users/set", formUser, {withCredentials:true}).then((res) =>{
         console.log("form submit"); 
         console.log(res);
-        if (res.data === false)
+        if (res.data.bool === false)
         {
           console.log('enter data === false');
-          this.setState({ok:false, message:true})
+          this.setState({ok:false, message:true, display: res.data.msg})
         }
         else{
           socket.emit('changeInfos', this.state.id);
@@ -90,7 +92,7 @@ class UserForm2 extends React.Component<any, any, any> {
                 <label>Login :
                 <input type="text" value={this.state.login} onChange={this.handleChange} id="login" name="login" /></label>
             </div>
-            <input type="submit" value="Set changes" /><b>{this.state.message ? 'log already use...' : ''}</b>
+            <input type="submit" value="Set changes" /><b>{this.state.message ? this.state.display : ''}</b>
 
         </form>
       );
