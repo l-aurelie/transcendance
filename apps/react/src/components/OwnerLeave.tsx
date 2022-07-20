@@ -85,7 +85,7 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
         {
             const info = { newCreator : option, roomId:idRoom};
             axios.post("http://localhost:3000/users/setNewCreator", info, {withCredentials:true}).then((res) =>{   
-                socket.emit('new-owner', option, idUser);
+                socket.emit('new-owner', option);
                 socket.emit('user_leaves_room', {userId: idUser, room: roomName, roomId: idRoom});
                 toggle();
                 toggle2();

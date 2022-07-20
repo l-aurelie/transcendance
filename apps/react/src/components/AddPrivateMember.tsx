@@ -64,12 +64,16 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
   
     const [option, setOption] = useState(-1);
     const [lab, setLab] = useState("");
+    const [value, setValue] = useState({value: -1, label:"Choose a user"});
     const handleChange = (e) => {
+        setValue({value:e.value, label:e.label});
         setOption(e.value);
         setLab(e.label);
+
     }
     const reset = () => {
         setOption(-1);
+        setValue({value: -1, label:"Choose a user"});
         toggle();
         toggle2();
     }
@@ -87,7 +91,8 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
             let tab = members;
             tab.push({value:option, label:lab});
             setMembers(tab);
-            setOption(-1);
+        setValue({value: -1, label:"Choose a user"});
+        setOption(-1);
             setLab("");
         //    toggle();
         }
@@ -111,7 +116,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
         <div style={{width :'50%', top:"50%"}}>
 
           <div style={{position:"relative",top:"20%"}}>
-                    <Select onChange={handleChange} options={allUser}/>
+                    <Select onChange={handleChange} options={allUser} value={value}/>
             </div>
             <div style={watchButton}><button  type='button' onClick={add}>Add</button>
             </div>

@@ -69,12 +69,12 @@ const MySalons = (props) => {
     const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
     const [joinedSalons, setJoinedSalons] = useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
     const [message, setMessage] = useState([] as any);// Message a envoyer au salon
-    const [banOption, setBan] = useState({value:0, label:''});
-    const [muteOption, setMute] = useState({value:0, label:''});
-    const [admOption, setAdm] = useState({value:0, label:''});
-    const [unmuteOption, setUnmute] = useState({value:0, label:''});
-    const [unbanOption, setUnban] = useState({value:0, label:''});
-    const [unadmOption, setUnadm] = useState({value:0, label:''});
+    const [banOption, setBan] = useState({value:0, label:'Select...'});
+    const [muteOption, setMute] = useState({value:0, label:'Select...'});
+    const [admOption, setAdm] = useState({value:0, label:'Select...'});
+    const [unmuteOption, setUnmute] = useState({value:0, label:'Select...'});
+    const [unbanOption, setUnban] = useState({value:0, label:'Select...'});
+    const [unadmOption, setUnadm] = useState({value:0, label:'Select...'});
   //  const [successorOption, setSuccessor] = useState({value:0, label:''});
     const [usersRoom, setUsersRoom] = useState([]);
     const [tabAdm, setTabAdm] = useState([]);
@@ -385,7 +385,7 @@ const MySalons = (props) => {
         });
         if (admOption.value !== 0)
         alert(admOption.label + " is now an admin");
-        setAdm({value:0, label:''});
+        setAdm({value:0, label:'Select...'});
         whichAdm(currentSalon.roomId);
         whichNonAdm(currentSalon.roomId);
     }
@@ -396,7 +396,7 @@ const MySalons = (props) => {
         });
         if (unadmOption.value !== 0)
             alert(unadmOption.label + " is remove of admins");
-        setAdm({value:0, label:''});
+        setUnadm({value:0, label:'Select...'});
         whichAdm(currentSalon.roomId);
         whichNonAdm(currentSalon.roomId);
     }
@@ -407,7 +407,7 @@ const MySalons = (props) => {
     });
         if (muteOption.value !== 0)
             alert(muteOption.label + " muted!");
-        setMute({value:0, label:''});
+        setMute({value:0, label:'Select...'});
         whichMute(currentSalon.roomId);
         whichNonMute(currentSalon.roomId);
     }
@@ -417,7 +417,7 @@ const MySalons = (props) => {
     });
         if (unmuteOption.value !== 0)
             alert(unmuteOption.label + " unmuted!");
-        setMute({value:0, label:''});
+        setUnmute({value:0, label:'Select...'});
         whichMute(currentSalon.roomId);
         whichNonMute(currentSalon.roomId);
     }
@@ -430,7 +430,7 @@ const MySalons = (props) => {
         socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
         if (banOption.value !== 0)
            alert(banOption.label + " banned!");
-        setBan({value:0, label:''});
+        setBan({value:0, label:'Select...'});
         whichBan(currentSalon.roomId);
         whichNonBan(currentSalon.roomId);
     }
@@ -443,7 +443,7 @@ const MySalons = (props) => {
         socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
         if (unbanOption.value !== 0)
             alert(unbanOption.label + " unbanned!");
-        setBan({value:0, label:''});
+        setUnban({value:0, label:'Select...'});
         whichBan(currentSalon.roomId);
         whichNonBan(currentSalon.roomId);
     }
@@ -524,8 +524,8 @@ const MySalons = (props) => {
                         <h3>Add/Remove admin's channel</h3>
                         {/* <div style={containerSetting}> */}
                            <div style={bar}>
-                            <button onClick={addAdmin}>ADD</button><Select onChange={setanAdm} options={tabNonAdm}/>
-                            {tabAdm.length  === 0 ? null :<Select onChange={setanUnadm} options={tabAdm}/>}
+                            <button onClick={addAdmin}>ADD</button><Select onChange={setanAdm} options={tabNonAdm} value={admOption}/>
+                            {tabAdm.length  === 0 ? null :<Select onChange={setanUnadm} options={tabAdm} value={unadmOption}/>}
                             {tabAdm.length  === 0 ? null :<button onClick={removeAdmin}>REMOVE</button>}
                            </div>
                            
@@ -533,14 +533,14 @@ const MySalons = (props) => {
                         <h3>Mute/Unmute User</h3>
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
-                            <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute}/>
-                            {tabMute.length  === 0 ? null :<Select onChange={setanUnmute} options={tabMute}/>}
+                            <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute} value={muteOption}/>
+                            {tabMute.length  === 0 ? null :<Select onChange={setanUnmute} options={tabMute} value={unmuteOption}/>}
                             {tabMute.length  === 0 ? null : <button onClick={unmuteUser}>UNMUTE</button>}
                         </div>   
                     <h3>Ban/Unban User</h3>
                     <div style={bar}>
-                    <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan}/>
-                    {tabBan.length  === 0 ? null : <Select onChange={setanUnban} options={tabBan}/>} 
+                    <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan} value={banOption}/>
+                    {tabBan.length  === 0 ? null : <Select onChange={setanUnban} options={tabBan} value={unbanOption}/>} 
                     {tabBan.length  === 0 ? null :<button onClick={unbanUser}>UNBAN</button>}
                     </div>
                 </ModalWindow>
@@ -559,13 +559,13 @@ const MySalons = (props) => {
                         <h3>Mute/Unmute User</h3>
                         {/* <div style={containerSetting}> */}
                             <div style={bar}>
-                            <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute}/>
-                            <Select onChange={setanUnmute} options={tabMute}/><button onClick={unmuteUser}>UNMUTE</button>
+                            <button onClick={muteUser}>MUTE</button><Select onChange={setaMute} options={tabNonMute} value={muteOption}/>
+                            <Select onChange={setanUnmute} options={tabMute} value={unmuteOption}/><button onClick={unmuteUser}>UNMUTE</button>
                         </div>   
                     <h3>Ban/Unban User</h3>
                     <div style={bar}>
-                    <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan}/>
-                        <Select onChange={setanUnban} options={tabBan}/><button onClick={unbanUser}>UNBAN</button>
+                    <button onClick={banUser}>BAN</button><Select onChange={setaBan} options={tabNonBan} value={banOption}/>
+                        <Select onChange={setanUnban} options={tabBan} value={unbanOption}/><button onClick={unbanUser}>UNBAN</button>
                     </div>
                 </ModalWindow>
                 {/* Permet de quitter le channel */}

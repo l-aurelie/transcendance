@@ -218,8 +218,8 @@ console.log(tab);
       this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
     @SubscribeMessage('new-owner')
-    async newOwner(client, infos) {
-      this.server.to('sockets' + infos[0]).emit('new-owner', infos[1]);
+    async newOwner(client, info) {
+      this.server.to('sockets' + info).emit('new-owner');
     }
 
     @SubscribeMessage('delete_room')
