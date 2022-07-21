@@ -10,7 +10,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller('friends')
 export class FriendsController {
-    constructor(private friendServ : FriendsService, private usersServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>) {}
+    constructor(private friendServ : FriendsService,
+    private usersServ : UsersService, @InjectRepository(User) private userRepo:Repository<User>,
+    @InjectRepository(FriendRequest)
+    private readonly friendRequestRepository: Repository<FriendRequest>) {}
 
      /* send friend request to receiverId*/
      @UseGuards(AuthenticatedGuard)
@@ -18,8 +21,14 @@ export class FriendsController {
      async sendFriendRequest(
         @Param('receiverId') receiverStringId: string,
         @Req() request,
-     ): Promise<FriendRequest | { error: string }> {
+     ): Promise<FriendRequest | { error: string }> { 
       const receiverId = parseInt(receiverStringId);
+      if (isNaN(receiverId))
+         return { error: "invalid receiver id" };
+      const the_user = await this.userRepo.findOne({where: [{ id: receiverId}],
+      });
+      if (!the_user)
+         return null;
       const requestSent = this.friendServ.sendFriendRequest(receiverId, request.user);
       return requestSent ;
      }
@@ -41,7 +50,11 @@ export class FriendsController {
         @Req() request,
      ): Promise<FriendRequest | { error: string; }> {
       const SenderId = parseInt(SenderStringId);
+      if (isNaN(SenderId))
+         return { error: "invalid receiver id" };
       const sender = await this.usersServ.findUserById(SenderId);
+      if (!sender)
+         return null;
       return this.friendServ.sendFriendRequest(request.user.id, sender);
      }
 
@@ -53,6 +66,12 @@ export class FriendsController {
         @Req() request,
      ): Promise<FriendRequestStatus> {
       const receiverId = parseInt(receiverStringId);
+      if (isNaN(receiverId))
+         return null;
+      const the_user = await this.userRepo.findOne({where: [{ id: receiverId}],
+         });
+      if (!the_user)
+         return null;
       const status = this.friendServ.getFriendRequestStatus(receiverId, request.user);
       return status ;
      }
@@ -64,7 +83,12 @@ export class FriendsController {
          @Param('friendRequestId') friendRequestStringId: string,
       ): Promise<FriendRequestStatus> {
        const friendRequestId = parseInt(friendRequestStringId);
-       return this.friendServ.respondToFriendRequest(friendRequestId, "accepted");
+       if (isNaN(friendRequestId))
+         return null;
+      const the_req = await this.friendRequestRepository.findOne({where: [{ id: friendRequestId}],});
+      if (!the_req)
+         return null;
+      return this.friendServ.respondToFriendRequest(friendRequestId, "accepted");
       }
 
       /*rejects friend request indicated*/
@@ -74,6 +98,11 @@ export class FriendsController {
          @Param('friendRequestId') friendRequestStringId: string,
       ): Promise<FriendRequestStatus> {
        const friendRequestId = parseInt(friendRequestStringId);
+       if (isNaN(friendRequestId))
+         return null;
+      const the_req = await this.friendRequestRepository.findOne({where: [{ id: friendRequestId}],});
+      if (!the_req)
+         return null;
        return this.friendServ.respondToFriendRequest(friendRequestId, "rejected");
       }
 
@@ -96,6 +125,11 @@ export class FriendsController {
       /*get user from login*/
       const the_user = await this.userRepo.findOne({where: [{ login: user_login}],
       });
+      if (!the_user)
+      {
+         console.log("invalid user");
+         return null;
+      }
       return this.friendServ.hasSentMe(the_user, request.user);
    }
 

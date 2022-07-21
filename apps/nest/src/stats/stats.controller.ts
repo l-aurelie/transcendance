@@ -38,7 +38,9 @@ export class StatsController {
     {
       const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
       });
-       return this.statsServ.getWins(friendUser);
+      if (!friendUser)
+         return null;
+      return this.statsServ.getWins(friendUser);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -50,7 +52,9 @@ export class StatsController {
     {
       const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
       });
-       return this.statsServ.getLosses(friendUser);
+      if (!friendUser)
+         return null;
+      return this.statsServ.getLosses(friendUser);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -62,6 +66,8 @@ export class StatsController {
     {
       const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
       });
+      if (!friendUser)
+         return null;
       return this.statsServ.getMatchHistory(friendUser);
     }
 
@@ -74,6 +80,8 @@ export class StatsController {
     {
       const friendUser = await this.userRepo.findOne({where: [{ login: friendLogin}],
       });
+      if (!friendUser)
+         return null;
       return this.statsServ.getRankingFriend(friendUser);
     }
 
