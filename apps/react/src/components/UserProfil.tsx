@@ -124,10 +124,24 @@ const UserProfil = (props) => {
   // fonction trigger lorsque l'on clique sur le bouton, qui va lgout l'utilisateur s'il est connecte ou le login s'il ne l'est pas
   const handleClick = event => {
     if (connected) {
-      axios.get("http://localhost:3000/auth/logout", { withCredentials:true })
-      socket.emit('logout', {userId:user.id});
-      setConnected(false);
-      setUser(0);
+      axios.get("http://localhost:3000/auth/logout", { withCredentials:true }).then((res) =>{
+      })
+      .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.message)
+            console.log(error.message);
+        else
+            console.log("unknown error");
+    })
+    socket.emit('logout', {userId:user.id});
+    setConnected(false);
+    setUser(0);
     }
     else {
       setConnected(true);
