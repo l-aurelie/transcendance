@@ -22,12 +22,38 @@ const FriendReqss = ({reqnotif}) => {
         axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
             setreqs(res.data);
         })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
 
         socket.on("changeReqs", data => {
             axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
              setreqs(res.data);
              console.log('A REQUEST SENT, ', res.data);
-             });
+             })
+             .catch(error => {
+                if (error.response && error.response.status)
+                {
+                    if (error.response.status === 403)
+                        window.location.href = "http://localhost:4200/";
+                    else
+                        console.log("Error: ", error.response.code, " : ", error.response.message);
+                }
+                else if (error.message)
+                    console.log(error.message);
+                else
+                    console.log("unknown error");
+            })
           })
 
     },[refresh]);

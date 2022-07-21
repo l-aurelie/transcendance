@@ -34,19 +34,71 @@ const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
         console.log('User profil extended : ', res.data);
         setWins(res.data);
         })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
 
         axios.get("http://localhost:3000/stats/getLosses", {withCredentials:true}).then((res) =>{
         console.log('User profil extended : ', res.data);
         setLosses(res.data);
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
         })
 
         axios.get("http://localhost:3000/stats/getMatchHistory", {withCredentials:true}).then((res) =>{
         console.log('THE DATA : ', res.data);
         setHistory(res.data);
         })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
 
         axios.get("http://localhost:3000/stats/getRanking", {withCredentials:true}).then((res) =>{
         setRanking(res.data);
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
         })
 
     }, [])

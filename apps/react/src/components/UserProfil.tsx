@@ -31,6 +31,19 @@ const UserProfil = (props) => {
         axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
             setUser(res.data);
         })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
       ;}
       const toggleModalBis = () => {
         setRevele(!revele);
@@ -40,11 +53,37 @@ const UserProfil = (props) => {
       axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
             setUser(res.data);
             setRevele2(res.data.first);
-        });
+        })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
       socket.on("changeInfos", data => {
         axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
         setUser(res.data);
-        });
+        })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
      });
     },[]);
 
@@ -52,7 +91,20 @@ const UserProfil = (props) => {
             axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
             console.log(res.data, res.data.length);
             setFriendNotif(res.data.length);
-        });
+        })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
      }, []);
 
     useEffect(() => {

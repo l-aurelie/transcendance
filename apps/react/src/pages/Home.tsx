@@ -129,9 +129,19 @@ const Home = () => {
         socket.emit('whoAmI', res.data);
     })
         .catch(error => {
-            if (error.response && error.response.status === 403)
-                window.location.href = "http://localhost:4200/";
-            })
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.request)
+                console.log("Unknown error");
+            else {
+                console.log(error.message);
+            }
+        })
 
     socket.on('logout', data => {
         socket.emit('disco');
@@ -142,7 +152,20 @@ const Home = () => {
           axios.get("http://localhost:3000/users", {withCredentials:true}).then((res) =>{
           setProfil(res.data);
           
-          });
+          })
+          .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
        });
     }, [])
   /*      axios.get("http://localhost:3000/users", { withCredentials:true }).then((res) =>{ 

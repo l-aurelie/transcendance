@@ -56,8 +56,34 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
                 tab.push({value: entry.id, label:entry.login});
             setAllUsers(tab);
             })
+            .catch(error => {
+                if (error.response && error.response.status)
+                {
+                    if (error.response.status === 403)
+                        window.location.href = "http://localhost:4200/";
+                    else
+                        console.log("Error: ", error.response.code, " : ", error.response.message);
+                }
+                else if (error.request)
+                    console.log("Unknown error");
+                else
+                    console.log(error.message);
+            })
             axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
             setMembers(res.data) 
+                })
+                .catch(error => {
+                    if (error.response && error.response.status)
+                    {
+                        if (error.response.status === 403)
+                            window.location.href = "http://localhost:4200/";
+                        else
+                            console.log("Error: ", error.response.code, " : ", error.response.message);
+                    }
+                    else if (error.request)
+                        console.log("Unknown error");
+                    else
+                        console.log(error.message);
                 })
     
         }, [idRoom])

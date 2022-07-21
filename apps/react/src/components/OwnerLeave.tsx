@@ -54,6 +54,19 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
             setMembers(res.data)
             //console.log('meembers in front', members);   
                 })
+                .catch(error => {
+                    if (error.response && error.response.status)
+                    {
+                        if (error.response.status === 403)
+                            window.location.href = "http://localhost:4200/";
+                        else
+                            console.log("Error: ", error.response.code, " : ", error.response.message);
+                    }
+                    else if (error.message)
+                        console.log(error.message);
+                    else
+                        console.log("unknown error");
+                })
     
         }, [idRoom])
   
@@ -89,7 +102,20 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
                 socket.emit('user_leaves_room', {userId: idUser, room: roomName, roomId: idRoom});
                 toggle();
                 toggle2();
-            });
+            })
+            .catch(error => {
+                if (error.response && error.response.status)
+                {
+                    if (error.response.status === 403)
+                        window.location.href = "http://localhost:4200/";
+                    else
+                        console.log("Error: ", error.response.code, " : ", error.response.message);
+                }
+                else if (error.message)
+                    console.log(error.message);
+                else
+                    console.log("unknown error");
+            })
         }
     }
 

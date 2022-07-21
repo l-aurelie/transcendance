@@ -22,7 +22,20 @@ function UserFormAvatar2({user, toggle}) {
                 "Access-Control-Allow-Origin" : "*", 
                 "Access-Control-Allow-Credentials" : 'true',
             }
-        }).then((res) => res.json());
+        }).then((res) => res.json())
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        });
         //alert(JSON.stringify(`${res.message}, status: ${res.status}`));
         close();
     };

@@ -20,7 +20,20 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
       console.log(res.data);   
       setPlaying(res.data === 'rgba(255, 0, 255, 0.9)');
           setColor(res.data)
-       });
+       })
+       .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.request)
+            console.log("Unknown error");
+        else
+            console.log(error.message);
+    })
      axios.get("http://localhost:3000/users/isBlock/" +  userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
       if (res.data === false)
       {
@@ -29,13 +42,39 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
       else{
       setBlock(true);
       }
-    });
+    })
+    .catch(error => {
+      if (error.response && error.response.status)
+      {
+          if (error.response.status === 403)
+              window.location.href = "http://localhost:4200/";
+          else
+              console.log("Error: ", error.response.code, " : ", error.response.message);
+      }
+      else if (error.request)
+          console.log("Unknown error");
+      else
+          console.log(error.message);
+  })
     socket.on("changeColor", data => {
       axios.get("http://localhost:3000/users/getColor/" + userSelected.id, {withCredentials:true}).then((res) =>{
       console.log(res.data);   
       setPlaying(res.data === 'rgba(255, 0, 255, 0.9)');
           setColor(res.data)
-       });
+       })
+       .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.request)
+            console.log("Unknown error");
+        else
+            console.log(error.message);
+    })
     });
     /* Lancer un message prive */
     const beginChat = (friend) => {
@@ -62,6 +101,19 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
             alert("Friend request sent");
         }
         })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.request)
+              console.log("Unknown error");
+          else
+              console.log(error.message);
+      })
     }
 
 //set version of game whern defeat someone and send the request to other user
@@ -74,6 +126,19 @@ const block = () => {
     setBlock(true);
     socket.emit("just-block", userConnected);
   })
+  .catch(error => {
+    if (error.response && error.response.status)
+    {
+        if (error.response.status === 403)
+            window.location.href = "http://localhost:4200/";
+        else
+            console.log("Error: ", error.response.code, " : ", error.response.message);
+    }
+    else if (error.request)
+        console.log("Unknown error");
+    else
+        console.log(error.message);
+})
 }
 const watch = () => {
     socket.emit("watch-friend", userSelected.id, userConnected);
@@ -85,7 +150,20 @@ const  unblock = () => {
     setBlock(false);
     socket.emit("just-block", userConnected);
   })
-  }
+  .catch(error => {
+    if (error.response && error.response.status)
+    {
+        if (error.response.status === 403)
+            window.location.href = "http://localhost:4200/";
+        else
+            console.log("Error: ", error.response.code, " : ", error.response.message);
+    }
+    else if (error.request)
+        console.log("Unknown error");
+    else
+        console.log(error.message);
+})
+}
 
   
 

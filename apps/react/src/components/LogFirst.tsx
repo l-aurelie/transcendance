@@ -72,6 +72,19 @@ class UserForm2 extends React.Component<any, any, any> {
           this.state.toggle();
         }
       })
+      .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.message)
+            console.log(error.message);
+        else
+            console.log("unknown error");
+    })
 
       console.log("submit form : ", this.state.login, this.state.email, this.state.twoFA);
 

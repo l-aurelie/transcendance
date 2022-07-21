@@ -80,6 +80,19 @@ const AddChannel = ({user}) => {
             
             }
           })
+          .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.request)
+                console.log("Unknown error");
+            else
+                console.log(error.message);
+        })
        // const pwdInput = prompt('Enter the password to join the room');
           //  setPwd(pwdInput);
         //    const inf = {roomId: currentSal, pwd: pwdInput};
@@ -102,6 +115,19 @@ const AddChannel = ({user}) => {
         }
         else
             socket.emit('user_joins_room', {userId: user.id, room: salon.name, roomId:salon.id});
+    })
+    .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.request)
+            console.log("Unknown error");
+        else
+            console.log(error.message);
     })
     
       //toggle();

@@ -12,6 +12,19 @@ const Leaderboard = () => {
         axios.get("http://localhost:3000/stats/getLeaderboard", {withCredentials:true}).then((res) =>{
         setLeader(res.data);
         })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
     }, [])
     
     return(

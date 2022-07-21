@@ -64,7 +64,20 @@ const FirstConnect = ({revele, toggle, user}) => {
         const inf = {userId:user.id};
         axios.post("http://localhost:3000/users/firstFalse", inf, {withCredentials:true}).then((res) => {
             toggle();
-        });            
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.request)
+                console.log("Unknown error");
+            else
+                console.log(error.message);
+        })            
     }
 
     if (revele)

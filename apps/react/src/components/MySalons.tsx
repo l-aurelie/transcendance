@@ -115,6 +115,19 @@ const MySalons = (props) => {
             for (let entry of res.data)
                 setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
             })
+            .catch(error => {
+                if (error.response && error.response.status)
+                {
+                    if (error.response.status === 403)
+                        window.location.href = "http://localhost:4200/";
+                    else
+                        console.log("Error: ", error.response.code, " : ", error.response.message);
+                }
+                else if (error.message)
+                    console.log(error.message);
+                else
+                    console.log("unknown error");
+            })
 
     }, [props.actualUser.id])
 
@@ -158,6 +171,19 @@ const MySalons = (props) => {
             axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
                 for (let entry of res.data)
                     setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
+                })
+                .catch(error => {
+                    if (error.response && error.response.status)
+                    {
+                        if (error.response.status === 403)
+                            window.location.href = "http://localhost:4200/";
+                        else
+                            console.log("Error: ", error.response.code, " : ", error.response.message);
+                    }
+                    else if (error.message)
+                        console.log(error.message);
+                    else
+                        console.log("unknown error");
                 })
             
         })
@@ -225,7 +251,20 @@ const MySalons = (props) => {
         whichNonBan(salon[1].roomId);
         whichNonMute(salon[1].roomId);
         console.log('After created a tab user in ROOM ==> ', usersRoom);
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
     };
         const whichBan = (idRoom) => {
             axios.get("http://localhost:3000/users/whichBan/" + idRoom, {withCredentials:true}).then((res) => {
@@ -238,7 +277,20 @@ const MySalons = (props) => {
             }
             setTabBan(tab);
             console.log('ban', tab);
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
     }
         const whichNonBan = (idRoom) => {
             axios.get("http://localhost:3000/users/whichNonBan/" + idRoom, {withCredentials:true}).then((res) => {
@@ -250,7 +302,20 @@ const MySalons = (props) => {
             }
             console.log('nonban', tab);
             setTabNonBan(tab);
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
     }
         const whichMute = (idRoom) => {
             axios.get("http://localhost:3000/users/whichMute/" + idRoom, {withCredentials:true}).then((res) => {
@@ -262,7 +327,20 @@ const MySalons = (props) => {
             }
             console.log('mute', tab);
             setTabMute(tab);
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
     }
         const whichNonMute = (idRoom) => {
             axios.get("http://localhost:3000/users/whichNonMute/" + idRoom, {withCredentials:true}).then((res) => {
@@ -274,7 +352,21 @@ const MySalons = (props) => {
             }
             console.log('nonmute', tab);
             setTabNonMute(tab);
-        });}
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
+    }
 
         const whichAdm = (idRoom) => {
         console.log('in whichAdm roomId = ', idRoom)
@@ -288,7 +380,21 @@ const MySalons = (props) => {
             }
             console.log('adm', tab);
             setTabAdm(tab);
-        });}
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
+    }
         const whichNonAdm = (idRoom) => {
         console.log('in whichAdm roomId = ', roomId)
         axios.get("http://localhost:3000/users/whichNonAdm/" + idRoom, {withCredentials:true}).then((res) => {
@@ -300,7 +406,20 @@ const MySalons = (props) => {
             }
             console.log('nonadm', tab);
             setTabNonAdm(tab);
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
     }
             /* on recupere le password de la room actuelle */
             // axios.get("http://localhost:3000/users/pwd/" + currentSalon.roomId, {withCredentials: true}).then((res) => {
@@ -342,7 +461,20 @@ const MySalons = (props) => {
         const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
         // console.log('pwd => ', pwdRef.current.value);
         axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
         event.target.reset(); //clear all input values in the form withCredentials:true
         alert("Password has been set");
         return;
@@ -353,7 +485,20 @@ const MySalons = (props) => {
         const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};
         event.preventDefault();
         axios.post("http://localhost:3000/users/resetpwd", inf, {withCredentials:true}).then((res) => {
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
         // console.log('pwd to DELETE => ', pwd);
         alert("Password reset to null");
 
@@ -385,7 +530,20 @@ const MySalons = (props) => {
             socket.emit('new-owner', admOption.value);
             if (admOption.value !== 0)
                 alert(admOption.label + " is now an admin");
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
         
         setAdm({value:0, label:'Select...'});
         whichAdm(currentSalon.roomId);
@@ -399,7 +557,20 @@ const MySalons = (props) => {
             if (unadmOption.value !== 0)
                 alert(unadmOption.label + " is remove of admins");
 
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
        
         setUnadm({value:0, label:'Select...'});
         whichAdm(currentSalon.roomId);
@@ -409,7 +580,20 @@ const MySalons = (props) => {
     const muteUser = () => {
         const inf = { userId : muteOption.value, roomId: currentSalon.roomId, muteUser: true};
         axios.post("http://localhost:3000/users/mute/", inf, {withCredentials:true}).then((res) => {
-    });
+    })
+    .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.message)
+            console.log(error.message);
+        else
+            console.log("unknown error");
+    })
         if (muteOption.value !== 0)
             alert(muteOption.label + " muted!");
         setMute({value:0, label:'Select...'});
@@ -419,7 +603,20 @@ const MySalons = (props) => {
     const unmuteUser = () => {
         const inf = { userId : unmuteOption.value, roomId: currentSalon.roomId, muteUser: true};
         axios.post("http://localhost:3000/users/unmute/", inf, {withCredentials:true}).then((res) => {
-    });
+    })
+    .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.message)
+            console.log(error.message);
+        else
+            console.log("unknown error");
+    })
         if (unmuteOption.value !== 0)
             alert(unmuteOption.label + " unmuted!");
         setUnmute({value:0, label:'Select...'});
@@ -430,7 +627,20 @@ const MySalons = (props) => {
     const banUser = () => {
         const inf = { userId : banOption.value, roomId: currentSalon.roomId, banUser: true};
         axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
 
         socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
         if (banOption.value !== 0)
@@ -443,7 +653,20 @@ const MySalons = (props) => {
     const unbanUser = () => {
         const inf = { userId : unbanOption.value, roomId: currentSalon.roomId, banUser: true};
         axios.post("http://localhost:3000/users/unban/" , inf, {withCredentials:true}).then((res) => {
-        });
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.message)
+                console.log(error.message);
+            else
+                console.log("unknown error");
+        })
 
         socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
         if (unbanOption.value !== 0)

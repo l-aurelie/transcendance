@@ -37,12 +37,38 @@ const onChange = (event) => {
   useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
     setFriends(res.data);
-    });
+    })
+    .catch(error => {
+      if (error.response && error.response.status)
+      {
+          if (error.response.status === 403)
+              window.location.href = "http://localhost:4200/";
+          else
+              console.log("Error: ", error.response.code, " : ", error.response.message);
+      }
+      else if (error.request)
+          console.log("Unknown error");
+      else
+          console.log(error.message);
+  })
 
     //-* Get all users
     axios.get("http://localhost:3000/users/all", {withCredentials:true}).then((res) =>{
     setAllUsers(res.data);
-    });
+    })
+    .catch(error => {
+      if (error.response && error.response.status)
+      {
+          if (error.response.status === 403)
+              window.location.href = "http://localhost:4200/";
+          else
+              console.log("Error: ", error.response.code, " : ", error.response.message);
+      }
+      else if (error.request)
+          console.log("Unknown error");
+      else
+          console.log(error.message);
+  })
 
     
 
@@ -51,7 +77,20 @@ const onChange = (event) => {
       axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
        setFriends(res.data);
        console.log('ACCEPTED A REQ, ', res.data);
-       });
+       })
+       .catch(error => {
+        if (error.response && error.response.status)
+        {
+            if (error.response.status === 403)
+                window.location.href = "http://localhost:4200/";
+            else
+                console.log("Error: ", error.response.code, " : ", error.response.message);
+        }
+        else if (error.request)
+            console.log("Unknown error");
+        else
+            console.log(error.message);
+    })
     })
   }, [])
 

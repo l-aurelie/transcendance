@@ -22,13 +22,39 @@ const Friends = ({user, toggleProfil, toggleProfil2}) => {
         axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
          setFriends(res.data);
          console.log('ACCEPTED A REQ, ', res.data);
-         });
+         })
+         .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
       });
     /*get friendlist*/
     useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
         setFriends(res.data);
         })
+        .catch(error => {
+          if (error.response && error.response.status)
+          {
+              if (error.response.status === 403)
+                  window.location.href = "http://localhost:4200/";
+              else
+                  console.log("Error: ", error.response.code, " : ", error.response.message);
+          }
+          else if (error.message)
+              console.log(error.message);
+          else
+              console.log("unknown error");
+      })
 }, [])
 
 
