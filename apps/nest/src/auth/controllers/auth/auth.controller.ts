@@ -63,15 +63,11 @@ export class verifyCode {
           console.log('fail verify');
           res.status(304);
           res.send('Unauthorized');
-          //return res.HttpStatus.UNAUTHORIZED;
-          //throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
         await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });// sinon on passe la mention isVerified de la db a true et le code a undefines puis en renvoie true
         console.log('sucess verify');
         res.status(200);
         res.send('Ok');
-        //return res.HttpStatus.OK;
-        //throw new HttpException('Ok', HttpStatus.OK);
       } catch(e){
          console.log('error catched...');
          console.log(e);
@@ -89,26 +85,12 @@ export class AuthController {
     @Get('login') /*takes us to Intra login*/
     /*Page protected by authentification defined in IntradAuthGuard -> redirect vers localhost:3000/verify*/ 
     @UseGuards(IntraAuthGuard)
- //   @Redirect('http://localhost:4200/Home')
     async login(@Req() request: RequestWithUser, @Response() res) {
-      console.log('here')
-   //  console.log(request.user);
-        //on retourne quoi ?
-     //   return {login:"yoooooooo"};
      if (request.user.twoFA === true && request.user.isVerified === false && request.user.isConnected === false)
         res.redirect('http://localhost:4200/Verify');
       else
         res.redirect('http://localhost:4200/Home');
       await this.userRepo.update( { id:request.user.id }, {isConnected:true}, );
-    }
-
-    /*If we have authentifcated via login we can access this page*/
-    /*check if user is logged in*/
-    @Get('status')
-    @UseGuards(AuthenticatedGuard)
-    @UseFilters(redirToLogin)
-    status() {
-        return 'HELLLOOOO';
     }
 
     @Get('/verify')
@@ -140,13 +122,9 @@ export class AuthController {
 @UseGuards(AuthenticatedGuard)
 @Get('logout')
 async logOut(@Req() request,@Res() res ) {
-//request.user.isConnected = false;
 await this.userRepo.update( { id:request.user.id }, {isConnected:false, isVerified:false});
-//request.user.isVerified = false;
 request.logOut(function(err) {return err;});
 request.session.cookie.maxAge = 0;
-
-//return res.redirect('http://localhost:3000/auth/login');
 }
 }
 

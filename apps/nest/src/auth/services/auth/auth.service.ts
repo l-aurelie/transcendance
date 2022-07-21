@@ -20,24 +20,16 @@ export class AuthService implements AuthenticationProvider {
         console.log('validate user');
         if (user)
         {
-         // this.ChatGateway.handleConnection()
           console.log('yes there is a user and isConnected is ', user.isConnected);
           if (user.twoFA === true && user.isConnected === false) //s' il y en a un et que son statut n' est pas verifier, on envoie le code par mail pour verification et on update le code dans la db aussi
           {
             const myNewCode = Math.floor(10000 + Math.random() * 90000);
             this.sendCode(user, myNewCode);
-           // details.authConfirmToken = myNewCode;
-           // const {intraId} = details;
-            /*ON VEUT PAS REMPLACER LEURS INFOS*/
             await this.userRepo.update( { id: user.id}, {authConfirmToken:myNewCode});
           }
           else
           {
             await this.userRepo.update( { id: user.id}, {isConnected:true});
-            
-            //est-ce qu'il faut faire ca ? details.isConnected = true;
-            /*ON VEUT PAS REMPLACER LEURS INFOS*/
-            //await this.userRepo.update( { intraId }, details); // sinon on update dans le cas ou certaines infos aurai changee
           }
           console.log('updated');
           return user;// on retourne le user modifie

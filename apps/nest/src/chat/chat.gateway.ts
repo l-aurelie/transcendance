@@ -15,9 +15,6 @@ import { UsersService, SocketService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { RoomService } from './service/room.service';
 import { MessageService } from './service/message.service';
-//import { resolve } from 'path';
-//import  * as moment from 'moment';
-//import 'moment-timezone';
 
 export var gameQueue = [];
 export var gameQueueSmach = [];
@@ -42,7 +39,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private messageService: MessageService,
         private roomService: RoomService,
         private userService: UsersService,
-     //    private gameQueue: any[]
         ) {}
 
 
@@ -51,14 +47,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // A client has connected
         this.users++;
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
-      
         // Notify connected clients of current users
         this.server.emit('users', this.users);
     }
 
     async handleDisconnect(client) {
         const the_date = new Date(Date.now()).toLocaleString();// moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
-console.log('handleDisconnect');
+        console.log('handleDisconnect');
         // A client has disconnected
         this.users--;
         await this.disconnectGame(client, the_date);
@@ -109,10 +104,10 @@ console.log('handleDisconnect');
         client.emit('fetchsalon', tab);
      }
 
-     /* Recupere tous les messages de la table RoomId [room] sauf ceux des utilisateurs bloqués et les formatte pour l'affichage, les emit au front */
-     /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
-     @SubscribeMessage('fetchmessage')
-     async fetch_message(client, data) {
+    /* Recupere tous les messages de la table RoomId [room] sauf ceux des utilisateurs bloqués et les formatte pour l'affichage, les emit au front */
+    /* {nameSalon: currentSalon.name, idUser: props.actualUser.id} */
+    @SubscribeMessage('fetchmessage')
+    async fetch_message(client, data) {
         const message = await this.messageRepo.find({relations: ["sender"], where: { roomID : data.roomId }});//await this.roomService.getRoomIdFromRoomName(data.nameSalon) }});
         /* Récupération de l'id des users bloqués par le client dans un tableau*/
         const blockedUsers = await this.userBlockRepo.find({where: {blockingUserId: data.idUser}});
@@ -125,39 +120,26 @@ console.log('handleDisconnect');
         {
                 if (arrayBlockedUsers.includes(entry.sender.id))
                     continue;
-                //   break; // plutot continue ; non ?
-                // if (dm === true)
-                //    tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
-                // else {
-                //     const roomUser = await this.roomUserRepo.findOne({where: {userId:entry.senderId, roomId:data.roomId}});
-                //  if (roomUser.mute === false)
-                     tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
-               //  }
+                tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
             }
-        /*tab = await Promise.all(message.map( async (it) : Promise<any[]> => {
-                if (arrayBlockedUsers.includes(it.sender.id))
-                   return tab;
-                return [...tab, it.sender.login + ' : ' + it.content];
-             }));*/
-console.log(tab);
-tab = tab.sort((a,b) => a.id- b.id);
-console.log(tab);
+        console.log(tab);
+        tab = tab.sort((a,b) => a.id- b.id);
+        console.log(tab);
         client.emit('fetchmessage', tab);
-      }
+    }
     
-     @SubscribeMessage('just-block')
-     async justBlock(client, user)
-     {
+    @SubscribeMessage('just-block')
+    async justBlock(client, user)
+    {
         this.server.to('sockets' + user.id).emit('just-block');
         console.log("here just block back")
-       // client.emit('just_block');
-     }
+    }
       
 
     /* Un user join une room ou crée une conversation privée, on cree une entre userRoom */
     /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */
-     @SubscribeMessage('user_joins_room')
-     async user_joins_room(client, infos) {
+    @SubscribeMessage('user_joins_room')
+    async user_joins_room(client, infos) {
         console.log('userJoinRoom');
 
         if(infos.roomId && !infos.otherLogin)
@@ -173,29 +155,28 @@ console.log(tab);
                     return;
             }
         }
-    /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
-       this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.roomId);
-    /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
-       const dm = !(!infos.otherLogin);
-       let adm = false;
-       var displayName;        
-       if(dm) {
+        /* On fait rejoindre au client la room débutant par le mot clé salonRoom pour éviter les conflits */
+        this.server.in('sockets' + infos.userId).socketsJoin('salonRoom' + infos.roomId);
+        /* On communique au front le nom d'affichage : soit le nom du salon soit le login du friend si c'est un dm */
+        const dm = !(!infos.otherLogin);
+        let adm = false;
+        var displayName;        
+        if(dm) {
         if (infos.otherLogin.length > 10)
             displayName = infos.otherLogin.substring(0,9) + "...";
         else
             displayName = infos.otherLogin;
-       }
-       const theRoom = await this.roomRepo.findOne({where :{ name : infos.room }});
-           if (!dm) {
+        }
+        const theRoom = await this.roomRepo.findOne({where :{ name : infos.room }});
+        if (!dm) {
             if (infos.room.length > 10)
                 displayName = infos.room.substring(0,9) + "...";
             else
                 displayName = infos.room;
-           const theUser = await this.userService.findUserById(infos.userId);
-        //   const joinedRoomId = await this.roomService.getRoomIdFromRoomName(infos.room);
-           let myUserRoom = await this.roomUserRepo.findOne({where:{userId: infos.userId, roomId: infos.roomId}});
-           if (!myUserRoom)
-           {
+            const theUser = await this.userService.findUserById(infos.userId);
+            let myUserRoom = await this.roomUserRepo.findOne({where:{userId: infos.userId, roomId: infos.roomId}});
+            if (!myUserRoom)
+            {
                const getNewUserRoom = {id: null, userId: infos.userId, user: theUser, room: theRoom, roomId: infos.roomId, mute: false,
                    ban: false, isAdmin: false, expireBan: null, expiredMute: null};
                 myUserRoom = await this.roomUserRepo.save(getNewUserRoom);
@@ -203,20 +184,19 @@ console.log(tab);
         adm = myUserRoom.isAdmin;
        }
        /* On emit le nom du salon ajoute pour afficher dans les front de chaque socket du user */
-       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId, isAdmin:adm, creator: theRoom.creatorId, private:theRoom.private});
-       
+       this.server.to('sockets' + infos.userId).emit('joinedsalon', {salonName: infos.room, dm: dm, displayName: displayName, roomId:infos.roomId, isAdmin:adm, creator: theRoom.creatorId, private:theRoom.private}); 
     }
 
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
-   //   await this.roomUserRepo.createQueryBuilder().delete().where({ userId: infos.userId, roomId: infos.roomId}).execute();
-   console.log('passe here user leaves');
-      await this.roomUserRepo.delete({ userId: infos.userId, roomId: infos.roomId})
-      this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.roomId);
-      /* On emit le nom du salon quitté pour en informer tous les fronts */
-      this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
+        console.log('passe here user leaves');
+        await this.roomUserRepo.delete({ userId: infos.userId, roomId: infos.roomId})
+        this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.roomId);
+        /* On emit le nom du salon quitté pour en informer tous les fronts */
+        this.server.to('sockets' + infos.userId).emit('leftsalon', infos.room)
     }
+
     @SubscribeMessage('new-owner')
     async newOwner(client, info) {
         console.log('in new owner');
@@ -273,8 +253,8 @@ console.log(tab);
             else
                 disp = data.whoAmI.login;
             const otherUserId = data.roomToEmit.endsWith(data.whoAmI.id) ? data.roomToEmit.split('.')[0] : data.roomToEmit.split('.')[1];
-          //  this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
-          //  this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit,sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
+            //  this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.whoAmI.login});
+            //  this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit,sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, dontNotif: true});
             this.server.to('sockets' + otherUserId).except(bannedMe).emit('chat', {id:newMes.id, emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message,dontNotif: false, displayName: disp, roomId:data.roomId, creator:data.creator});
             this.server.to('sockets' + data.whoAmI.id).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
         }
@@ -285,17 +265,10 @@ console.log(tab);
                 disp = data.roomToEmit.substring(0,9) + "...";
             else
                 disp = data.roomToEmit;
-            // const roomUser = await this.roomUserRepo.findOne({where: {userId:data.whoAmI.id, roomId:data.roomId}});
-            //  if (roomUser.mute === true)
-            //  {
-            //     console.log('roomUser.mute === true')
-            //      return;
-            //          }        
-                     //   this.server.to('salonRoom' + data.roomToEmit).except(bannedMe).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit});
-            //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
-         //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
-         this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: false,roomId:data.roomId, creator:data.creator});
-         this.server.to('sockets' + data.whoAmI.id).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
+        //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
+        //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
+        this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: false,roomId:data.roomId, creator:data.creator});
+        this.server.to('sockets' + data.whoAmI.id).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
         }
     }
 
@@ -319,11 +292,6 @@ console.log(tab);
       console.log('rooms = ', rooms);
       for (let room of rooms) {
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
-          /* on emit au nouveau socket tous ses salons rejoints, et on les lui fait rejoindre */
-      //    console.log('A');
-       //   client.emit('joinedsalon', {salonName: roomName, dm: false, displayName: roomName, roomId:room.RoomUser_roomId, isAdmin:room.RoomUser_isAdmin});
-       //   console.log('B');
-        //  console.log("salonName ==> ", roomName, "dm ==> :", false, "displayName ==> ", roomName, "roomId: ==> ", room.RoomUser_roomId, "isAdmin ==> ", room.RoomUser_isAdmin);
           client.join('salonRoom' + room.RoomUser_roomId);
       }
     }
@@ -340,9 +308,6 @@ console.log(tab);
         if (infos[2] === false && roomUser.id)
             await this.roomUserRepo.update({id: roomUser.id}, {isAdmin:true});
         console.log('addSalon5');
-       // console.log('roomuserId= ', roomUser.id, roomUser.roomId, roomUser.userId, infos[0]);
-        // await this.roomRepo.update({id:newRoom.id}, {creatorId:infos[0]})
-      //  if (!infos[1]) //{
         let disp;
         if ((newRoom.name).length > 10)
             disp = (newRoom.name).substring(0,9) + "...";
@@ -350,13 +315,11 @@ console.log(tab);
             disp = (newRoom.name);
             this.server.emit('newsalon', (newRoom.name));
         this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: (newRoom.name), dm: false, displayName: disp, roomId:newRoom.id, creator:infos[0], isAdmin:true, private:infos[1]}); // add owner = true;
-        //}
         console.log('addSalon');
         if (infos.length > 4)
             this.user_joins_room(client, {userId: infos[0], room: (newRoom.name), otherLogin: infos[4], roomId:newRoom.id})
         else 
             this.user_joins_room(client, {userId: infos[0], room: (newRoom.name), roomId:newRoom.id})
-            //  socket.emit('user_joins_room', {userId: props.user.id, room: roomname, otherLogin: friend.login});
     }
 
     @SubscribeMessage('changeInfos')
@@ -539,7 +502,6 @@ console.log(tab);
         var smachY = infos[1].smachY;
         var login;
 
-
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }   
@@ -606,17 +568,11 @@ console.log(tab);
             const idGame = await this.gameRepo.findOne({where:{id:infos[0]}});
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
             const user = await this.userRepo.findOne({where:{id: idGame.playerLeft}});
-login = user.login;
-this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
-this.server.to(infos[0]).emit("game-stop", user.login);
-           // const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
+            login = user.login;
+            this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
+            this.server.to(infos[0]).emit("game-stop", user.login);
             const win = (await this.gameRepo.find({where: {winner:idGame.playerLeft}})).length;
             await this.userRepo.update({id: idGame.playerLeft}, {total_wins:win});
-            // if (update)
-            // {
-            // update.total_wins = (update.total_wins + 1);
-            //     this.userRepo.save(update);
-            // }
         }
         if (sR >= 11 && sL < sR - 1) {
 
@@ -625,17 +581,10 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             const user = await this.userRepo.findOne({where:{id: idGame.playerRight}});
 
             login = user.login;
-        this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
-          this.server.to(infos[0]).emit("game-stop", user.login);
-          const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
+            this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
+            this.server.to(infos[0]).emit("game-stop", user.login);
+            const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
             await this.userRepo.update({id: idGame.playerRight}, {total_wins:win});
-            // const update = await this.userRepo.findOne({where: [{ id: idGame.winner},],});
-            // if (update)
-            // {
-            //     update.total_wins = (update.total_wins + 1);
-            // this.userRepo.save(update);
-
-            // }
         }
         if (newSleep === true) {
             let ball = {x : infos[1].width/2, y: infos[1].height/2, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
@@ -691,11 +640,9 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             return ;
         }
         await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2], abort:true});
-      //  await this.updateScore(client, infos);
         this.server.to(infos[0]).emit("opponent-quit");
         this.server.to(infos[0]+'-watch').emit("opponent-quit");
     }
-
 
     @SubscribeMessage('finish-match')
     async endMatch(client, infos)
@@ -750,6 +697,7 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         const data = {watchRoom: watchRoom, loginL:userL, loginR:userR}
         this.server.to(watchRoom).emit('watch', data);
     }
+
     @SubscribeMessage('defeat')
     async defeat(client, infos) {
         //for block
@@ -761,11 +709,6 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             this.rejectMatch(client, infos);
             return ; 
         }
-        //if is block 
-        //{
-            //this.rejectMatch(infos[1], infos[0], infos[2]);
-        // return;
-        //}
         this.server.to('sockets'+infos[0].id).emit('defeat', infos[1]);
         const data = {user:infos[0], version:infos[2] };
         console.log('smash = ', infos[2])
@@ -796,7 +739,6 @@ this.server.to(infos[0]).emit("game-stop", user.login);
             this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
             this.server.to(entry.id+'-watch').emit("restart");
             this.server.to(entry.id).emit("restart");
-
         }
     }
 
@@ -840,4 +782,3 @@ this.server.to(infos[0]).emit("game-stop", user.login);
         }
     }
 }
-

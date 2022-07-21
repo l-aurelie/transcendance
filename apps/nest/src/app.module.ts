@@ -36,7 +36,6 @@ import { GameModule } from './game/game.module';
       database: process.env.POSTGRES_DB,
       /*entities = typeorm database tables, all entities imported in typeorm/index.ts*/
       entities: entities,
-      //url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize:true //suppress for production
     }),
@@ -46,24 +45,3 @@ import { GameModule } from './game/game.module';
   providers: [AppService],
 })
 export class AppModule {}
-
-/*old code: @Module({
-  imports: [
-    ConfigModule.forRoot({envFilePath: '../.env'}),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-     // url: process.env.DATABASE_URL,
-      host: process.env.POSTGRES_HOST,
-      port: Number.parseInt(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      autoLoadEntities: true,
-      synchronize: true //suppress for production
-    //  entities: [moduleEntity]
-    }),
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}*/

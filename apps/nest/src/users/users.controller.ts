@@ -5,7 +5,6 @@ import { UsersService } from './users.service';
 import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards';
 import RequestWithUser from 'src/auth/interface/requestWithUser.interface';
 import { User } from 'src/typeorm/entities/User';
-//import { Avatar } from 'src/typeorm/entities/Avatar';
 import { Not, Repository, UsingJoinColumnIsNotAllowedError } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Express } from 'express'
@@ -54,15 +53,12 @@ export class UsersController {
    @Get()
    getUser(@Req() request: RequestWithUser) {//TODO: async ? 
      const user = request.user;
-//     console.log('===getUser', user);
-return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email, first: user.first});
-//  return (user);
+   return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email, first: user.first});
      }
 
 
    /* WIP: set le profil avec le formulaire envoye */
    @UseGuards(AuthenticatedGuard)
-   //@UseGuards(IntraAuthGuard)
    @Post('set')
    async setUsers(@Req() req: RequestWithUser, @Body() body: setProfilDto) {
       try {
@@ -97,7 +93,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
 
    //-* A DECOMMENTER pour obtenir l'img
    //-* Renvoie l'image sous un format affichable
-  /* @Get('getimg')
+   /* @Get('getimg')
    async getImg(@Res({ passthrough: true }) res: any) {
       const imgRaw = await this.avatarRepo.findOne( {id: 1} );
       const stream = Readable.from(imgRaw.data);
@@ -109,31 +105,21 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    }*/
 
    //-* UPLOAD l'image et la place dans la base de donnee
-  // @UseGuards(AuthenticatedGuard)
    @UseGuards(AuthenticatedGuard)
-   @Post('setimg/:userId')
+   @Get('setimg/:userId')
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
-   //   console.log('===setImg()')
-
       console.log('file', file);
-      //const ActualUser = await this.userRepo.findOne({id : 1});
       try {
       console.log('passe in img');
       if (!file || !file.buffer)
          return;
-
       let buf64;
-    //  buf64 = (file.buffer).toString('base64');
       let newUrl;
-     // if (file.size >= 500000)
-     // {
-         console.log ('trop grand');
-         const image = await resizeImg(file.buffer, {width:150, height:150});
-         buf64 = (image).toString('base64');
-     // }
-      // const newIm = fs.writeFileSync('new', image);
+      console.log ('trop grand');
+      const image = await resizeImg(file.buffer, {width:150, height:150});
+      buf64 = (image).toString('base64');
       if (file.mimetype === 'image/jpeg')
          newUrl = "data:image/jpeg;base64,"+buf64;
       else if (file.mimetype === 'image/png')
@@ -145,48 +131,10 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          const data = '{"status":"500", "message": "invalid photo or size"}';
          return(JSON.parse(data));
       }
-    /*  const ActualUser = await this.userRepo.findOne({id : 1})
-      //-* Enregistre l'avatar en format bytea dans Avatar2 une relation one avec le user
-      if(!ActualUser.Avatar2)
-      {
-         console.log("if--");
-         const avatar = this.avatarRepo.create();
-         avatar.name = file.fieldname;
-         avatar.data = file.buffer;
-         avatar.mimeType = file.mimetype;
-         //avatar.user = ActualUser;
-         await this.avatarRepo.save(avatar);
-         //let avatar : Avatar  = { id: null, name: file.fieldname, data : file.buffer, mimeType : file.mimetype , user: ActualUser};
-         //this.avatarRepo.save(avatar); 
-         this.userRepo.update({id: 1}, {Avatar2: avatar})   
-      }
-      else
-      {
-         console.log('else--');//Condition a faire
-         const avatar = this.avatarRepo.create();
-         avatar.name = file.fieldname;
-         avatar.data = file.buffer;
-         avatar.mimeType = file.mimetype;
-         //avatar.user = ActualUser;
-         await this.avatarRepo.save(avatar);
-         this.userRepo.update({id: 1}, {Avatar2: avatar})   
-      }
-      */
-      //const thisUser = await this.userRepo.find({ relations: ["Avatar2"]});
-      //console.log("this USER ====== ", thisUser);
-      
-      //const thisUser = this.avatarRepo.findOne({where: {user.id: 1}});
-      //const thisUser = await this.avatarRepo.find({ relations: ["user"], where: [ {user.id: 1}],});
-      //const thisUser = await this.avatarRepo.find({ relations: ["user"]});
-      //console.log("this USER ====== ", thisUser);
-
-      //await this.userRepo.update({ id: 1}, {avatar: './upload/' + file.filename});
-      //await this.userRepo.update({ id: 1}, {avatar: './upload/' + file.filename});
-      //console.log('req.user', req.user);
-    //  return ('SetImg()');
    }
+
    @UseGuards(AuthenticatedGuard)
-  @Post('changemdp')
+   @Post('changemdp')
    async changeMdp(@Body() body: setUserRoomDto) {
       const currentSal = parseInt(body.roomId);
       const room_user = await this.roomUser.findOne(
@@ -201,12 +149,12 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: hash});
       return({status:201})
       /* To compare/check a password, use the compare function:
-      
-         const isMatch = await bcrypt.compare(password, hash); */
+      const isMatch = await bcrypt.compare(password, hash); */
    }
+
    @UseGuards(AuthenticatedGuard)
-  @Post('resetpwd')
-  async resetPwd(@Body() body: setUserRoomDto) {
+   @Post('resetpwd')
+   async resetPwd(@Body() body: setUserRoomDto) {
      const currentSal = parseInt(body.roomId);
      const room_user = await this.roomUser.findOne(
         { relations: ["room"],
@@ -236,6 +184,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       this.roomUser.update({id:room_user.id}, {isAdmin:true});
       return({status:201})
    }
+
    @UseGuards(AuthenticatedGuard)
    @Post('/setAdminFalse')///:currentSalonId/:idNewAdm')
     async setAminFalse(@Body() body: setUserRoomDto)// ,@Param('currentSalonId') salonId: string,@Param('idNewAdm') idNewAdm: string) 
@@ -252,18 +201,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
        this.roomUser.update({id:room_user.id}, {isAdmin:false});
        return({status:201})
     }
-   // @UseGuards(AuthenticatedGuard)
-   // @Post('/setAdminFalse/:currentSalonId')
-   // async setAminFalse(@Param('currentSalonId') salonId: string) {
-   //    const currentSal = parseInt(salonId);
-   //    const room_user = await this.roomUser.findOne(
-   //       {
-   //          where : {roomId: currentSal}
-   //       });
-   //    this.roomUser.update({id:room_user.id}, {isAdmin:false});
-   // }
-   
-
+  
    @UseGuards(AuthenticatedGuard)
    @Post('/mute')
    async mute(@Body() body: setUserRoomDto)
@@ -283,7 +221,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       this.roomUser.update({id: room_user.id}, {mute:true, expiredMute: expired});
       console.log("is mute = " + room_user.mute);
       return({status:201})
-
    }
 
    @UseGuards(AuthenticatedGuard)
@@ -312,7 +249,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          });
       this.roomUser.update({id: room_user.id}, {mute:false});
       return({status:201})
-
    }
 
    @UseGuards(AuthenticatedGuard)
@@ -334,6 +270,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       console.log("is ban = " + room_user.ban);
       return({status:201})
    }
+
    @UseGuards(AuthenticatedGuard)
    @Post('/unban')
    async unban(@Body() body: setUserRoomDto)
@@ -363,26 +300,22 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       await this.roomUserRepo.update({id: relation[0].id}, {isAdmin:true});
       return({status:201})
    }
+
    /* Retourne tous les utilisateurs presents dans la base de donnee */
    @Get('all')
    async getUsers() {
       const users = await this.userServ.findAll();
-      //console.log('GetUsers()');
       let tab = [];
       for (let entry of users)
       {
-     // return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA});
-      tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified, email:entry.email})
+         tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified, email:entry.email})
       }
-      //return (users);
-   return(tab);
+      return(tab);
    }
 
-   //UPTO HERE
    @Get('allNoMembers/:roomId')
    async getNoMember(@Param('roomId') roomId : string) {
       const users = await this.userServ.findAll();
-      //console.log('GetUsers()');
       let tab = [];
       const id = parseInt(roomId);
       if (!Number.isInteger(id))
@@ -395,10 +328,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          let isMember = await this.roomUser.find({where: {roomId:id, userId:entry.id}});
          if(isMember.length === 0)
             tab.push({id:entry.id, avatar:entry.avatar, login:entry.login, color:entry.color, twoFA:entry.twoFA, isVerified:entry.isVerified, email:entry.email})
-      // return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA});
       }
-      //return (users);
-   return(tab);
+      return(tab);
    }
 
    /* Retourne le user [login] */
@@ -407,8 +338,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       const user = await this.userServ.findUserByLogin(params);
       if (!user)
          return null;
-      //console.log('=====getUserByLogin()', user, params);
-      //return (user);
       return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
    }
 
@@ -423,9 +352,7 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          return null;
       }
       const user = await this.userServ.findUserById(userId);
-      //return (user);
       return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
-
    }
 
    @Get('userRooms/:id')
@@ -530,18 +457,15 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       }
    return (tab);
    }
+
    /* Retourne la liste des utilisateurs presents dans un salon */
    @Get('test/:currentSalon')
    async getUsersInChannel(
       @Param('currentSalon') currentSalon: string
-      // @Req() request,
       ) : Promise<RoomUser[]> {
          console.log('IN USERSINCHANNEL');
          if (currentSalon === "undefined")
-         {
-           // console.log('undef');
             return([]);
-         }
          const currentSalonInt = parseInt(currentSalon);
          const room = this.roomRepo.findOne({where: {id: currentSalonInt}});
          if (!Number.isInteger(currentSalonInt))
@@ -549,12 +473,6 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
          const users = await this.roomUser.find({
             relations: ["user", "room"],
             where : {roomId: currentSalonInt, userId:Not((await room).creatorId),}});
-         //   console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
-         //   console.log(users[0].user.login);
-         //   console.log(users[0].user.avatar);
-         //   console.log(users[0].room.creatorId);
-         //   console.log(users[0].room.password);
-         //   console.log('quoi');
          let tab = [];
          for (let entry of users)
          {
@@ -628,227 +546,198 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       return tab;
    }
 
-      /* Retourne si il y a un password */
-      @Get('pwd/:currentSalon')
-      async getPwd(@Param('currentSalon') currentSalon: string) {
-         console.log('IN USERSINCHANNEL 2');
-         console.log('current SALON : ' + currentSalon);
-         if (currentSalon === "undefined")
-         {
-           console.log('undef');
-            return(false);
-         }
-         var currentSal = parseInt(currentSalon);
-         if (!Number.isInteger(currentSal))
-            return (false);
-         console.log('current SAL: ' + currentSal);
-         const room = await this.roomRepo.findOne({where: {id:currentSal}});
-         console.log("ROOM +++> ", room);
-         console.log("PWD +++> ", room.password);
-         const pwd = room.password;
-         console.log("password == ", pwd);
-         if (pwd == null)
-         {   
-            console.log("RETURN 0");
-            return(false);
-         }
-         else
-         {   
-            console.log("RETURN 1");
-            return(true);
-         }
+   /* Retourne si il y a un password */
+   @Get('pwd/:currentSalon')
+   async getPwd(@Param('currentSalon') currentSalon: string) {
+      console.log('IN USERSINCHANNEL 2');
+      console.log('current SALON : ' + currentSalon);
+      if (currentSalon === "undefined")
+      {
+         console.log('undef');
+         return(false);
       }
+      var currentSal = parseInt(currentSalon);
+      if (!Number.isInteger(currentSal))
+         return (false);
+      console.log('current SAL: ' + currentSal);
+      const room = await this.roomRepo.findOne({where: {id:currentSal}});
+      console.log("ROOM +++> ", room);
+      console.log("PWD +++> ", room.password);
+      const pwd = room.password;
+      console.log("password == ", pwd);
+      if (pwd == null)
+      {   
+         console.log("RETURN 0");
+         return(false);
+      }
+      else
+      {   
+         console.log("RETURN 1");
+         return(true);
+      }
+   }
    
-      /* check si le password est valide */
-      @UseGuards(AuthenticatedGuard)
-      @Post('/checkpwd')
-      async checkpwd(@Body() body: setUserRoomDto) {
-         console.log(body.pwd);
-         if (!body.pwd)
-            return(false);
-         const currentSal = parseInt(body.roomId);
-         const room = await this.roomRepo.findOne({where:{id:currentSal}});
-         const pwdHashed = room.password;
-         const isMatch = await bcrypt.compare(body.pwd, pwdHashed);
-         console.log("MATCH === ", isMatch);
-         return (isMatch);
-      }
+   /* check si le password est valide */
+   @UseGuards(AuthenticatedGuard)
+   @Post('/checkpwd')
+   async checkpwd(@Body() body: setUserRoomDto) {
+      console.log(body.pwd);
+      if (!body.pwd)
+         return(false);
+      const currentSal = parseInt(body.roomId);
+      const room = await this.roomRepo.findOne({where:{id:currentSal}});
+      const pwdHashed = room.password;
+      const isMatch = await bcrypt.compare(body.pwd, pwdHashed);
+      console.log("MATCH === ", isMatch);
+      return (isMatch);
+   }
 
-      @Get('whichBan/:currentSalon')
-      async whichBan(@Param('currentSalon') currentSalon: string) {
-         console.log('ban', currentSalon)
-         if (currentSalon === "undefined")
-         {
-           // console.log('undef');
-            return([]);
-         }
-         const id = parseInt(currentSalon);
-         if (!Number.isInteger(id))
-            return ([]);
-         const room = await this.roomRepo.findOne({where:{id:id}});
-         const repo = await this.roomUserRepo.find({where:{roomId:id, ban:true}});
-         let tab = [];
-         for (let entry of repo) {
-            const user = await this.userRepo.findOne({where:{id:entry.userId}});
-            if (user.id != room.creatorId)
-               tab.push(user);
-         }
-         return tab;
+   @Get('whichBan/:currentSalon')
+   async whichBan(@Param('currentSalon') currentSalon: string) {
+      console.log('ban', currentSalon)
+      if (currentSalon === "undefined")
+      {
+         return([]);
       }
-      @Get('whichMute/:currentSalon')
-      async whichMute(@Param('currentSalon') currentSalon: string) {
-         console.log('mute', currentSalon)
-         if (currentSalon === "undefined")
-         {
-           // console.log('undef');
-            return([]);
-         }
-         const id = parseInt(currentSalon);
-         if (!Number.isInteger(id))
-            return ([]);
-         const room = await this.roomRepo.findOne({where:{id:id}});
-         const repo = await this.roomUserRepo.find({where:{roomId:id, mute:true}});
-         let tab = [];
-         for (let entry of repo) {
-            const user = await this.userRepo.findOne({where:{id:entry.userId}});
-            if (user.id != room.creatorId)
-               tab.push(user);
-         }
-         return tab;
+      const id = parseInt(currentSalon);
+      if (!Number.isInteger(id))
+         return ([]);
+      const room = await this.roomRepo.findOne({where:{id:id}});
+      const repo = await this.roomUserRepo.find({where:{roomId:id, ban:true}});
+      let tab = [];
+      for (let entry of repo) {
+         const user = await this.userRepo.findOne({where:{id:entry.userId}});
+         if (user.id != room.creatorId)
+            tab.push(user);
       }
-      @Get('whichAdm/:currentSalon')
-      async whichAdm(@Param('currentSalon') currentSalon: string) {
-         console.log('adm', currentSalon)
-         if (currentSalon === "undefined")
-         {
-           // console.log('undef');
-            return([]);
-         }
-         const id = parseInt(currentSalon);
-         if (!Number.isInteger(id))
-            return ([]);
-         const room = await this.roomRepo.findOne({where:{id:id}});
-         const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
-         let tab = [];
-         for (let entry of repo) {
-            const user = await this.userRepo.findOne({where:{id:entry.userId}});
-            if (user.id != room.creatorId)
-               tab.push(user);
-         }
-         return tab;
+      return tab;
+   }
+   
+   @Get('whichMute/:currentSalon')
+   async whichMute(@Param('currentSalon') currentSalon: string) {
+      console.log('mute', currentSalon)
+      if (currentSalon === "undefined")
+      {
+         return([]);
       }
-      @Get('whichNonAdm/:currentSalon')
-      async whichNonAdm(@Param('currentSalon') currentSalon: string) {
-         console.log('nonadm', currentSalon)
-         const id = parseInt(currentSalon);
-         if (!Number.isInteger(id))
-            return ([]);
-         if (currentSalon === "undefined")
-         {
-           // console.log('undef');
-            return([]);
-         }
-         const room = await this.roomRepo.findOne({where:{id:id}});
-         const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:false}});
-         
-         let tab = [];
-         for (let entry of repo) {
-            const user = await this.userRepo.findOne({where:{id:entry.userId}});
-            console.log("nonAdm",user.login, user.id)
-            if (user.id != room.creatorId)
-               tab.push(user);
-         }
-         return tab;
+      const id = parseInt(currentSalon);
+      if (!Number.isInteger(id))
+         return ([]);
+      const room = await this.roomRepo.findOne({where:{id:id}});
+      const repo = await this.roomUserRepo.find({where:{roomId:id, mute:true}});
+      let tab = [];
+      for (let entry of repo) {
+         const user = await this.userRepo.findOne({where:{id:entry.userId}});
+         if (user.id != room.creatorId)
+            tab.push(user);
       }
-      @Get('whichNonMute/:currentSalon')
-      async whichNonMute(@Param('currentSalon') currentSalon: string) {
-         console.log('nonmute', currentSalon)
-         if (currentSalon === "undefined")
-         {
-           // console.log('undef');
-            return([]);
-         }
-         const id = parseInt(currentSalon);
-         if (!Number.isInteger(id))
-            return ([]);
-         const room = await this.roomRepo.findOne({where:{id:id}});
-         const repo = await this.roomUserRepo.find({where:{roomId:id, mute:false}});
-         const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
-         const adminIdsArray = admins.map((it) => it.userId);
-         console.log(adminIdsArray);
-         let tab = [];
-         for (let entry of repo) {
-            const user = await this.userRepo.findOne({where:{id:entry.userId}});
-            console.log("nonmute",user.login, user.id)
-            console.log('hereers', user.id);
-            if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
-               tab.push(user);
-         }
-         return tab;
-         
-      }
-      @Get('getColor/:userId')
-      async getColor(@Param('userId') userId:string) {
-         let color = "rgba(0,0,0,1)";
-         const userIdInt = parseInt(userId);
-         if (!Number.isInteger(userIdInt))
-            return ([]);
-         const user = await this.userRepo.findOne({where:{id: userIdInt}});
-         if (user)
-            color = user.color;
-         return (color);
-      }
+      return tab;
+   }
 
-      @Get('whichNonBan/:currentSalon')
-      async whichNonBan(@Param('currentSalon') currentSalon: string) {
-         console.log('nonban', currentSalon)
-         if (currentSalon === "undefined")
-         {
-           // console.log('undef');
-            return([]);
-         }
-         const id = parseInt(currentSalon);
-         if (!Number.isInteger(id))
-            return ([]);
-         const room = await this.roomRepo.findOne({where:{id:id}});
-         const repo = await this.roomUserRepo.find({where:{roomId:id, ban:false}});
-         const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
-         const adminIdsArray = admins.map((it) => it.userId);
-         console.log(adminIdsArray);
-         let tab = [];
-         for (let entry of repo) {
-            const user = await this.userRepo.findOne({where:{id:entry.userId}});
-            console.log("nonban",user.login, user.id)
-            if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
-               tab.push(user);
-         }
-         return tab;
+   @Get('whichAdm/:currentSalon')
+   async whichAdm(@Param('currentSalon') currentSalon: string) {
+      console.log('adm', currentSalon)
+      if (currentSalon === "undefined")
+      {
+         return([]);
       }
-   //  @Get('testing/test')
-   // async getUsersInChannel(
-   //    @Req() request,
-   //    ) {
-   //       console.log('IN USERSINCHANNEL');
-   //       const users = await this.roomUser.find({
-   //          relations: ["user", "room"],
-   //       });
-   //       console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
-   //       console.log(users[0].user.login);
-   //       console.log(users[0].user.avatar);
-   //       console.log(users[0].room.creatorId);
-   //       console.log(users[0].room.password);
-   // }
+      const id = parseInt(currentSalon);
+      if (!Number.isInteger(id))
+         return ([]);
+      const room = await this.roomRepo.findOne({where:{id:id}});
+      const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
+      let tab = [];
+      for (let entry of repo) {
+         const user = await this.userRepo.findOne({where:{id:entry.userId}});
+         if (user.id != room.creatorId)
+            tab.push(user);
+      }
+      return tab;
+   }
 
+   @Get('whichNonAdm/:currentSalon')
+   async whichNonAdm(@Param('currentSalon') currentSalon: string) {
+      console.log('nonadm', currentSalon)
+      const id = parseInt(currentSalon);
+      if (!Number.isInteger(id))
+         return ([]);
+      if (currentSalon === "undefined")
+      {
+         return([]);
+      }
+      const room = await this.roomRepo.findOne({where:{id:id}});
+      const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:false}});
+      
+      let tab = [];
+      for (let entry of repo) {
+         const user = await this.userRepo.findOne({where:{id:entry.userId}});
+         console.log("nonAdm",user.login, user.id)
+         if (user.id != room.creatorId)
+            tab.push(user);
+      }
+      return tab;
+   }
 
-/*
-    @Get()
-    getUser(@Headers() header) {
-      // console.log(header);
-      const user = this.userServ.findUserById(1).then((result) => { // trouve dans la db l'utilisateur ayant pour identifiant '1'
-         return result; // retourne le login de l'utilisateur avec id '1'
-      })
-    return user; //return login de l'utilisateur ayant l' id '1'
-    }
-*/
+   @Get('whichNonMute/:currentSalon')
+   async whichNonMute(@Param('currentSalon') currentSalon: string) {
+      console.log('nonmute', currentSalon)
+      if (currentSalon === "undefined")
+      {
+         return([]);
+      }
+      const id = parseInt(currentSalon);
+      if (!Number.isInteger(id))
+         return ([]);
+      const room = await this.roomRepo.findOne({where:{id:id}});
+      const repo = await this.roomUserRepo.find({where:{roomId:id, mute:false}});
+      const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
+      const adminIdsArray = admins.map((it) => it.userId);
+      console.log(adminIdsArray);
+      let tab = [];
+      for (let entry of repo) {
+         const user = await this.userRepo.findOne({where:{id:entry.userId}});
+         console.log("nonmute",user.login, user.id)
+         console.log('hereers', user.id);
+         if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
+            tab.push(user);
+      }
+      return tab;
+   }
 
+   @Get('getColor/:userId')
+   async getColor(@Param('userId') userId:string) {
+      let color = "rgba(0,0,0,1)";
+      const userIdInt = parseInt(userId);
+      if (!Number.isInteger(userIdInt))
+         return ([]);
+      const user = await this.userRepo.findOne({where:{id: userIdInt}});
+      if (user)
+         color = user.color;
+      return (color);
+   }
+
+   @Get('whichNonBan/:currentSalon')
+   async whichNonBan(@Param('currentSalon') currentSalon: string) {
+      console.log('nonban', currentSalon)
+      if (currentSalon === "undefined")
+      {
+         return([]);
+      }
+      const id = parseInt(currentSalon);
+      if (!Number.isInteger(id))
+         return ([]);
+      const room = await this.roomRepo.findOne({where:{id:id}});
+      const repo = await this.roomUserRepo.find({where:{roomId:id, ban:false}});
+      const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
+      const adminIdsArray = admins.map((it) => it.userId);
+      console.log(adminIdsArray);
+      let tab = [];
+      for (let entry of repo) {
+         const user = await this.userRepo.findOne({where:{id:entry.userId}});
+         console.log("nonban",user.login, user.id)
+         if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
+            tab.push(user);
+      }
+      return tab;
+   }
 }

@@ -21,12 +21,6 @@ export class RoomEntity implements IRoom {
     @OneToMany(() => RoomUser, RoomUser => RoomUser.user)
     room_user: RoomUser[];
 
-  //  @Column({nullable:true})
-  //  description:string;
-
- //   @ManyToMany(() => User)
- //   @JoinTable()
- //   users: User[];
     @Column({nullable:true})
     password: string;
 
@@ -39,8 +33,6 @@ export class RoomEntity implements IRoom {
     @UpdateDateColumn()
     updatedAt: Date;
     
-    // @ManyToMany(() => User, User => User.admin)
-    // admin: User[];
 }
 
 
@@ -55,5 +47,4 @@ export interface IRoom {
     creatorId? : number;
     createdAt?: Date;
     updatedAt? : Date;
-    // admin?: User[];
 }
