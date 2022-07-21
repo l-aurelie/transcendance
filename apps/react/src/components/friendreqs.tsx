@@ -9,73 +9,72 @@ import { socket } from './Socket';
 
 const FriendReqss = ({reqnotif}) => {
 
-    const [reqs, setreqs] = useState([]);
-    const [refresh, setRefresh] = useState(false);
-    /* Outils d'affichage de la modale */
-    const [revele, setRevele] = useState(false);
-    const toggleModal = () => {setRevele(!revele);} 
-    /*------*/
+	const [reqs, setreqs] = useState([]);
+	const [refresh, setRefresh] = useState(false);
+	/* Outils d'affichage de la modale */
+	const [revele, setRevele] = useState(false);
+	const toggleModal = () => {setRevele(!revele);} 
+	/*------*/
 
-    useEffect(() => {
-        setRefresh(false);
-        console.log('in friend request');
-        axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
-            setreqs(res.data);
-        })
-        .catch(error => {
-            if (error.response && error.response.status)
-            {
-                if (error.response.status === 403)
-                    window.location.href = "http://localhost:4200/";
-                else
-                    console.log("Error: ", error.response.code, " : ", error.response.message);
-            }
-            else if (error.message)
-                console.log(error.message);
-            else
-                console.log("unknown error");
-        })
+	useEffect(() => {
+		setRefresh(false);
+		console.log('in friend request');
+		axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
+			setreqs(res.data);
+		})
+		.catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.message)
+				console.log(error.message);
+			else
+				console.log("unknown error");
+		})
 
-        socket.on("changeReqs", data => {
-            axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
-             setreqs(res.data);
-             console.log('A REQUEST SENT, ', res.data);
-             })
-             .catch(error => {
-                if (error.response && error.response.status)
-                {
-                    if (error.response.status === 403)
-                        window.location.href = "http://localhost:4200/";
-                    else
-                        console.log("Error: ", error.response.code, " : ", error.response.message);
-                }
-                else if (error.message)
-                    console.log(error.message);
-                else
-                    console.log("unknown error");
-            })
-          })
+		socket.on("changeReqs", data => {
+			axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
+				setreqs(res.data);
+			})
+			.catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.message)
+				console.log(error.message);
+			else
+				console.log("unknown error");
+			})
+		})
 
-    },[refresh]);
+	},[refresh]);
 
-    return(
-        <div>
-        {
-            reqnotif ?
-            <button onClick={toggleModal} style={{backgroundColor:'pink'}}>Friend Reqs</button>
-            :
-            <button onClick={toggleModal}>Friend Reqs</button>
-        }
-            <ModalWindow revele={revele} setRevele={toggleModal}>
-                <h1>Friend Requests</h1>
-                {reqs.map(reqs => (
-                    <div key={reqs.id}><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
-                    {reqs.status} request from {reqs.sender.login}
-                    <AcceptButton FriendReq = {reqs} setRefresh={setRefresh}></AcceptButton>
-                    <RejectButton FriendReq = {reqs} setRefresh={setRefresh}></RejectButton></div>
-                ))}
-            </ModalWindow>
-        </div>
-        );
+	return(
+		<div>
+		{
+			reqnotif ?
+			<button onClick={toggleModal} style={{backgroundColor:'pink'}}>Friend Reqs</button>
+			:
+			<button onClick={toggleModal}>Friend Reqs</button>
+		}
+			<ModalWindow revele={revele} setRevele={toggleModal}>
+				<h1>Friend Requests</h1>
+				{reqs.map(reqs => (
+					<div key={reqs.id}><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
+					{reqs.status} request from {reqs.sender.login}
+					<AcceptButton FriendReq = {reqs} setRefresh={setRefresh}></AcceptButton>
+					<RejectButton FriendReq = {reqs} setRefresh={setRefresh}></RejectButton></div>
+				))}
+			</ModalWindow>
+		</div>
+		);
 }
 export default FriendReqss
