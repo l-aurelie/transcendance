@@ -24,9 +24,13 @@ export class RoomService {
       const room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
       const does_exist = await this.roomRepo.findOne({where: {name: nameRoom} });
       const newRoom = await this.roomRepo.save(room);
-      if (does_exist){
+      if (does_exist && (room.directMessage === false)){
+        console.log("ROOM ALREADY EXISTS")
         await this.roomRepo.update({id:newRoom.id}, {name:newRoom.name + "-" + (newRoom.id).toString()})
-    }
+      }
+      // else if (does_exist && room.directMessage) {
+      //   console.log("DIRECT MESSAGE ROOM ALREADY EXISTS")
+      // }
       console.log('does room exist ?', does_exist);
       return (await this.roomRepo.findOne({where:{id:newRoom.id}}));
      }
