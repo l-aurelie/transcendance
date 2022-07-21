@@ -711,7 +711,7 @@ const MySalons = (props) => {
                 {/* Permet de quitter le channel */}
                 <div>
                     {
-                        ((salon[1].creator === props.actualUser.id) ) ?
+                        ((salon[1].creator === props.actualUser.id) && (salon[1].isDm === false)) ?
                         <div style={{cursor:"pointer"}} onClick={alertCreator}>x</div> : <div style={{cursor:"pointer"}} onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</div>
                     }
                 </div>
