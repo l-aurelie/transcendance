@@ -8,7 +8,6 @@ import MaterialIcon from 'material-icons-react';
 import DisplayUser from './DisplayUser';
 
 const lists = {
-  // overflowY: 'scroll'
   overflowY: "scroll" as "scroll"
 }
 
@@ -23,7 +22,6 @@ const onChange = (event) => {
   const [value, setValue] = useState([]);
   const [userChoose, setUserChoose] = useState([] as any);
   const [userNotFound, setUserNotFound] = useState(false);
-  //const [color, setColor] = useState("rgba(255, 0, 0, 0.9")
   
   /* Outils d'affichage de la modale */
   const [revele, setRevele] = useState(false);
@@ -36,7 +34,7 @@ const onChange = (event) => {
   /*get friendlist*/    
   useEffect(() => {
     axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-    setFriends(res.data);
+      setFriends(res.data);
     })
     .catch(error => {
       if (error.response && error.response.status)
@@ -52,9 +50,27 @@ const onChange = (event) => {
           console.log(error.message);
   })
 
-    //-* Get all users
-    axios.get("http://localhost:3000/users/all", {withCredentials:true}).then((res) =>{
+  //-* Get all users
+  axios.get("http://localhost:3000/users/all", {withCredentials:true}).then((res) =>{
     setAllUsers(res.data);
+  })
+  .catch(error => {
+    if (error.response && error.response.status)
+    {
+        if (error.response.status === 403)
+            window.location.href = "http://localhost:4200/";
+        else
+            console.log("Error: ", error.response.code, " : ", error.response.message);
+    }
+    else if (error.request)
+        console.log("Unknown error");
+    else
+        console.log(error.message);
+})
+
+  socket.on("changeFriends", data => {
+    axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+      setFriends(res.data);
     })
     .catch(error => {
       if (error.response && error.response.status)
@@ -68,29 +84,7 @@ const onChange = (event) => {
           console.log("Unknown error");
       else
           console.log(error.message);
-  })
-
-    
-
-
-    socket.on("changeFriends", data => {
-      axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-       setFriends(res.data);
-       console.log('ACCEPTED A REQ, ', res.data);
-       })
-       .catch(error => {
-        if (error.response && error.response.status)
-        {
-            if (error.response.status === 403)
-                window.location.href = "http://localhost:4200/";
-            else
-                console.log("Error: ", error.response.code, " : ", error.response.message);
-        }
-        else if (error.request)
-            console.log("Unknown error");
-        else
-            console.log(error.message);
-    })
+      })
     })
   }, [])
 
@@ -100,19 +94,18 @@ const togglePlay = () => {
   toggleAdd();
 }
 
-//-* Regarde si l'ami entre en barre de recherche existe 
-const searchFriend = () => {
-  console.log(allUsers);
-  const res = allUsers.find(element => value === element.login);
-  setValue([]);
-  if(res)
-  {
-    setUserChoose(res);
-    toggleModal();
+  //-* Regarde si l'ami entre en barre de recherche existe 
+  const searchFriend = () => {
+    const res = allUsers.find(element => value === element.login);
+    setValue([]);
+    if(res)
+    {
+      setUserChoose(res);
+      toggleModal();
+    }
+    else 
+      setUserNotFound(true);
   }
-  else 
-    setUserNotFound(true);
-}
 
 /* Recherche d'amis a ajouter */
     return(
@@ -142,11 +135,7 @@ const searchFriend = () => {
                   <DisplayUser userConnected={props.user} userSelected={users} isFriend={false} togglePlay={togglePlay} togglePlay2={togglePlay}/>
               : <></>}
               </div>
-            ))}  
-            {/* <div style={lists}>
-              {allUsers.map(users => (
-                  <div key={users.id}><DisplayUser userConnected={props.user} userSelected={users} isFriend={false} /></div>
-              ))}    */}
+            ))} 
             </div>
 
           </ModalWindow>

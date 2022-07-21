@@ -2,12 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { socket } from "./Socket";
 import MySalons from "./MySalons";
-//import { markAsUntransferable } from "worker_threads";
-//import { defaultIfEmpty } from "rxjs";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
 import Defeat from './Defeat';
-/* Style (insere dans la div jsx) */
 
 const chatStyle = {
   display: 'flex'
@@ -40,9 +37,6 @@ const chatBox = {
   border: '2px',
 }
 
-// const scrollBox = {
-//   overflowY: 'scroll' as 'scroll',
-// }
 const chatTitle = {
   display: "flex",
   justifyContent: "center",
@@ -53,14 +47,7 @@ const chatTitle = {
 const messageSent = {
   textAlign: 'right' as 'right',
 }
-// const salonName = {
-//   marginTop: "auto", 
 
-// }
-// const notifSalon = {
-//   marginTop: "auto", 
-//   backgroundColor: 'pink',
-// }
 const over = {
   cursor: 'pointer',
 }
@@ -69,20 +56,6 @@ const overLi = {
   padding: '0',
   textAlign: 'left' as 'left',
 }
-// const menu = {
-//   fontSize: '14px',
-//   backgroundColor:'#fff',
-//   borderRadius:'2px',
-//   padding: '5px 0 5px 0',
-//   width : '150px',
-//   height:'auto',
-//   margin:'0',
-//   position:'absolute' as 'absolute',
-//   listStyle: 'none',
-//   boxShadow: '0 0 20px 0 #ccc',
-//   opacity:'1',
-//   transition: 'opacity 0.5s linear',
-// }
 
 const Chat = (props) => {
 
@@ -90,7 +63,6 @@ const Chat = (props) => {
 
   const [message, setMessage] = useState([]);// Message a envoyer au salon
   const [currentSalon, setCurrentSalon] = useState([] as any);// Salon courant
-  //const joinedSalons= useState(new Map()); //Array de tous les salons a afficher, que l'on peut selectionner
   const [anchorPoint, setAnchorPoint] = useState({x:0, y:0});
   const [show, setShow] = useState(false);
   const [userIdClick, setUserIdClick] = useState(0);
@@ -107,71 +79,59 @@ const Chat = (props) => {
   //Emit le message rentre par l'utilisateur a tout le salon
   const sendMessage = (event) => {
     if(event.key === 'Enter') {
-      console.log(currentSalon);
       if (currentSalon.length !== 0)
         socket.emit('chat', {roomId: currentSalon.roomId, creator: currentSalon.creator, private:currentSalon.private, roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
       event.target.value = "";
-     // console.log(joinedSalons);
     }
   }
+  
+  socket.on("noMoreMatch", data => {
+    setRevele(false);
+  });
+    socket.on("ask-defeat", data => {
+    setDefeatUser(data.user);
+      setVersion(data.version);
+      toggleModal();
+  });
 
-//if user that ask to play quit window for accept or reject the request disappear
-  //useEffect(() => {
-    // socket.on('just-block', data => {
-    //   console.log("here in socketOn just blooooooooooooooooooock")
-    //   socket.emit('fetchmessage', {nameSalon: currentSalon.name, idUser: actualUser.id, roomId:currentSalon.roomId});
+  //open user profil when clic on profil on menu
+  const getUserProfil = () => {
+    toggleModal2();
+    closeMenu();
+  }
 
-    // })
-    socket.on("noMoreMatch", data => {
-      setRevele(false);
-    });
-      socket.on("ask-defeat", data => {
-      setDefeatUser(data.user);
-        setVersion(data.version);
-        toggleModal();
-    });
-//},[actualUser])
+  //set version of game whern defeat someone and send the request to other user
+  const defeat = (smash) => {
+    setShow(false);
+    socket.emit('defeat', actualUser, userIdClick, smash);
+    closeMenu();
+  }
 
-//open user profil when clic on profil on menu
-const getUserProfil = () => {
-  toggleModal2();
-  closeMenu();
-}
+  //open menu on 1fst click  on name on chat
+  const actionUser = (event, data) => {
+    setUserIdClick(data.sender);
+    setUserLogClick(data.senderLog);
+    setAnchorPoint({x:event.pageX, y: event.pageY});
+    if (data.sender === actualUser.id)
+      setSame(true);
+    else
+      setSame(false);
+    setShow(true);
+  }
 
-//set version of game whern defeat someone and send the request to other user
-const defeat = (smash) => {
-  setShow(false);
-  socket.emit('defeat', actualUser, userIdClick, smash);
-  closeMenu();
-  console.log('smash=', smash);
-}
+  //close menu on 2nd click  on name on chat
+  const closeMenu = () => {
+    setShow(false);
+  }
 
-//open menu on 1fst click  on name on chat
-const actionUser = (event, data) => {
-  setUserIdClick(data.sender);
-  setUserLogClick(data.senderLog);
-  setAnchorPoint({x:event.pageX, y: event.pageY});
-  if (data.sender === actualUser.id)
-    setSame(true);
-  else
-    setSame(false);
-  setShow(true);
-}
-
-//close menu on 2nd click  on name on chat
-const closeMenu = () => {
-  setShow(false);
-}
-
-    const handleCallback = (childData) =>{
-      setMessage(childData.msg);
-      console.log('childata.msg = ', childData.msg);
-      setCurrentSalon(childData.curSal);
-      console.log('sur sur', childData);
+  const handleCallback = (childData) =>{
+    setMessage(childData.msg);
+    setCurrentSalon(childData.curSal);
   }
 
   //permet de scroll en bas lors de nouveaux msg
   const messagsEndRef = useRef(null);
+
   const scrollToBottom = () => {
     messagsEndRef.current.scrollIntoView({behavior:"smooth"});
   }
@@ -183,12 +143,10 @@ const closeMenu = () => {
         <MySalons actualUser={actualUser} callBack={handleCallback}/>
       </div>
       {/*modale qui apparaissent seulement si elle sont demande: userProfil et lorsque l' utilisateur est defie par un autre */}
-      {/* <ModalWindow revele={revele} setRevele={toggleModal}> */}
         <Defeat toggle={toggleModal} revele={revele} opponent={defeatUser} actual={actualUser} version={version}></Defeat>
-      {/* </ModalWindow> */}
-      <ModalWindow revele={revele2} setRevele={toggleModal2}>
-        <FriendUserProfilExtended Value={userLogClick}/>
-      </ModalWindow>
+        <ModalWindow revele={revele2} setRevele={toggleModal2}>
+          <FriendUserProfilExtended Value={userLogClick}/>
+        </ModalWindow>
       <div style={messageStyle}>
         <div><p style={chatTitle}>{currentSalon.display}</p></div>
         <div style={chatBox} >
@@ -218,35 +176,3 @@ const closeMenu = () => {
   );
 }
 export default Chat
-
-// /* Recupere tout les utilisateur dans un tableau users, 1x slmt (componentDidMount) */
-  // const [users, setUsers] = useState([]);// Tous les users de la db
-  // const [userFound, setUserFound] = useState([]); // Contient l'utilisateur si trouve
-
-  // useEffect(() => {
-  //   axios.get("http://localhost:3000/users/all", { withCredentials: true }).then((res) => {
-  //     setUsers(res.data);
-  //     console.log('find all pour la barre de recherche:', users);
-  //   });
-  // }, [])
- 
-  // /* Apres enter dans la barre de recherche users */
-  // const displayUser = (event) => {
-  //   /* Recherche dans le tableau users sil trouve le user cherche */
-  //  if(event.key === 'Enter'){
-  //     console.log('===displayUSer()');
-  //    const res = users.find(element => event.target.value === element.login);
-  //    if (res)
-  //      setUserFound(res);
-  //    else
-  //       setUserFound('User not found');
-  //     /* Affiche le profil user */
-  //     toggle();
-  //   }
-  // }
-/* Barre de recherche d'un user + affichage de userFound
-      <div>
-        <p>Search a user</p>
-        <input type='text' onKeyPress={displayUser} />
-        <Modale revele={revele} toggle={toggle} name={userFound.login} />
-      </div>*/

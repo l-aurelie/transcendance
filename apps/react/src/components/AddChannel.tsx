@@ -10,8 +10,6 @@ const chatTitle1 = {
     justifyContent: "center",
     marginTop: "auto", 
     outline: "ridge", "1px": "red",
-    //width: "250px",
-   // height: "80px",
     borderRadius: "2rem",
     position: "absolute",
     top:"60%", 
@@ -23,8 +21,6 @@ const chatTitle1 = {
     justifyContent: "center",
     marginTop: "auto", 
     outline: "ridge", "1px": "red",
-    //width: "250px",
-   // height: "80px",
     borderRadius: "2rem",
     position: "absolute",
     top:"60%", 
@@ -49,17 +45,16 @@ const AddChannel = ({user}) => {
     const [inf, setInf] = useState('');
     const [reveleAdd, setReveleAdd] = useState(false);
     const toggleAdd = () => {setReveleAdd(!reveleAdd);}
-    //const [pwd]
     const [revele, setRevele] = useState(false);
     const toggle = () => {setRevele(!revele);}
+    
     useEffect(() => {
         setNewSalon(0); 
         socket.on('fetchsalon', data => {
-        console.log(data);
         setSalons(data);
        });
       socket.emit('fetchsalon', user.id);
-      }, [newSalon, user.id])
+    }, [newSalon, user.id])
 
     const handleChange = event => {
         setMessage(event.target.value);
@@ -67,20 +62,18 @@ const AddChannel = ({user}) => {
 
     const check = () => {
         const info = {roomId:currentSal, pwd:inf}
-         axios.post("http://localhost:3000/users/checkpwd/", info, {withCredentials: true}).then((res) => {
+        axios.post("http://localhost:3000/users/checkpwd/", info, {withCredentials: true}).then((res) => {
             if (res.data === true)
             {
-              setMes(false);
+                setMes(false);
                 socket.emit('user_joins_room', {userId: user.id, room: currentName, roomId:currentSal});
-
-              toggle();
+                toggle();
             }
-            else{
-              setMes(true);
-            
+            else {
+                setMes(true);
             }
-          })
-          .catch(error => {
+        })
+        .catch(error => {
             if (error.response && error.response.status)
             {
                 if (error.response.status === 403)
@@ -93,56 +86,42 @@ const AddChannel = ({user}) => {
             else
                 console.log(error.message);
         })
-       // const pwdInput = prompt('Enter the password to join the room');
-          //  setPwd(pwdInput);
-        //    const inf = {roomId: currentSal, pwd: pwdInput};
-        //    console.log("PWD === ", pwdInput);
-        //     axios.post("http://localhost:3000/users/checkpwd/", inf, {withCredentials: true}).then((res) => {
-        //         goodPwd = res.data;
-        //         if(!goodPwd)
-        //         alert('Wrong password');
-        //     })
     }
-  const handleClick = (salon) => { 
-    axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
-        console.log('PWD', res.data);
-        //let goodPwd = false;
-
-        if (res.data === true) {
-            setCurrentSal(salon.id);
-            setCurrentName(salon.name);
-            toggle();
-        }
-        else
-            socket.emit('user_joins_room', {userId: user.id, room: salon.name, roomId:salon.id});
-    })
-    .catch(error => {
-        if (error.response && error.response.status)
-        {
-            if (error.response.status === 403)
-                window.location.href = "http://localhost:4200/";
-            else
-                console.log("Error: ", error.response.code, " : ", error.response.message);
-        }
-        else if (error.request)
-            console.log("Unknown error");
-        else
-            console.log(error.message);
-    })
     
-      //toggle();
+    const handleClick = (salon) => { 
+        axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
+            if (res.data === true) {
+                setCurrentSal(salon.id);
+                setCurrentName(salon.name);
+                toggle();
+            }
+            else
+                socket.emit('user_joins_room', {userId: user.id, room: salon.name, roomId:salon.id});
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.request)
+                console.log("Unknown error");
+            else
+                console.log(error.message);
+        })
     };
 
     const sendNewSalon = (bool, text) => { 
-    console.log('user.id = ', user.id);
+        socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id); 
+        setNewSalon(1);
+        setMessage('');
+        toggleAdd();     
+    };
 
-            socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id); 
-            setNewSalon(1);
-            setMessage('');
-            toggleAdd();     
-            //           toggle();
-        };
-        const handleChange2 = (event) => {    setInf(event.target.value);  }
+    const handleChange2 = (event) => {    setInf(event.target.value);  }
+    
     return(
         <div>
             <MaterialIcon size="large" icon="group_add" onClick={toggleAdd} />

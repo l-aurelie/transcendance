@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Logo from './Logo';
-//import CreateSalon from './AddChannel';
-//import AddNav from './AddNav';
 import Select from 'react-select';
 import { socket } from "./Socket";
 import CSS from 'csstype';
@@ -10,14 +8,13 @@ import axios from 'axios';
 const log: CSS.Properties = {
     position : 'relative',
     top : '5%',
-   // left: '50%'
 }
 
 const watchButton: CSS.Properties = {
     position : 'relative',
     top : '40%',
-    //left : '10%'
 }
+
 /* Assombri l'arriere plan */
 const background: CSS.Properties = {
     background: 'rgba(0,0,0,0.5)',
@@ -28,6 +25,7 @@ const background: CSS.Properties = {
     bottom: '0',
     zIndex: '9998'
 }
+
 const modale: CSS.Properties = {
     height: '500px',
     width: '700px',
@@ -55,38 +53,37 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
             for (let entry of res.data)
                 tab.push({value: entry.id, label:entry.login});
             setAllUsers(tab);
-            })
-            .catch(error => {
-                if (error.response && error.response.status)
-                {
-                    if (error.response.status === 403)
-                        window.location.href = "http://localhost:4200/";
-                    else
-                        console.log("Error: ", error.response.code, " : ", error.response.message);
-                }
-                else if (error.request)
-                    console.log("Unknown error");
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
                 else
-                    console.log(error.message);
-            })
-            axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.request)
+                console.log("Unknown error");
+            else
+                console.log(error.message);
+        })
+        axios.get("http://localhost:3000/users/members/" + idRoom, {withCredentials:true}).then((res) =>{
             setMembers(res.data) 
-                })
-                .catch(error => {
-                    if (error.response && error.response.status)
-                    {
-                        if (error.response.status === 403)
-                            window.location.href = "http://localhost:4200/";
-                        else
-                            console.log("Error: ", error.response.code, " : ", error.response.message);
-                    }
-                    else if (error.request)
-                        console.log("Unknown error");
-                    else
-                        console.log(error.message);
-                })
-    
-        }, [idRoom])
+        })
+        .catch(error => {
+            if (error.response && error.response.status)
+            {
+                if (error.response.status === 403)
+                    window.location.href = "http://localhost:4200/";
+                else
+                    console.log("Error: ", error.response.code, " : ", error.response.message);
+            }
+            else if (error.request)
+                console.log("Unknown error");
+            else
+                console.log(error.message);
+        })        
+    }, [idRoom])
   
     const [option, setOption] = useState(-1);
     const [lab, setLab] = useState("");
@@ -95,8 +92,8 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
         setValue({value:e.value, label:e.label});
         setOption(e.value);
         setLab(e.label);
-
     }
+
     const reset = () => {
         setOption(-1);
         setValue({value: -1, label:"Choose a user"});
@@ -104,67 +101,52 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
         toggle2();
     }
 
-
     const add = () => {
         if (option === -1)
             return ;
-        else
-        {
-            console.log("test");
+        else {
             socket.emit('user_joins_room', {userId: option, room: roomName, roomId: idRoom});
             let tabU = allUser.filter(element => element.value !== option)
             setAllUsers(tabU);
             let tab = members;
             tab.push({value:option, label:lab});
             setMembers(tab);
-        setValue({value: -1, label:"Choose a user"});
-        setOption(-1);
+            setValue({value: -1, label:"Choose a user"});
+            setOption(-1);
             setLab("");
-        //    toggle();
         }
     }
 
-    if (revele)
-    {
-    return(
-        <div>
-        <div style={background} />
-             <div style={modale}>
-             <div style={log}>
-                    <Logo/>
-                </div>
-        <div style={{display:'flex', justifyContent:'space-around', position:"relative",top:"20%"}}>
-        <div style={{overflowY:'scroll' as 'scroll', width:'50%', maxHeight:'300px', borderRight:'solid', borderColor:'grey'}}>
-            <h2>Members</h2>
-                {members.map(data => (<div key={data.value}> {data.label}</div>))}
-            
-                </div>
-        <div style={{width :'50%', top:"50%"}}>
+    if (revele) {
+        return (
+            <div>
+            <div style={background} />
+                <div style={modale}>
+                <div style={log}>
+                        <Logo/>
+                    </div>
+            <div style={{display:'flex', justifyContent:'space-around', position:"relative",top:"20%"}}>
+            <div style={{overflowY:'scroll' as 'scroll', width:'50%', maxHeight:'300px', borderRight:'solid', borderColor:'grey'}}>
+                <h2>Members</h2>
+                    {members.map(data => (<div key={data.value}> {data.label}</div>))}
+                
+                    </div>
+            <div style={{width :'50%', top:"50%"}}>
 
-          <div style={{position:"relative",top:"20%"}}>
-                    <Select onChange={handleChange} options={allUser} value={value}/>
+            <div style={{position:"relative",top:"20%"}}>
+                        <Select onChange={handleChange} options={allUser} value={value}/>
+                </div>
+                <div style={watchButton}><button  type='button' onClick={add}>Add</button>
+                </div>
             </div>
-            <div style={watchButton}><button  type='button' onClick={add}>Add</button>
             </div>
-        </div>
-        </div>
-        <button style={button} type='button' onClick={reset}>x</button>
-        </div>
-        </div>
-    //     <div>
-    //         <div style={background} />
-    //         <div style={modale}>
-               
-    //             <div style={watchButton}>
-    //                 <button style={button} type='button' onClick={watch}>watch</button>
-    //             </div>
-    //             <button style={button} type='button' onClick={reset}>x</button>
-    //         </div>
-    //     </div>
-     )
-}
-else
-    return null;
+            <button style={button} type='button' onClick={reset}>x</button>
+            </div>
+            </div>
+        )
+    }
+    else
+        return null;
 };
 
 export default AddPrivateMember;
