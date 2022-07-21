@@ -13,8 +13,8 @@ cd ..
 
 #delete old paths in .env
 echo -e "\e[1;36m setting volume path variables \e[0m"
-sed -i '20d' .env
-sed -i '20d' .env
+sed -i '21d' .env
+sed -i '21d' .env
 #replace with correct path in .env
 echo "NEST_PATH=${PWD}/nest/node_modules" >> .env
 echo "REACT_PATH=${PWD}/react/node_modules" >> .env
