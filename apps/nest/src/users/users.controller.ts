@@ -377,12 +377,19 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       //return (users);
    return(tab);
    }
+
+   //UPTO HERE
    @Get('allNoMembers/:roomId')
    async getNoMember(@Param('roomId') roomId : string) {
       const users = await this.userServ.findAll();
       //console.log('GetUsers()');
       let tab = [];
       const id = parseInt(roomId);
+      if (!Number.isInteger(id))
+      {
+         console.log("function expected number");
+         return null;
+      }
       for (let entry of users)
       {
          let isMember = await this.roomUser.find({where: {roomId:id, userId:entry.id}});
@@ -398,6 +405,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    @Get(':login')
    async getUserByLogin(@Param('login') params : string) {
       const user = await this.userServ.findUserByLogin(params);
+      if (!user)
+         return null;
       //console.log('=====getUserByLogin()', user, params);
       //return (user);
       return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
@@ -408,14 +417,22 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    async getUserByID(@Param() userStringId: string) {
       console.log("---------------getBYID");
       const userId = parseInt(userStringId);
+      if (!Number.isInteger(userId))
+      {
+         console.log("expected integer");
+         return null;
+      }
       const user = await this.userServ.findUserById(userId);
       //return (user);
       return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
 
    }
+
    @Get('userRooms/:id')
    async getUserRooms(@Param('id') id : string) {
-      const idUser = parseInt(id);
+   const idUser = parseInt(id);
+   if (!Number.isInteger(idUser))
+      return null;
    let tab = [];
 
    const dm = await this.roomRepo.find({where:{directMessage:true}});
@@ -525,11 +542,13 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
            // console.log('undef');
             return([]);
          }
-         const room = this.roomRepo.findOne({where: {id:parseInt(currentSalon)}});
-      
+         const currentSalonInt = parseInt(currentSalon);
+         const room = this.roomRepo.findOne({where: {id: currentSalonInt}});
+         if (!Number.isInteger(currentSalonInt))
+            return ([]);
          const users = await this.roomUser.find({
             relations: ["user", "room"],
-            where : {roomId: parseInt(currentSalon), userId:Not((await room).creatorId),}});
+            where : {roomId: currentSalonInt, userId:Not((await room).creatorId),}});
          //   console.log('HERE!!!!!!!!!!!!!!!!!!!!!!!!!*********************** ===> ' + (users));
          //   console.log(users[0].user.login);
          //   console.log(users[0].user.avatar);
@@ -551,6 +570,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    {
       const userBlocking = parseInt(idBlocking);
       const userBlocked = parseInt(idBlocked);
+      if (!Number.isInteger(userBlocked) || !Number.isInteger(userBlocking))
+         return null;
       const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
       if (already.length > 0)
          return ;
@@ -563,6 +584,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    {
       const userBlocking = parseInt(idBlocking);
       const userBlocked = parseInt(idBlocked);
+      if (!Number.isInteger(userBlocked) || !Number.isInteger(userBlocking))
+         return null;
       const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
       if (already.length > 0)
          return true;
@@ -575,6 +598,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    {
       const userBlocking = parseInt(idBlocking);
       const userBlocked = parseInt(idBlocked);
+      if (!Number.isInteger(userBlocked) || !Number.isInteger(userBlocking))
+         return null;
       const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
       if (already.length === 0)
          return ;
@@ -585,6 +610,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
    @Get('members/:idRoom')
    async members(@Param('idRoom') idRoom: string) {
       const id = parseInt(idRoom);
+      if (!Number.isInteger(id))
+         return [];
       const allRelations = await this.roomUser.find({where: {roomId:id}});
       let tab = [];
       for (let entry of allRelations)
@@ -612,6 +639,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return(false);
          }
          var currentSal = parseInt(currentSalon);
+         if (!Number.isInteger(currentSal))
+            return (false);
          console.log('current SAL: ' + currentSal);
          const room = await this.roomRepo.findOne({where: {id:currentSal}});
          console.log("ROOM +++> ", room);
@@ -654,6 +683,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
+         if (!Number.isInteger(id))
+            return ([]);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, ban:true}});
          let tab = [];
@@ -673,6 +704,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
+         if (!Number.isInteger(id))
+            return ([]);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, mute:true}});
          let tab = [];
@@ -692,6 +725,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
+         if (!Number.isInteger(id))
+            return ([]);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
          let tab = [];
@@ -706,6 +741,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       async whichNonAdm(@Param('currentSalon') currentSalon: string) {
          console.log('nonadm', currentSalon)
          const id = parseInt(currentSalon);
+         if (!Number.isInteger(id))
+            return ([]);
          if (currentSalon === "undefined")
          {
            // console.log('undef');
@@ -732,6 +769,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
+         if (!Number.isInteger(id))
+            return ([]);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, mute:false}});
          const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
@@ -751,7 +790,10 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
       @Get('getColor/:userId')
       async getColor(@Param('userId') userId:string) {
          let color = "rgba(0,0,0,1)";
-         const user = await this.userRepo.findOne({where:{id:parseInt(userId)}});
+         const userIdInt = parseInt(userId);
+         if (!Number.isInteger(userIdInt))
+            return ([]);
+         const user = await this.userRepo.findOne({where:{id: userIdInt}});
          if (user)
             color = user.color;
          return (color);
@@ -766,6 +808,8 @@ return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, two
             return([]);
          }
          const id = parseInt(currentSalon);
+         if (!Number.isInteger(id))
+            return ([]);
          const room = await this.roomRepo.findOne({where:{id:id}});
          const repo = await this.roomUserRepo.find({where:{roomId:id, ban:false}});
          const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
