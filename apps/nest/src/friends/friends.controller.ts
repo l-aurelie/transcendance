@@ -23,7 +23,7 @@ export class FriendsController {
         @Req() request,
      ): Promise<FriendRequest | { error: string }> { 
       const receiverId = parseInt(receiverStringId);
-      if (isNaN(receiverId))
+      if (!Number.isInteger(receiverId))
          return { error: "invalid receiver id" };
       const the_user = await this.userRepo.findOne({where: [{ id: receiverId}],
       });
@@ -50,7 +50,7 @@ export class FriendsController {
         @Req() request,
      ): Promise<FriendRequest | { error: string; }> {
       const SenderId = parseInt(SenderStringId);
-      if (isNaN(SenderId))
+      if (!Number.isInteger(SenderId))
          return { error: "invalid receiver id" };
       const sender = await this.usersServ.findUserById(SenderId);
       if (!sender)
@@ -66,7 +66,7 @@ export class FriendsController {
         @Req() request,
      ): Promise<FriendRequestStatus> {
       const receiverId = parseInt(receiverStringId);
-      if (isNaN(receiverId))
+      if (!Number.isInteger(receiverId))
          return null;
       const the_user = await this.userRepo.findOne({where: [{ id: receiverId}],
          });
@@ -83,7 +83,7 @@ export class FriendsController {
          @Param('friendRequestId') friendRequestStringId: string,
       ): Promise<FriendRequestStatus> {
        const friendRequestId = parseInt(friendRequestStringId);
-       if (isNaN(friendRequestId))
+       if (!Number.isInteger(friendRequestId))
          return null;
       const the_req = await this.friendRequestRepository.findOne({where: [{ id: friendRequestId}],});
       if (!the_req)
@@ -98,7 +98,7 @@ export class FriendsController {
          @Param('friendRequestId') friendRequestStringId: string,
       ): Promise<FriendRequestStatus> {
        const friendRequestId = parseInt(friendRequestStringId);
-       if (isNaN(friendRequestId))
+       if (!Number.isInteger(friendRequestId))
          return null;
       const the_req = await this.friendRequestRepository.findOne({where: [{ id: friendRequestId}],});
       if (!the_req)

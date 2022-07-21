@@ -205,7 +205,7 @@ const MySalons = (props) => {
         //socket.off('fetchmessage');
         //setCurrentSalon({name: data.salonName, isDm: data.dm, display: data.chatterLogin});
     });
-    }, [joinedSalons])
+    }, [joinedSalons, props.actualUser.id])
 
     //Ecoute sur le channel leftsalon pour suivre les sorties de salon dans n'importe quel socket
     //Le hook étant sur joinedSalon, il faut socket.off 'leftsalon' à chaque modif de joinedSalons
@@ -715,7 +715,7 @@ const MySalons = (props) => {
                 {/* Permet de quitter le channel */}
                 <div>
                     {
-                        ((salon[1].creator === props.actualUser.id) ) ?
+                        ((salon[1].creator === props.actualUser.id) && (salon[1].isDm === false)) ?
                         <div style={{cursor:"pointer"}} onClick={alertCreator}>x</div> : <div style={{cursor:"pointer"}} onClick={(event) => closeSalon(event, salon[1], salon[0])}>x</div>
                     }
                 </div>

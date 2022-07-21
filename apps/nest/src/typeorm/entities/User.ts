@@ -72,9 +72,6 @@ export class User implements IUser { // donne la composition de User, permet de 
     @Column({default: 0})
     total_wins: number;
  
- //   @ManyToMany(() => RoomEntity, room => room.users)
- //   rooms : RoomEntity;
- 
     @OneToMany(() => Socket, socket => socket.user)
     socket: Socket[];
 
@@ -83,9 +80,6 @@ export class User implements IUser { // donne la composition de User, permet de 
 
     @Column({default: true})
     first : boolean;
-
-    // @ManyToMany(() => RoomEntity , RoomEntity => RoomEntity.admin)
-    // admin: RoomEntity[];
     
 }
 

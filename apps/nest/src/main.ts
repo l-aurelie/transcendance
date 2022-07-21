@@ -35,14 +35,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  //app.use('/mnt/nfs/homes/ssar/PROJECT/my_transcendance/apps/nest/src/views', express.static('/mnt/nfs/homes/ssar/PROJECT/my_transcendance/apps/nest/src/views/verify.hbs'));
-  //app.use(multer);
- // app.use(bodyParser.urlencoded({extended:true}))
- // app.use(bodyParser.text({type: 'text/html'}))
- // app.use(bodyParser.json());
- // app.useStaticAssets(join(__dirname, '..', 'public'));
- // app.setBaseViewsDir(join(__dirname, '..', 'views'));
-//  app.setViewEngine('hbs');
   await app.listen(3000);
 }
 bootstrap();
