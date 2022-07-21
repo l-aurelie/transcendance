@@ -179,10 +179,10 @@ const  unblock = () => {
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={color}></rect></svg>
         
           <p style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
-          | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-          | <MaterialIcon icon="videogame_asset" onClick={defeat} />
-          | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
-          | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
+            | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
+            | <MaterialIcon icon="videogame_asset" onClick={defeat} />
+            | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
+            | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
           {/* |Spectate <br></br> */}
           </div>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
@@ -202,11 +202,11 @@ const  unblock = () => {
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={userSelected.color}></rect></svg>
         
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
-          | <MaterialIcon icon="person_add" onClick={sendFriendRequest} /> 
-          | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-          | <MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}
-          |{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
-          | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
+            | <MaterialIcon icon="person_add" onClick={sendFriendRequest} /> 
+            | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
+            | <MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}
+            |{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
+            | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
            {/* | Spectate <br></br> */}
            </div>
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>

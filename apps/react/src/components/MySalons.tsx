@@ -37,6 +37,10 @@ const channelNameNotif = {
 
 }
 
+const salons= {
+    overflowY: "auto" as "auto",
+}
+
 const channel = {
     width: "100%",
     // backgroundColor: 'green',
@@ -692,7 +696,7 @@ const MySalons = (props) => {
 
     return(
         <div>
-        <div style={{overflowY:'scroll' as 'scroll'}}>   
+        <div style={salons}>   
           {Array.from(joinedSalons.entries()).map((salon) => ( 
             <button key={salon[1].roomId} style={channel} onClick={() => {handleClick(salon)}}>
                <div style={{position:'relative' as 'relative', width:'100%', display:'flex', justifyContent:'space-between'}}>

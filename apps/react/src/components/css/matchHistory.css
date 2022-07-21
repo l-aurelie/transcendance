@@ -8,7 +8,7 @@
   table {
     display: block;
     height: 400px;
-    overflow-y: scroll;
+    overflow-y: auto;
     border-collapse: collapse;
     width: 100%;
   }

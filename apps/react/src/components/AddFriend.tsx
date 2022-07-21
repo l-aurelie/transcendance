@@ -9,7 +9,7 @@ import DisplayUser from './DisplayUser';
 
 const lists = {
   // overflowY: 'scroll'
-  overflowY: "scroll" as "scroll"
+  overflowY: "auto" as "auto"
 }
 
 const AddFriend = (props) => {
@@ -118,6 +118,7 @@ const searchFriend = () => {
     return(
         <div>
           <MaterialIcon size="large" icon="person_add" onClick={toggleAdd} />
+          <br></br>
           <div style={lists}>
             {friends.map(friends => (
               <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav} togglePlay2={props.toggleAddNav}/></div>

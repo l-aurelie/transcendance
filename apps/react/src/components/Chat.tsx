@@ -36,7 +36,7 @@ const messageStyle = {
 }
 const chatBox = {
   marginTop: 'auto',
-  overflowY: 'scroll' as 'scroll',
+  overflowY: 'auto' as 'auto',
   border: '2px',
 }
 

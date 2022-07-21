@@ -33,6 +33,8 @@ const background: CSS.Properties = {
     zIndex: '9998'
 }
 const modale: CSS.Properties = {
+    boxShadow: ' inset 0px 0px 10px 20px rgba(204, 95, 117)',
+    borderRadius: "1%",
     height: '500px',
     width: '700px',
     background: 'rgba(214,105,127)',

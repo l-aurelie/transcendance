@@ -15,10 +15,13 @@ import AddChannel from "./AddChannel";
      }  
 
      return (
-        <div>
+      <div>
+         <br></br><br></br>
+         <div style={{display:'flex', justifyContent:'center', width:'100%', background:'rgba(204, 95, 117)'}}>
             <button onClick={switchToFriend}>Friend</button>
             <button onClick={switchToChannel}>Channel</button>
-            {reveleFriend ? <AddFriend user={props.user} toggleAddNav={props.toggleAddNav}/> : <AddChannel user={props.user} />}
+         </div>
+         {reveleFriend ? <AddFriend user={props.user} toggleAddNav={props.toggleAddNav}/> : <AddChannel user={props.user} />}
         </div>    
      );  
  }

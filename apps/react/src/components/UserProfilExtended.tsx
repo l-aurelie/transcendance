@@ -8,6 +8,7 @@ import MatchHistory from "./MatchHistory";
 import Leaderboard from "./Leaderboard";
 import UserFormAvatar from "./UserFormAvatar";
 import UserForm from "./UserForm";
+import MaterialIcon from 'material-icons-react';
 
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
 const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
@@ -107,25 +108,31 @@ const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
         <div>
             <div style={{display:'flex', justifyContent:'center'}}>
                 <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
+            </div >
+            <div style={{display:'flex', justifyContent: 'center'}}>
+                <h1 style={{display:'flex', marginBottom:'0'}}>{user.login}</h1>
+                <MaterialIcon size='large' icon="edit" onClick={toggleForm} />
             </div>
-            <h1 style={{display:'flex', justifyContent:'center', marginBottom:'0'}}>{user.login}</h1>
-            <div style={{display:'flex', justifyContent:'center', paddingTop:'0'}}><p><button onClick={toggleForm}>Set profil</button></p></div><br></br>
             <ModalWindow revele={reveleForm} setRevele={toggleForm}>
                 <div style={{display:'flex', justifyContent:'space-around'}}>
-                <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'grey'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
+                <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'rgba(204, 95, 117)'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
                 <div><h2>Change your photo</h2><UserFormAvatar user={user} toggle={toggleForm}/></div>
                 </div>
             </ModalWindow>
-            <div style={{display:'flex', justifyContent:'space-around'}}>
-                <div>Victoires: {wins} </div>
-                <div>Defaites: {losses} </div>
-                <div>Ranking: {ranking} </div>
-            </div>
-            <div style={{display:'flex', justifyContent:'space-around'}}>
+
+            <br></br>
+            <div style={{display:'flex', justifyContent:'center', width:'100%', background:'rgba(204, 95, 117)'}}>
                 <div><Friends user={user} toggleProfil={toggleProfil} toggleProfil2={toggleProfil2}></Friends></div>
                 <div><FriendReqs reqnotif={reqnotif}></FriendReqs></div>
                 <div><Leaderboard></Leaderboard></div>
                 <div><button onClick={toggleHistory}>Match History</button></div>
+            </div>
+            <br></br>
+            <br></br>
+            <div style={{display:'flex', flexDirection: 'column'}}>
+                <div style={{display:'flex', justifyContent:'center'}}>Victoires: {wins}</div><br></br>
+                <div style={{display:'flex', justifyContent:'center'}}>Defaites: {losses}</div><br></br>
+                <div style={{display:'flex', justifyContent:'center'}}>Ranking: {ranking}</div><br></br>
             </div>
             <ModalWindow revele={reveleHistory} setRevele={toggleHistory}>
                 <MatchHistory history={history}></MatchHistory>
@@ -135,3 +142,4 @@ const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
 }
 
 export default UserProfilExtended
+            //<div style={{display:'flex', justifyContent:'center', paddingTop:'0'}}><p><button onClick={toggleForm}>Set profil</button></p></div><br></br>

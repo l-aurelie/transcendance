@@ -3,6 +3,8 @@ import CSS from 'csstype';
 import MaterialIcon from 'material-icons-react';
 
 const modaleWindow: CSS.Properties = {
+    boxShadow: ' inset 0px 0px 10px 20px rgba(204, 95, 117)',
+    borderRadius: "1%",
     height: '500px',
     width: '700px',
     background: 'rgba(214,105,127)',
