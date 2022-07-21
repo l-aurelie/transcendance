@@ -4,7 +4,7 @@ WORKDIR /src/app
 
 COPY package*.json ./
 
-RUN npm install --location=global npm@8.14.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps
+RUN npm install --location=global npm@8.15.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps
 COPY . .
 
 RUN npm run build 

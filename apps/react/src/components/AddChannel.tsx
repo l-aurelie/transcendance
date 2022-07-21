@@ -59,7 +59,7 @@ const AddChannel = ({user}) => {
         setSalons(data);
        });
       socket.emit('fetchsalon', user.id);
-      }, [newSalon])
+      }, [newSalon, user.id])
 
     const handleChange = event => {
         setMessage(event.target.value);
