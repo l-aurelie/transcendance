@@ -13,6 +13,7 @@ const FriendReqss = ({reqnotif}) => {
 	const [refresh, setRefresh] = useState(false);
 	/* Outils d'affichage de la modale */
 	const [revele, setRevele] = useState(false);
+	const [myId, setmyId] = useState([]);
 	const toggleModal = () => {setRevele(!revele);} 
 	/*------*/
 
@@ -35,26 +36,45 @@ const FriendReqss = ({reqnotif}) => {
 				console.log("unknown error");
 		})
 
-		socket.on("changeReqs", data => {
-			axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
-				setreqs(res.data);
-			})
-			.catch(error => {
-			if (error.response && error.response.status)
-			{
-				if (error.response.status === 403)
-					window.location.href = "http://localhost:4200/";
-				else
-					console.log("Error: ", error.response.code, " : ", error.response.message);
-			}
-			else if (error.message)
-				console.log(error.message);
-			else
-				console.log("unknown error");
-			})
+		/*get userId*/   
+	axios.get("http://localhost:3000/users/getMyId", {withCredentials:true}).then((res) =>{
+		setmyId(res.data);
 		})
-
+		.catch(error => {
+		  if (error.response && error.response.status)
+		  {
+			  if (error.response.status === 403)
+				  window.location.href = "http://localhost:4200/";
+			  else
+				  console.log("Error: ", error.response.code, " : ", error.response.message);
+		  }
+		  else if (error.request)
+			  console.log("Unknown error");
+		  else
+			  console.log(error.message);
+		})
 	},[refresh]);
+
+	socket.on("changeReqs", ({receiver}, data) => {
+		if (receiver === myId)
+		{
+			axios.get("http://localhost:3000/friends/friendRequest/me/received-requests", {withCredentials:true}).then((res) =>{
+			setreqs(res.data);
+		})
+		.catch(error => {
+		if (error.response && error.response.status)
+		{
+			if (error.response.status === 403)
+				window.location.href = "http://localhost:4200/";
+			else
+				console.log("Error: ", error.response.code, " : ", error.response.message);
+		}
+		else if (error.message)
+			console.log(error.message);
+		else
+			console.log("unknown error");
+		})
+	}})
 
 	return(
 		<div>
