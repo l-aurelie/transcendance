@@ -3,8 +3,6 @@
 const Error404 = () => {
     return (
         <div>
-            {/* <Logo></Logo> */}
-
             <h1>404 error: File not found</h1>
         </div>
     );

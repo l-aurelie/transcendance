@@ -7,7 +7,6 @@ function UserFormAvatar2({user, toggle}) {
 	const { register, handleSubmit } = useForm();
 
 	const onSubmit = async (data) => {
-		console.log('submit avatar');
 		if (!data.file[0])
 			return;
 		const formData = new FormData();

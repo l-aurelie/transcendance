@@ -34,8 +34,6 @@ const modale: CSS.Properties = {
 const FirstConnect = ({revele, toggle, user}) => {
   
 	const toggleForm = () => {}
-	console.log(revele, '= revele');
-
 	const close = () => {
 		const inf = {userId:user.id};
 		axios.post("http://localhost:3000/users/firstFalse", inf, {withCredentials:true}).then((res) => {

@@ -12,134 +12,124 @@ import MaterialIcon from 'material-icons-react';
 
 /* Composant affichant le profil detaille d'un utilisateur [name] recu en parametre */
 const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
-    
-   // const [user, setUser] = useState([] as any);
-    const [wins, setWins] = useState([]);
-    const [losses, setLosses] = useState([]);
-    const [history, setHistory] = useState([]);
-    const [ranking, setRanking] = useState([]);
+	
+	const [wins, setWins] = useState([]);
+	const [losses, setLosses] = useState([]);
+	const [history, setHistory] = useState([]);
+	const [ranking, setRanking] = useState([]);
 
-    const [reveleHistory, setReveleHistory] = useState(false);
-    const toggleHistory = () => {setReveleHistory(!reveleHistory);} 
-    //---
-    const [reveleForm, setReveleForm] = useState(false);
-    const toggleForm = () => {setReveleForm(!reveleForm);} 
-    
-    useEffect(() => {
-        //axios.get("http://localhost:3000/users/" + myuser.login, {withCredentials:true}).then((res) =>{
-        //console.log('User profil extended : ', res.data);
-        //setUser(res.data);
-        //})
+	const [reveleHistory, setReveleHistory] = useState(false);
+	const toggleHistory = () => {setReveleHistory(!reveleHistory);} 
+	//---
+	const [reveleForm, setReveleForm] = useState(false);
+	const toggleForm = () => {setReveleForm(!reveleForm);} 
+	
+	useEffect(() => {
+		axios.get("http://localhost:3000/stats/getWins", {withCredentials:true}).then((res) =>{
+			setWins(res.data);
+		})
+		.catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.message)
+				console.log(error.message);
+			else
+				console.log("unknown error");
+		})
 
-        axios.get("http://localhost:3000/stats/getWins", {withCredentials:true}).then((res) =>{
-        console.log('User profil extended : ', res.data);
-        setWins(res.data);
-        })
-        .catch(error => {
-            if (error.response && error.response.status)
-            {
-                if (error.response.status === 403)
-                    window.location.href = "http://localhost:4200/";
-                else
-                    console.log("Error: ", error.response.code, " : ", error.response.message);
-            }
-            else if (error.message)
-                console.log(error.message);
-            else
-                console.log("unknown error");
-        })
+		axios.get("http://localhost:3000/stats/getLosses", {withCredentials:true}).then((res) =>{
+			setLosses(res.data);
+		})
+		.catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.message)
+				console.log(error.message);
+			else
+				console.log("unknown error");
+		})
 
-        axios.get("http://localhost:3000/stats/getLosses", {withCredentials:true}).then((res) =>{
-        console.log('User profil extended : ', res.data);
-        setLosses(res.data);
-        })
-        .catch(error => {
-            if (error.response && error.response.status)
-            {
-                if (error.response.status === 403)
-                    window.location.href = "http://localhost:4200/";
-                else
-                    console.log("Error: ", error.response.code, " : ", error.response.message);
-            }
-            else if (error.message)
-                console.log(error.message);
-            else
-                console.log("unknown error");
-        })
+		axios.get("http://localhost:3000/stats/getMatchHistory", {withCredentials:true}).then((res) =>{
+			setHistory(res.data);
+		})
+		.catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.message)
+				console.log(error.message);
+			else
+				console.log("unknown error");
+		})
 
-        axios.get("http://localhost:3000/stats/getMatchHistory", {withCredentials:true}).then((res) =>{
-        console.log('THE DATA : ', res.data);
-        setHistory(res.data);
-        })
-        .catch(error => {
-            if (error.response && error.response.status)
-            {
-                if (error.response.status === 403)
-                    window.location.href = "http://localhost:4200/";
-                else
-                    console.log("Error: ", error.response.code, " : ", error.response.message);
-            }
-            else if (error.message)
-                console.log(error.message);
-            else
-                console.log("unknown error");
-        })
+		axios.get("http://localhost:3000/stats/getRanking", {withCredentials:true}).then((res) =>{
+			setRanking(res.data);
+		})
+		.catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.message)
+				console.log(error.message);
+			else
+				console.log("unknown error");
+		})
 
-        axios.get("http://localhost:3000/stats/getRanking", {withCredentials:true}).then((res) =>{
-        setRanking(res.data);
-        })
-        .catch(error => {
-            if (error.response && error.response.status)
-            {
-                if (error.response.status === 403)
-                    window.location.href = "http://localhost:4200/";
-                else
-                    console.log("Error: ", error.response.code, " : ", error.response.message);
-            }
-            else if (error.message)
-                console.log(error.message);
-            else
-                console.log("unknown error");
-        })
+	}, [])
+	
+	return(
+		<div>
+			<div style={{display:'flex', justifyContent:'center'}}>
+				<img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
+			</div >
+			<div style={{display:'flex', justifyContent: 'center'}}>
+				<h1 style={{display:'flex', marginBottom:'0'}}>{user.login}</h1>
+				<MaterialIcon size='large' icon="edit" onClick={toggleForm} />
+			</div>
+			<ModalWindow revele={reveleForm} setRevele={toggleForm}>
+				<div style={{display:'flex', justifyContent:'space-around'}}>
+				<div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'rgba(204, 95, 117)'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
+				<div><h2>Change your photo</h2><UserFormAvatar user={user} toggle={toggleForm}/></div>
+				</div>
+			</ModalWindow>
 
-    }, [])
-    
-    return(
-        <div>
-            <div style={{display:'flex', justifyContent:'center'}}>
-                <img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
-            </div >
-            <div style={{display:'flex', justifyContent: 'center'}}>
-                <h1 style={{display:'flex', marginBottom:'0'}}>{user.login}</h1>
-                <MaterialIcon size='large' icon="edit" onClick={toggleForm} />
-            </div>
-            <ModalWindow revele={reveleForm} setRevele={toggleForm}>
-                <div style={{display:'flex', justifyContent:'space-around'}}>
-                <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'rgba(204, 95, 117)'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
-                <div><h2>Change your photo</h2><UserFormAvatar user={user} toggle={toggleForm}/></div>
-                </div>
-            </ModalWindow>
-
-            <br></br>
-            <div style={{display:'flex', justifyContent:'center', width:'100%', background:'rgba(204, 95, 117)'}}>
-                <div><Friends user={user} toggleProfil={toggleProfil} toggleProfil2={toggleProfil2}></Friends></div>
-                <div><FriendReqs reqnotif={reqnotif}></FriendReqs></div>
-                <div><Leaderboard></Leaderboard></div>
-                <div><button onClick={toggleHistory}>Match History</button></div>
-            </div>
-            <br></br>
-            <br></br>
-            <div style={{display:'flex', flexDirection: 'column'}}>
-                <div style={{display:'flex', justifyContent:'center'}}>Victoires: {wins}</div><br></br>
-                <div style={{display:'flex', justifyContent:'center'}}>Defaites: {losses}</div><br></br>
-                <div style={{display:'flex', justifyContent:'center'}}>Ranking: {ranking}</div><br></br>
-            </div>
-            <ModalWindow revele={reveleHistory} setRevele={toggleHistory}>
-                <MatchHistory history={history}></MatchHistory>
-            </ModalWindow>
-        </div>
-    );
+			<br></br>
+			<div style={{display:'flex', justifyContent:'center', width:'100%', background:'rgba(204, 95, 117)'}}>
+				<div><Friends user={user} toggleProfil={toggleProfil} toggleProfil2={toggleProfil2}></Friends></div>
+				<div><FriendReqs reqnotif={reqnotif}></FriendReqs></div>
+				<div><Leaderboard></Leaderboard></div>
+				<div><button onClick={toggleHistory}>Match History</button></div>
+			</div>
+			<br></br>
+			<br></br>
+			<div style={{display:'flex', flexDirection: 'column'}}>
+				<div style={{display:'flex', justifyContent:'center'}}>Victoires: {wins}</div><br></br>
+				<div style={{display:'flex', justifyContent:'center'}}>Defaites: {losses}</div><br></br>
+				<div style={{display:'flex', justifyContent:'center'}}>Ranking: {ranking}</div><br></br>
+			</div>
+			<ModalWindow revele={reveleHistory} setRevele={toggleHistory}>
+				<MatchHistory history={history}></MatchHistory>
+			</ModalWindow>
+		</div>
+	);
 }
 
 export default UserProfilExtended
-            //<div style={{display:'flex', justifyContent:'center', paddingTop:'0'}}><p><button onClick={toggleForm}>Set profil</button></p></div><br></br>

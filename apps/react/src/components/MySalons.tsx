@@ -356,7 +356,6 @@ const MySalons = (props) => {
 				def= {value:entry.id, label: entry.login}
 				tab.push(def);
 			}
-			console.log('nonadm', tab);
 			setTabNonAdm(tab);
 		})
 		.catch(error => {
