@@ -494,12 +494,13 @@ export class UsersController {
       const userBlocking = parseInt(idBlocking);
       const userBlocked = parseInt(idBlocked);
       if (!Number.isInteger(userBlocked) || !Number.isInteger(userBlocking))
-         return null;
+         return (false);
       const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
       if (already.length > 0)
-         return ;
+         return (false);
       const create = await this.blockRepo.create({blockingUserId:userBlocking, blockedUserId:userBlocked});
       await this.blockRepo.save(create);
+      return (true);
    }
 
    @Get('isBlock/:idBlocking/:idBlocked')
@@ -522,11 +523,12 @@ export class UsersController {
       const userBlocking = parseInt(idBlocking);
       const userBlocked = parseInt(idBlocked);
       if (!Number.isInteger(userBlocked) || !Number.isInteger(userBlocking))
-         return null;
+         return false;
       const already = await this.blockRepo.find({where: {blockingUserId:userBlocking , blockedUserId:userBlocked}})
       if (already.length === 0)
-         return ;
+         return false;
       const create = await this.blockRepo.delete({id:already[0].id});
+      return true;
    }
 
    //return all room that a user joined when he logged

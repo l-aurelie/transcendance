@@ -47,7 +47,7 @@ const MySalons = (props) => {
 	const [unmuteOption, setUnmute] = useState({value:0, label:'Select...'});
 	const [unbanOption, setUnban] = useState({value:0, label:'Select...'});
 	const [unadmOption, setUnadm] = useState({value:0, label:'Select...'});
-	const [usersRoom, setUsersRoom] = useState([]);
+	//const [usersRoom, setUsersRoom] = useState([]);
 	const [tabAdm, setTabAdm] = useState([]);
 	const [tabBan, setTabBan] = useState([]);
 	const [tabMute, setTabMute] = useState([]);
@@ -60,7 +60,7 @@ const MySalons = (props) => {
 	const [revele2, setRevele2] = useState(false);
 	const [revele3, setRevele3] = useState(false);
 	const [revele4, setRevele4] = useState(false);
-	const [roomId, setRoomId] = useState(0);
+	//const [roomId, setRoomId] = useState(0);
 	const toggleModal = (salon) => {setRevele(!revele);} 
 	const toggleModal2 = (salon) => {setRevele2(!revele2);} 
 	const toggleModal3 = (data) => {setRevele3(!revele3);} 
@@ -181,7 +181,7 @@ const MySalons = (props) => {
 	}, [joinedSalons, currentSalon.name])
 
 	const handleClick = (salon) => {
-		setRoomId(salon[1].roomId)
+		//setRoomId(salon[1].roomId)
 
 		if ((revele|| revele2 ||revele3) && currentSalon.roomId !== 'undefined')
 			 return ;
@@ -202,7 +202,7 @@ const MySalons = (props) => {
 			def= {value:entry.useId, label: entry.userLogin, admin:entry.isAdmin}
 			tab.push(def);
 		}
-		setUsersRoom(tab);
+		//setUsersRoom(tab);
 		whichAdm(salon[1].roomId);
 		whichBan(salon[1].roomId);
 		whichMute(salon[1].roomId);
