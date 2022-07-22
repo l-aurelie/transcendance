@@ -52,7 +52,7 @@ export class AuthService implements AuthenticationProvider {
     console.log('sendMail useremail =',user.email);  
     await this.mailerService.sendMail({
         to: user.email, // get l' email de l'utilisateur
-        subject: 'Your transcendance secret code ', 
+        subject: 'Your transcendence secret code !', 
         template: 'confirm',
         context: {
           login: user.login, //dans nest/views/email-templates/confirm.hbs, login et code seront remplace par les donne de l'utilisateur
