@@ -72,8 +72,9 @@ async sendFriendRequest(receiverId: number, sender: User): Promise<FriendRequest
     let MyFriendRequest: FriendRequest = {
         id: null, senderId:sender.id, receiverId:receiverId, sender:sender, receiver:receiver, status: 'pending'
     }
-    this.server.emit('changeReqs');
-    return this.friendRequestRepository.save(MyFriendRequest);
+    const ret = this.friendRequestRepository.save(MyFriendRequest);
+    this.server.emit('changeReqs', {receiver: receiver.id});
+    return ret;
 }
 
 /*retourne le status d'un requete precise*/
@@ -99,8 +100,7 @@ async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestSt
     const ret = await this.friendRequestRepository.save(friendReq);
     if (newStatus == "accepted")
     {
-        console.log("EMITTING");
-        this.server.emit('changeFriends');
+        this.server.emit('changeFriends', {sender: friendReq.senderId}, {receiver: friendReq.receiverId});
     }
     return ret.status;
 }

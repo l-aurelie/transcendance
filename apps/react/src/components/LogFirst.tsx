@@ -34,7 +34,6 @@ class UserForm2 extends React.Component<any, any, any> {
         });
     }
     handleChangePhoto(e) {
-        console.log(e.target);
         this.setState({
           photo: e.target.file[-1]
         });
@@ -51,11 +50,8 @@ class UserForm2 extends React.Component<any, any, any> {
         twoFA: this.state.twoFA,
     }
     axios.post("http://localhost:3000/users/set", formUser, {withCredentials:true}).then((res) =>{
-      console.log("form submit"); 
-      console.log(res);
       if (res.data.bool === false)
       {
-        console.log('enter data === false');
         this.setState({ok:false, message:true, display: res.data.msg})
       }
       else{
