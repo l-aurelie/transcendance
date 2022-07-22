@@ -111,7 +111,7 @@ export class UsersController {
 
    //-* UPLOAD l'image et la place dans la base de donnee
    @UseGuards(AuthenticatedGuard)
-   @Get('setimg/:userId')
+   @Post('setimg/:userId')
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 

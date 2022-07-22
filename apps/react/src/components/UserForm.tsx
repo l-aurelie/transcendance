@@ -87,7 +87,7 @@ class UserForm extends React.Component<any, any, any> {
 								<input type="text" value={this.state.email} onChange={this.handleChange} id="email" name="email" /></label>
 						</div>
 						<div>
-							{ this.state.twoFA === false ? <input type="checkbox"  value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA"/> : <input type="checkbox"  value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA" checked/>}
+							<input type="checkbox"  value={this.state.twoFA} onChange={this.handleChange} id="twoFa" name="twoFA" checked={this.state.twoFA}/>
 								<label>Two-factor Authentication
 								</label>
 						</div><br></br>

@@ -21,9 +21,16 @@ export class RoomService {
 
      async createRoom(idUser: number, isPrivate:boolean, isDm:boolean, nameRoom: string): Promise<IRoom> {
        // const newRoom = await this.addCreatorInRoom(room, creator);
-      const room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
+      let room;
+      if (isDm === true)
+        room = {creatorId: -1, private: isPrivate, directMessage: isDm, name: nameRoom};
+      else
+        room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
       const does_exist = await this.roomRepo.findOne({where: {name: nameRoom} });
-      const newRoom = await this.roomRepo.save(room);
+      if (does_exist && (room.directMessage === true)){
+        return does_exist;
+      }
+        const newRoom = await this.roomRepo.save(room);
       if (does_exist && (room.directMessage === false)){
         console.log("ROOM ALREADY EXISTS")
         await this.roomRepo.update({id:newRoom.id}, {name:newRoom.name + "-" + (newRoom.id).toString()})
