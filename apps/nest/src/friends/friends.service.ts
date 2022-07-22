@@ -99,8 +99,7 @@ async respondToFriendRequest(FriendRequestId: number, newStatus: FriendRequestSt
     const ret = await this.friendRequestRepository.save(friendReq);
     if (newStatus == "accepted")
     {
-        console.log("EMITTING");
-        this.server.emit('changeFriends');
+        this.server.emit('changeFriends', {sender: friendReq.senderId}, {receiver: friendReq.receiverId});
     }
     return ret.status;
 }

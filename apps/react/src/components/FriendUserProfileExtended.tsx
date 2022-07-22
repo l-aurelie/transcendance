@@ -18,6 +18,7 @@ const FriendUserProfilExtended = ({Value}) => {
 	const [friends, setFriends] = useState([] as any);
 	const [InboundReq, setInboundReq] = useState([] as any);
 	const [revele, setRevele] = useState(false);
+	const [myId, setmyId] = useState([]);
 	const toggleModal = () => {setRevele(!revele);} 
 	const [history, setHistory] = useState([]);
 	const [wins, setWins] = useState([]);
@@ -59,6 +60,23 @@ const FriendUserProfilExtended = ({Value}) => {
 			else
 				console.log("unknown error");
 		})
+		/*get userId*/   
+		axios.get("http://localhost:3000/users/getMyId", {withCredentials:true}).then((res) =>{
+			setmyId(res.data);
+			})
+			.catch(error => {
+			  if (error.response && error.response.status)
+			  {
+				  if (error.response.status === 403)
+					  window.location.href = "http://localhost:4200/";
+				  else
+					  console.log("Error: ", error.response.code, " : ", error.response.message);
+			  }
+			  else if (error.request)
+				  console.log("Unknown error");
+			  else
+				  console.log(error.message);
+			})
 		/*get requests recus par cet utilisateur*/
 		axios.get("http://localhost:3000/friends/friendRequest/me/hasSentMe/" + Value, {withCredentials:true}).then((res) =>{
 		setInboundReq(res.data);
@@ -131,26 +149,29 @@ const FriendUserProfilExtended = ({Value}) => {
 			else
 				console.log("unknown error");
 		})
-
-		socket.on("changeFriends", data => {
-			axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-				setFriends(res.data);
-			})
-			.catch(error => {
-				if (error.response && error.response.status)
-				{
-					if (error.response.status === 403)
-						window.location.href = "http://localhost:4200/";
-					else
-						console.log("Error: ", error.response.code, " : ", error.response.message);
-				}
-				else if (error.message)
-					console.log(error.message);
-				else
-					console.log("unknown error");
-			})
-		})
 	},[Value]);
+
+	socket.on("changeFriends", ({sender}, {receiver}, data) => {
+		if (sender === myId || receiver === myId)
+		{
+		  console.log("updating friends for users: ", sender, " and ", receiver);
+		  axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+		  setFriends(res.data);
+		   })
+		   .catch(error => {
+			if (error.response && error.response.status)
+			{
+				if (error.response.status === 403)
+					window.location.href = "http://localhost:4200/";
+				else
+					console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.request)
+				console.log("Unknown error");
+			else
+				console.log(error.message);
+		})
+		}})
 
 /****************************************/
 /*ACTION FUNCTIONS: send/accept/reject***/

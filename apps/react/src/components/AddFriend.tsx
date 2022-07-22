@@ -19,7 +19,8 @@ const onChange = (event) => {
 	}
 
 	const [friends, setFriends] = useState([]);
-	const [allUsers, setAllUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [myId, setmyId] = useState([]);
 	const [value, setValue] = useState([]);
 	const [userChoose, setUserChoose] = useState([] as any);
 	const [userNotFound, setUserNotFound] = useState(false);
@@ -49,7 +50,25 @@ const onChange = (event) => {
 					console.log("Unknown error");
 			else
 					console.log(error.message);
-	})
+  })
+  
+  /*get userId*/   
+  axios.get("http://localhost:3000/users/getMyId", {withCredentials:true}).then((res) =>{
+    setmyId(res.data);
+    })
+    .catch(error => {
+      if (error.response && error.response.status)
+      {
+          if (error.response.status === 403)
+              window.location.href = "http://localhost:4200/";
+          else
+              console.log("Error: ", error.response.code, " : ", error.response.message);
+      }
+      else if (error.request)
+          console.log("Unknown error");
+      else
+          console.log(error.message);
+    })
 
 	//-* Get all users
 	axios.get("http://localhost:3000/users/all", {withCredentials:true}).then((res) =>{
@@ -68,26 +87,29 @@ const onChange = (event) => {
 		else
 				console.log(error.message);
 })
+}, [])
 
-	socket.on("changeFriends", data => {
-		axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
-			setFriends(res.data);
-		})
-		.catch(error => {
-			if (error.response && error.response.status)
-			{
-					if (error.response.status === 403)
-							window.location.href = "http://localhost:4200/";
-					else
-							console.log("Error: ", error.response.code, " : ", error.response.message);
-			}
-			else if (error.request)
-					console.log("Unknown error");
-			else
-					console.log(error.message);
-			})
-		})
-	}, [])
+socket.on("changeFriends", ({sender}, {receiver}, data) => {
+  if (sender === myId || receiver === myId)
+  {
+    console.log("updating friends for users: ", sender, " and ", receiver);
+    axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
+    setFriends(res.data);
+     })
+     .catch(error => {
+      if (error.response && error.response.status)
+      {
+          if (error.response.status === 403)
+              window.location.href = "http://localhost:4200/";
+          else
+              console.log("Error: ", error.response.code, " : ", error.response.message);
+      }
+      else if (error.request)
+          console.log("Unknown error");
+      else
+          console.log(error.message);
+  })
+  }})
 
 //-* Ferme toutes les modales pour jouer apres une invitation
 const togglePlay = () => {

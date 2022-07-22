@@ -55,7 +55,12 @@ export class UsersController {
      const user = request.user;
    return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email, first: user.first});
      }
-
+   
+   @UseGuards(AuthenticatedGuard)
+   @Get('getMyId')
+   getMyId(@Req() request: RequestWithUser) : number {//TODO: async ?
+    return (request.user.id);
+   }
 
    /* WIP: set le profil avec le formulaire envoye */
    @UseGuards(AuthenticatedGuard)
