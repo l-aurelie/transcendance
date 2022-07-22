@@ -355,19 +355,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       return ;
     }
-      const allGame = await this.gameRepo.find( { } );
-      for (let entry of allGame) {
-          if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {
-            this.joinRoom(client, entry.id);
-            const data = {roomname:entry.id, sL:entry.scoreLeft, sR:entry.scoreRight, player1:entry.playerLeft, player2:entry.playerRight, smash :entry.smash};
-            this.server.to(entry.id).emit("game-start", data);
-            this.server.to(entry.id+'-watch').emit("game-start", data);
+      const allGame = await this.gameRepo.find( { where: [{playerLeft:user.id, finish:false}, {playerRight:user.id, finish:false}]} );
+    //  for (let entry of allGame) {
+         // if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {
+         if (allGame.length > 0) {  
+         this.joinRoom(client, allGame[0].id+'-players');
+            const data = {roomname:allGame[0].id, sL:allGame[0].scoreLeft, sR:allGame[0].scoreRight, player1:allGame[0].playerLeft, player2:allGame[0].playerRight, smash :allGame[0].smash};
+            this.server.to(allGame[0].id+'-players').emit("game-start", data);
+            this.server.to(allGame[0].id+'-watch').emit("game-start", data);
             await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9)'});
             this.server.emit('changeColor');
             console.log('passe dans init');
             return;
           }
-      }
+     // }
     }
 
     async launchMatch(userL, userR, v)
@@ -447,7 +448,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos + 10;
             if(newPos + infos[2].paddleSize >= infos[2].height)
                 newPos = infos[2].height - infos[2].paddleSize;
-            this.server.to(infos[1]).emit("left-move", newPos);
+            this.server.to(infos[1]+'-players').emit("left-move", newPos);
             this.server.to(infos[1]+'-watch').emit("left-move", newPos);
         }
         else if (infos[2].playerR === infos[0])
@@ -457,7 +458,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if(newPos + infos[2].paddleSize >= infos[2].height)
                 newPos = infos[2].height - infos[2].paddleSize;
             this.server.to(infos[1]+'-watch').emit("right-move", newPos);
-            this.server.to(infos[1]).emit("right-move", newPos);
+            this.server.to(infos[1]+'-players').emit("right-move", newPos);
         }
     }
 
@@ -469,7 +470,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos - 10;
             if(newPos <= 0)
                 newPos = 0;
-            this.server.to(infos[1]).emit("left-move", newPos);
+            this.server.to(infos[1]+'-players').emit("left-move", newPos);
             this.server.to(infos[1]+'-watch').emit("left-move", newPos);
         }
         else if (infos[2].playerR === infos[0])
@@ -478,7 +479,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             let newPos = pos - 10;
             if(newPos <= 0)
                 newPos = 0;
-            this.server.to(infos[1]).emit("right-move", newPos);
+            this.server.to(infos[1]+'-players').emit("right-move", newPos);
             this.server.to(infos[1]+'-watch').emit("right-move", newPos);
         }
     }
@@ -570,7 +571,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const user = await this.userRepo.findOne({where:{id: idGame.playerLeft}});
             login = user.login;
             this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
-            this.server.to(infos[0]).emit("game-stop", user.login);
+            this.server.to(infos[0]+'-players').emit("game-stop", user.login);
             const win = (await this.gameRepo.find({where: {winner:idGame.playerLeft}})).length;
             await this.userRepo.update({id: idGame.playerLeft}, {total_wins:win});
         }
@@ -582,23 +583,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             login = user.login;
             this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
-            this.server.to(infos[0]).emit("game-stop", user.login);
+            this.server.to(infos[0]+'-players').emit("game-stop", user.login);
             const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
             await this.userRepo.update({id: idGame.playerRight}, {total_wins:win});
         }
         if (newSleep === true) {
             let ball = {x : infos[1].width/2, y: infos[1].height/2, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
-            this.server.to(infos[0]).emit("updatedBall", ball);
+            this.server.to(infos[0]+'-players').emit("updatedBall", ball);
             await sleep(500);
             newSleep = false;
             ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY, login: login}
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
-            this.server.to(infos[0]).emit("updatedBall", ball);
+            this.server.to(infos[0]+'-players').emit("updatedBall", ball);
         }
         else {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY, login: login}
-            this.server.to(infos[0]).emit("updatedBall", ball);
+            this.server.to(infos[0]+'-players').emit("updatedBall", ball);
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
         }
     }
@@ -640,7 +641,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return ;
         }
         await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2], abort:true});
-        this.server.to(infos[0]).emit("opponent-quit");
+        this.server.to(infos[0]+'-players').emit("opponent-quit");
         this.server.to(infos[0]+'-watch').emit("opponent-quit");
     }
 
@@ -661,10 +662,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.userRepo.update({id: idGame.playerLeft}, {isPlaying:false, color:'rgba(0,255,0,0.9)'});
         await this.userRepo.update({id: idGame.playerRight}, {isPlaying:false, color:'rgba(0,255,0,0.9)'});
         this.server.emit('changeColor');
-        this.server.to(infos[0]).emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
+        this.server.to(infos[0]+'-players').emit("restart"); // a la fin d' un match, tout les joueurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("restart"); //a la fin d' un match, tout les spectateurs ont leur jeu reset
         this.server.to(infos[0]+'-watch').emit("leaveroom", infos[0]+'-watch'); //a la fin d' un match, tout les spectateur quittent la room qu'ils ecoutaient
-        this.server.to(infos[0]).emit("leaveroom", infos[0]); //a la fin d' un match, tout les joueurs quittent la room qu'ils ecoutaient
+        this.server.to(infos[0]+'-players').emit("leaveroom", infos[0]+'-players'); //a la fin d' un match, tout les joueurs quittent la room qu'ils ecoutaient
     }
 
     @SubscribeMessage('watch-friend')
@@ -736,9 +737,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             await this.userRepo.update({id:entry.playerLeft}, {isPlaying:false, color:'rgba(0,255,0,0.9)'});
             await this.userRepo.update({id:entry.playerRight}, {isPlaying:false, color:'rgba(0,255,0,0.9)'});
             this.server.emit('changeColor');
-            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
             this.server.to(entry.id+'-watch').emit("restart");
-            this.server.to(entry.id).emit("restart");
+            this.server.to(entry.id+'-players').emit("restart");
+            this.server.to(entry.id+'-watch').emit("leaveroom", entry.id+'-watch');
+            this.server.to(entry.id+'-players').emit("leaveroom", entry.id+'-players');
         }
     }
 
@@ -771,7 +773,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                const room = await this.gameRepo.find({where: [{playerLeft:whichuser.idUser, finish:false}, {playerRight:whichuser.idUser, finish: false}]});
                for (let entry of room)
                 {
-                    this.server.to(entry.id).emit("opponent-leave");
+                    this.server.to(entry.id+'-players').emit("opponent-leave");
                     this.server.to(entry.id+'-watch').emit("opponent-leave");
                     if (whichuser.idUser === entry.playerLeft)
                         await this.twoPlayerDisconnect(the_date, entry, entry.playerRight);
