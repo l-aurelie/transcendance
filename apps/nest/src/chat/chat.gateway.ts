@@ -371,7 +371,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
      // }
     }
 
-    async launchMatch(userL, userR, v)
+    async launchMatch(userL, userR, v, client, userClient)
     {
         console.log('launchmatch')
         let roomName;
@@ -388,24 +388,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.userRepo.update({id:userR.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9)'});
         this.server.emit('changeColor');
         roomName = newGame.id;
-        this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("joinroom",  roomName);
-     const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
-     this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("game-start",  data);  
+        this.joinRoom(client, newGame.id+'-players');
+        let other;
+        if (userL.id === userClient.id)
+            other = userR;
+        else
+            other = userL;
+        this.server.to('sockets'+other.id).emit("joinroom",  roomName);
+  //   const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
+//     this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("game-start",  data);  
 
     }
 
-    async matchMake(tabMatch, v)
+    async matchMake(tabMatch, v, user, client)
     {
         if(tabMatch.length % 2 === 0) 
         {      
-            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v);
+            this.launchMatch(tabMatch[0].user, tabMatch[1].user, v, client, user);
             tabMatch.splice(0,2);
         }
-    }
+        else
+            this.server.to('sockets'+ user.id).emit("already-ask");
+        }
 
     @SubscribeMessage('acceptMatch')
     async acceptMatch(client, infos) {
-        this.launchMatch(infos[0], infos[1], infos[2]);
+        this.launchMatch(infos[0], infos[1], infos[2], client, infos[1]);
     }
 
     @SubscribeMessage('warnOpponent')
@@ -427,14 +435,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if(!gameQueue.find(element => infos[0].id === element.user.id)
             && !gameQueueSmach.find(element => infos[0].id === element.user.id))
         {
-            this.server.to('sockets'+ infos[0].id).emit("joinroom");
+         //   this.server.to('sockets'+ infos[0].id).emit("joinroom");
             if (infos[1] === 1) {
                 gameQueueSmach.push(tab);
-                this.matchMake(gameQueueSmach, infos[1]);
+                this.matchMake(gameQueueSmach, infos[1], infos[0], socket);
             }
             else {
                 gameQueue.push(tab);
-                this.matchMake(gameQueue, infos[1]);
+                this.matchMake(gameQueue, infos[1], infos[0], socket);
             }
         }
         
