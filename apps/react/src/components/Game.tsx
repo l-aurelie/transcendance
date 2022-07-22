@@ -412,7 +412,7 @@ const Game = (props) => {
 					socket.emit('moveUp', actualUser.id, roomName, allPos);
 				if (key === 40)
 					socket.emit('moveDown', actualUser.id, roomName, allPos);
-				if (allPos.sleep === false) {
+				if (allPos.sleep === false && allPos.playerL === actualUser.id) {
 					socket.emit('ball', roomName,  allPos);
 				}
 			}

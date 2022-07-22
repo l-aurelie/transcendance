@@ -1,11 +1,16 @@
-FROM node:lts-alpine AS development
+FROM node:lts-alpine AS production
 
-WORKDIR /react/src/app
+RUN mkdir /build-dir
+WORKDIR /build-dir
+COPY package.json /build-dir
+COPY ./webpackDevServer.config.js /build-dir
+RUN npm install --location=global npm@8.15.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps && rm -rf /build-dir/node_modules/react-scripts/config/webpackDevServer.config.js \
+    && cp /build-dir/webpackDevServer.config.js /build-dir/node_modules/react-scripts/config/webpackDevServer.config.js
 
-COPY package*.json ./
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-# ENV PATH /react/src/app/node_modules/.bin:$PATH
+RUN ln -s /build-dir/node_modules node_modules
+COPY . /usr/src/app
 
-RUN npm install --location=global npm@8.15.0 && export npm_config_loglevel=silent && npm install --legacy-peer-deps
-
-COPY . ./
+EXPOSE 4200
