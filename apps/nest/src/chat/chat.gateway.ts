@@ -600,10 +600,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
             this.server.to(infos[0]+'-players').emit("updatedBall", ball);
             await sleep(500);
-            newSleep = false;
-            ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY, login: login}
-            this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
-            this.server.to(infos[0]+'-players').emit("updatedBall", ball);
+            this.server.to(infos[0]+'-watch').emit("end-wait", ball);
+            this.server.to(infos[0]+'-players').emit("end-wait", ball);
+            // newSleep = false;
+            // ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed:speed, smX: smachX, smY:smachY, login: login}
+            // this.server.to(infos[0]+'-watch').emit("updatedBall", ball);
+            // this.server.to(infos[0]+'-players').emit("updatedBall", ball);
         }
         else {
             let ball = {x : bx, y: by, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed : speed, smX: smachX, smY: smachY, login: login}

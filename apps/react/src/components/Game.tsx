@@ -50,6 +50,7 @@ const Game = (props) => {
 	const [loginL, setLoginL] = useState('');
 	const [loginR, setLoginR] = useState('');
 	const [waitingFor, setWaitingFor] = useState(0);
+	const [waitCenter, setWaitCenter] = useState(false);
 
 	let widthExt = 800;
 	let heightExt = 600;
@@ -193,6 +194,7 @@ const Game = (props) => {
 			smachX : smachX,
 			smachY : smachY,
 			login : login,
+			wait :false,
 		};
 		
 		//ensemble des socket. on, ecoute si un chanegment d' etat du jeu a eu lieu (deconnection, abandon, fin de match)
@@ -308,7 +310,11 @@ const Game = (props) => {
 			setEndWatch(true);
 		});
 
-		//socket.on pour update les positon de ball et paddle
+		socket.on("end-wait", data => {
+			allPos.sleep = false;
+			allPos.wait = false;
+		});
+			//socket.on pour update les positon de ball et paddle
 		socket.on("left-move", data => {
 			allPos.posHL = data;
 		});
@@ -316,8 +322,16 @@ const Game = (props) => {
 			allPos.posHR = data;
 		});
 		socket.on("updatedBall", data => {
-			allPos.ballX = data.x;
-			allPos.ballY = data.y;
+			if (allPos.sleep === true)
+				allPos.wait = true;
+			if (allPos.wait === true) {
+				allPos.ballX = width/2;
+				allPos.ballY = height/2;
+			}
+			else {
+				allPos.ballX = data.x;
+				allPos.ballY = data.y;
+			}
 			allPos.deltaX = data.dx;
 			allPos.deltaY = data.dy;
 			allPos.scoreL = data.scoreLeft;
@@ -412,7 +426,7 @@ const Game = (props) => {
 					socket.emit('moveUp', actualUser.id, roomName, allPos);
 				if (key === 40)
 					socket.emit('moveDown', actualUser.id, roomName, allPos);
-				if (allPos.sleep === false && allPos.playerL === actualUser.id) {
+				if (allPos.wait === false && allPos.playerL === actualUser.id) {
 					socket.emit('ball', roomName,  allPos);
 				}
 			}
@@ -474,7 +488,8 @@ const Game = (props) => {
 		loginL,
 		loginR,
 		winner,
-		waitingFor
+		waitingFor,
+		waitCenter
 	])
 	
 	return (
