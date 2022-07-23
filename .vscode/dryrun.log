@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/manon/Documents/42/transcendence0722'
+cd apps && ./helper.sh && docker-compose up --build
+make: Leaving directory '/home/manon/Documents/42/transcendence0722'
+ 

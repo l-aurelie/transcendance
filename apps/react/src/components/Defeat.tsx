@@ -14,7 +14,7 @@ const background: CSS.Properties = {
 const modale: CSS.Properties = {
 	height: '500px',
 	width: '700px',
-	background: 'rgba(214,105,127)',
+	background: 'white',
 	position: 'absolute',
 	top: '50%',
 	left: '50%',
@@ -25,9 +25,9 @@ const chatTitle1 = {
 	display: "flex",
 	justifyContent: "center",
 	marginTop: "auto", 
-	outline: "ridge", "1px": "red",
-	borderRadius: "2rem",
 	position: "absolute",
+	padding: '16px',
+
 	top:"70%", 
 	left: "38%",
    } as React.CSSProperties;
@@ -35,9 +35,8 @@ const chatTitle1 = {
    const chatTitle2 = {
 	display: "flex",
 	justifyContent: "center",
-	marginTop: "auto", 
-	outline: "ridge", "1px": "red",
-	borderRadius: "2rem",
+	marginTop: "auto",
+	padding: '16px',
 	position: "absolute",
 	top:"70%", 
 	left: "52%",

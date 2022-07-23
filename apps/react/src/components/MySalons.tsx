@@ -5,6 +5,7 @@ import { ModalWindow } from "./ModaleWindow/LogiqueModale2";
 import Select from 'react-select';
 import AddPrivateMember from './AddPrivateMember';
 import OwnerLeave from './OwnerLeave';
+import MaterialIcon from 'material-icons-react';
 
 /* John aurelie */
 
@@ -22,17 +23,25 @@ const channelName = {
 const channelNameNotif = {
 	width: "70%",
 	display: "flex",
-	backgroundColor: 'pink',
+	backgroundColor: '#3CCF4E',
 }
 
 const salons= {
-	overflowY: "auto" as "auto",
+	// overflowY: "auto" as "auto",
 }
 
 const channel = {
 	width: "100%",
 	display: "flex",
 	justifyContent: "space-between",
+	marginBottom: "8px"
+}
+
+const addNLeave = {
+	display:'flex',
+	flexDirection:'row' as 'row',
+	justifyContent: "space-around",
+
 }
 
 /* WIP : liste de display des amis et myChannels pour pouvoir changer le currentChannel*/
@@ -615,7 +624,7 @@ const MySalons = (props) => {
 				:
 				<div style={channelName}>{salon[1].avatar}</div>
 			}
-			{/* modale qui va etre un setting avec close dedans et si owner..... */}
+			{/* modale qui va etre un setting avec  dedans et si owner..... */}
 				{(salon[1].owner && salon[1].creator === props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={()=>toggleModal(salon[1])}> ⚙️ </div> : null}
 				{(salon[1].owner && salon[1].creator !== props.actualUser.id) ? <div style={{cursor:'pointer'}} onClick={() =>toggleModal2(salon[1])}> ⚙️ </div> : null}
 				{/* Permet de quitter le channel */}
@@ -629,14 +638,18 @@ const MySalons = (props) => {
 			</button>))}
 		</div>
 		<ModalWindow  revele={revele} setRevele={toggleModal}> 
-						<div style={{display:'flex', justifyContent:'center'}}><div><h1>Owner Settings</h1></div><div style={{marginTop:'10px'}}><button onClick={toggleModal4}>Leave Chanel</button></div></div>
-						<OwnerLeave idRoom={currentSalon.roomId} idUser={props.actualUser.id} roomName={currentSalon.name} revele={revele4} toggle={toggleModal4} toggle2={toggleModal} revele2={revele}></OwnerLeave>
-						<div style={{display:'flex', justifyContent:'space-around'}}>
-						{currentSalon.private === true ?  <div><h2>Private room</h2>
-					<button onClick={toggleModal3}>Add members</button>
-						<AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal}></AddPrivateMember>
-					</div> : <></> }
-					{currentSalon.private === false ?
+	
+			<h1>Owner Settings</h1>
+			<div style={addNLeave}>
+			{currentSalon.private === true ?  <div><h2>Private room</h2>
+				<button className='largeButton' onClick={toggleModal3}>Add members</button>
+				<AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal}></AddPrivateMember>
+				</div> : <></> }
+				<div style={{display:'flex', flexDirection:'column'}}>
+				<h2 >Leave Chanel</h2>
+				<button onClick={toggleModal4}><MaterialIcon size="large" icon="logout" /></button></div>
+				<OwnerLeave idRoom={currentSalon.roomId} idUser={props.actualUser.id} roomName={currentSalon.name} revele={revele4} toggle={toggleModal4} toggle2={toggleModal} revele2={revele}></OwnerLeave>
+				{currentSalon.private === false ?
 					<div>
 						<h3>Public Room - Define password</h3>
 						
@@ -675,7 +688,7 @@ const MySalons = (props) => {
 				<ModalWindow  revele={revele2} setRevele={toggleModal2}> 
 						<h1>Admin Settings</h1>
 						{currentSalon.private === true ?  <div><h2>Private room</h2>
-					<button onClick={toggleModal3}>Add members</button>
+					<button className='largeButton' onClick={toggleModal3}>Add members</button>
 						<AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal2}></AddPrivateMember>
 					</div> : <></> }
 						<h3>Mute/Unmute User</h3>

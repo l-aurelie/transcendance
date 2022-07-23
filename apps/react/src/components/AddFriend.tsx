@@ -6,10 +6,19 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
 import MaterialIcon from 'material-icons-react';
 import DisplayUser from './DisplayUser';
+import './css/globalStyle.css'
+
 
 const lists = {
   // overflowY: 'scroll'
   overflowY: "auto" as "auto"
+}
+
+const createChannelStyle ={
+	display: "flex",
+	flexDirection: "column" as "column",
+	width: "50%"
+
 }
 
 const AddFriend = (props) => {
@@ -133,20 +142,22 @@ const togglePlay = () => {
 /* Recherche d'amis a ajouter */
     return(
       <div>
-        <MaterialIcon size="large" icon="person_add" onClick={toggleAdd} />
-        <br></br>
+        <button onClick={toggleAdd}>
+        <MaterialIcon size="medium" icon="group_add" />
+        </button>
+        <h2>Friends' list</h2>
         <div style={lists}>
           {friends.map(friends => (
             <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav} togglePlay2={props.toggleAddNav}/></div>
           ))}   
         </div>
         <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
-          <p>Add new friends</p>
-          <div className="search bar">
-            <input type = "text" value={value} onChange={onChange} />
+          <h2>Add new friend</h2>
+          <div  style={createChannelStyle} className="search bar">
+            <input className="mediumMarginBottom" type = "text" value={value} onChange={onChange} />
             {/*When we click on button it opens the FriendUserProfil*/}
-            <button onClick={searchFriend}> Find members </button>
-            { userNotFound === true ? <p style={{display: 'inline'}}>User doesn't exists</p> : <></>}
+            <button className="mediumMarginBottom" onClick={searchFriend}> Find members </button>
+            { userNotFound === true ? <p  className="mediumMarginBottom"style={{display: 'inline'}}>User doesn't exists</p> : <></>}
             <ModalWindow revele={revele} setRevele={toggleModal}>
               <FriendUserProfilExtended Value={userChoose.login}/>
             </ModalWindow>

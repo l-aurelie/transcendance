@@ -29,18 +29,19 @@ const background: CSS.Properties = {
 const modale: CSS.Properties = {
 	height: '500px',
 	width: '700px',
-	background: 'rgba(214,105,127)',
+	background: 'white',
 	position: 'absolute',
 	top: '50%',
 	left: '50%',
+	padding:'16px',
 	zIndex: '9999',
 	transform: 'translate(-50%, -50%)'
 }
 
 const button: CSS.Properties = {
 	position: 'absolute',
-	right: '15px',
-	top: '15px'
+	right: '32px',
+	top: '32px'
 }
 
   
@@ -126,12 +127,12 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
 						<Logo/>
 					</div>
 			<div style={{display:'flex', justifyContent:'space-around', position:"relative",top:"20%"}}>
-			<div style={{overflowY:'scroll' as 'scroll', width:'50%', maxHeight:'300px', borderRight:'solid', borderColor:'grey'}}>
+			<div style={{ width:'50%', maxHeight:'300px', borderRight:'solid', borderColor:'grey'}}>
 				<h2>Members</h2>
 					{members.map(data => (<div key={data.value}> {data.label}</div>))}
 				
 					</div>
-			<div style={{width :'50%', top:"50%"}}>
+			<div style={{width :'50%', top:"50%", paddingLeft:'16px'}}>
 
 			<div style={{position:"relative",top:"20%"}}>
 						<Select onChange={handleChange} options={allUser} value={value}/>
@@ -140,7 +141,7 @@ const AddPrivateMember = ({idRoom, roomName, revele, toggle, toggle2}) => {
 				</div>
 			</div>
 			</div>
-			<button style={button} type='button' onClick={reset}>x</button>
+			<button style={button} type='button' onClick={reset}> x </button>
 			</div>
 			</div>
 		)

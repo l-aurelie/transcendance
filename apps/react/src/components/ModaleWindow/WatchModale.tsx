@@ -1,18 +1,12 @@
 /* sam */
 import React, { useState } from 'react';
 import Logo from '../Logo';
-//import CreateSalon from '../AddChannel';
-//import AddNav from '../AddNav';
 import Select from 'react-select';
 import { socket } from "../Socket";
 import CSS from 'csstype';
 import MaterialIcon from 'material-icons-react';
 
-const log: CSS.Properties = {
-    position : 'relative',
-    top : '5%',
-   // left: '50%'
-}
+
 const bar: CSS.Properties = {
     position : 'relative',
     top : '20%'
@@ -20,7 +14,7 @@ const bar: CSS.Properties = {
 const watchButton: CSS.Properties = {
     position : 'absolute',
     top : '50%',
-    left : '50%'
+    left : '60%'
 }
 /* Assombri l'arriere plan */
 const background: CSS.Properties = {
@@ -33,16 +27,18 @@ const background: CSS.Properties = {
     zIndex: '9998'
 }
 const modale: CSS.Properties = {
-    boxShadow: ' inset 0px 0px 10px 20px rgba(204, 95, 117)',
+    // boxShadow: ' inset 0px 0px 10px 20px rgba(204, 95, 117)',
     borderRadius: "1%",
     height: '500px',
     width: '700px',
-    background: 'rgba(214,105,127)',
+    background: 'white',
     position: 'absolute',
     top: '50%',
     left: '50%',
     zIndex: '9999',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    padding:'8px',
+
 }
 
 const button: CSS.Properties = {
@@ -78,17 +74,17 @@ const WatchModale = ({user, revele, toggle, game}) => {
         <div>
             <div style={background} />
             <div style={modale}>
-                <div style={log}>
+                {/* <div style={log}> */}
                     <Logo/>
-                </div>
+                {/* </div> */}
                 <div style={bar}>
                     <Select onChange={handleChange} options={game}/>
                 </div>
                 <div style={watchButton}>
-                    <button style={button} type='button' onClick={watch}>watch</button>
+                    <button className="largeButton" style={button} type='button' onClick={watch}>watch</button>
                 </div>
 
-                <div style={button}><MaterialIcon icon="close" onClick={reset} /></div>
+                <button className="closeButton"><div style={button}><MaterialIcon icon="close" onClick={reset} /></div></button>
             </div>
         </div>
     )

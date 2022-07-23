@@ -5,32 +5,24 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import MaterialIcon from 'material-icons-react';
 import axios from 'axios';
 
-const chatTitle1 = {
+const pwdStyle = {
 	display: "flex",
+	flexDirection: 'column' as 'column',
 	justifyContent: "center",
-	marginTop: "auto", 
-	outline: "ridge", "1px": "red",
-	borderRadius: "2rem",
-	position: "absolute",
-	top:"60%", 
-	left: "25%",
+	alignItems: 'center',
+	
    } as React.CSSProperties;
 
-   const chatTitle2 = {
+const createChannelStyle ={
 	display: "flex",
-	justifyContent: "center",
-	marginTop: "auto", 
-	outline: "ridge", "1px": "red",
-	borderRadius: "2rem",
-	position: "absolute",
-	top:"60%", 
-	left: "55%",
-   } as React.CSSProperties;
+	flexDirection: "column" as "column",
+	width: "50%"
+}
 
 const text = {
-	position: 'absolute',
-	top:'40%',
-	left:'36%',
+	// position: 'absolute',
+	// top:'40%',
+	// left:'36%',
 	} as React.CSSProperties;
 
 /* Join des channels, create des channels */
@@ -124,25 +116,37 @@ const AddChannel = ({user}) => {
 	
 	return(
 		<div>
-			<MaterialIcon size="large" icon="group_add" onClick={toggleAdd} />
-			<p>Join existing channels</p>    
+			
+			<button onClick={toggleAdd} ><MaterialIcon size="medium" icon="maps_ugc" /></button>
+			<h2 className="mediumMarginBottom">Join existing channels</h2>    
 			{salons.map((salon) => ( 
 			<button key={salon.id} onClick={() => handleClick(salon)}>
 				<div key={salon.id}>{salon.name}</div>
 			</button>))}
 
 			<ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
-				<p>Create a new Channel</p>
-				<input type='text' id="message" name="message" onChange={handleChange} value={message} style={text}/>
-				<button style={chatTitle1} onClick={() => sendNewSalon(false, message)}>Public channel</button>
-				<button style={chatTitle2} onClick={() => sendNewSalon(true, message)}>Private channel</button>
+				<h2>Create a new Channel</h2>
+			<div style={createChannelStyle}>
+				
+				<h3>Enter a channel' name</h3>
+				<input className="mediumMarginBottom" type='text' id="message" name="message" onChange={handleChange} value={message} style={text}/>
+				<button className="mediumMarginBottom" onClick={() => sendNewSalon(false, message)}>Create public channel</button>
+				<button className="mediumMarginBottom" onClick={() => sendNewSalon(true, message)}>Create private channel</button>
+				</div>
 			</ModalWindow>
 			<ModalWindow revele={revele} setRevele={toggle}>
-				<div style={{position:'relative', top:'10%'}}>    
+				{/* <div style={{position:'relative', top:'10%'}}>    
 					<div style={{position:'relative', left:'32%'}}><h2>please enter password</h2></div>
 					<div style={{position:'relative',  left:'38%'}}><input type='password' onChange={(event) =>handleChange2(event)}></input></div>
 					<div style={{position:'relative',  left:'48%'}}><button onClick={check}>Send</button></div>
 					<div style={{position:'relative',  left:'40%'}}><b>{mes ? 'wrong password...' : ''}</b></div>
+
+				</div> */}
+				<div style={pwdStyle}>    
+					<h2>please enter password</h2>
+					<input style={{marginBottom: '16px'}} type='password' onChange={(event) =>handleChange2(event)}></input>
+					<button onClick={check}>Send</button>
+					<b>{mes ? 'wrong password...' : ''}</b>
 
 				</div>
 			</ModalWindow>

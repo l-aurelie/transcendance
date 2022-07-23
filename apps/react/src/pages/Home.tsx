@@ -8,54 +8,40 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {socket} from '../components/Socket';
 import SideBarChat from '../components/SideBatChat';
+import '../components/css/globalStyle.css';
 
 
 /* Style (insere dans la div jsx) */
 const headStyle = {    
 	display: 'flex',
-	justifyContent: 'flex-end',
-	borderStyle: 'solid',
-	borderWidth: '1px',
-	borderColor: 'lightgrey',
-	boxShadow: '0 15px 15px -15px grey',
+	justifyContent: 'space-between',
+	boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
 	zIndex: "10"
 } as React.CSSProperties;
-
-const allStyle = {
-	display: 'flex',
-	justifyContent: 'flex-end',
-	borderWidth: '1px',
-}
 
 const bodyLogoutStyle = {
 	display: 'flex',
 	width:"100%",
-	// height: "80vh",
 	justifyContent:'center',
-}
+} as React.CSSProperties;
+
 const bodyStyle = {
 	display: 'flex',
+	marginTop: '32px',
 	width:"100%",
-	height: "85vh",
 	justifyContent: 'flex-end',
-	borderStyle: 'solid',
-	borderWidth: '1px',
-	borderColor: 'lightgrey',
-}
+}as React.CSSProperties;
 
 const thankStyle = {
 	position:'absolute' as 'absolute',
 	top:'50%'
-}
-
-const chatStyle = {
-	width: "30%",
-}
+} as React.CSSProperties;
 
 const gameStyle = {
 	width: "70%",
 	flexDirection: "column", // pour que le bouton soit en dessous du jeu
-}
+} as React.CSSProperties;
+
 
 const Home = () => {
    
@@ -139,14 +125,14 @@ const Home = () => {
 	{
 		return (
 		 <div>
-			<div style={headStyle}>
+			<div className="root" style={headStyle}>
 				<Logo></Logo>
 				<UserProfil dataFromParent={profil}></UserProfil>
 			</div>
 			<div style={bodyStyle}>
 				<Game style={gameStyle} dataFromParent={profil}/>
 				<SideBarChat user={profil}/>
-				<Chat style={chatStyle} dataFromParent={profil}></Chat>
+				<Chat dataFromParent={profil}></Chat>
 			</div>
 		</div>
 	);
@@ -154,7 +140,7 @@ const Home = () => {
 	else
 		return (
 		<div>
-			<div style={allStyle}>
+			<div style={headStyle}>
 		 		<Logo></Logo>
 		 		<UserProfil dataFromParent={profil}></UserProfil>
 	 		</div>

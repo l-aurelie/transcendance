@@ -3,23 +3,20 @@ import { socket } from "./Socket";
 import LogiqueModale from "./ModaleWindow/logiqueModale";
 import WatchModale from './ModaleWindow/WatchModale';
 import axios from 'axios';
+import './css/globalStyle.css'
 
 const divStyle = {
 	width:"70%",
-	backgroundColor : "rgba(238, 229, 229, 0.4)"
 }
 
 const canvasStyle = {
 	width:"90%",
 }
 
-const playButton = {
-	width: "70%",
-	fontSize: "20px",
-	borderRadius: "5px",
-	color: "white",
-	backgroundColor: "grey",
-	cursor: "pointer",
+const displayButtons = {
+	display: "flex" as "flex",
+	flexDirection: "row" as "row",
+
 }
 
 const Game = (props) => {
@@ -346,7 +343,7 @@ const Game = (props) => {
 		if (presentation === true) {
 			context.fillStyle = '#000000'
 			context.fillRect(0, 0, width, height)
-			context.font = "60px Verdana";
+			context.font = "60px Roboto";
 			context.fillStyle = "white";
 			context.fillText("PONG", width/2.5, height/2);
 		}
@@ -354,7 +351,7 @@ const Game = (props) => {
 		{
 			context.fillStyle = '#000000'
 			context.fillRect(0, 0, width, height)
-			context.font = "30px Verdana";
+			context.font = "30px Roboto";
 			context.fillStyle = "white";
 			context.fillText("Waiting for an opponent joining the game...", 0, height/2);
 		}
@@ -363,7 +360,7 @@ const Game = (props) => {
 			context.clearRect(0, 0, width, height);
 			context.fillStyle = '#000000'
 			context.fillRect(0, 0, width, height);
-			context.font = "30px Verdana";
+			context.font = "30px Roboto";
 			context.fillStyle = "white";
 			context.fillText(quitSentence, width/3, height/2);
 			socket.emit('finish-match', roomName, actualUser.id);
@@ -374,7 +371,7 @@ const Game = (props) => {
 			context.clearRect(0, 0, width, height);
 			context.fillStyle = '#000000'
 			context.fillRect(0, 0, width, height);
-			context.font = "30px Verdana";
+			context.font = "30px Roboto";
 			context.fillStyle = "white";
 			context.fillText('opponent disconnected...', width/3, height/2);
 		}
@@ -383,7 +380,7 @@ const Game = (props) => {
 			context.clearRect(0, 0, width, height);
 			context.fillStyle = '#000000'
 			context.fillRect(0, 0, width, height);
-			context.font = "30px Verdana";
+			context.font = "30px Roboto";
 			context.fillStyle = "white";
 			context.fillText(winner + ' won!', width/3, height/2);
 			socket.emit('finish-match', roomName, actualUser.id);
@@ -393,7 +390,7 @@ const Game = (props) => {
 			context.clearRect(0, 0, width, height);
 			context.fillStyle = '#000000'
 			context.fillRect(0, 0, width, height);
-			context.font = "30px Verdana";
+			context.font = "30px Roboto";
 			context.fillStyle = "white";
 			context.fillText('match ended during connection...', width/3, height/2);
 		}
@@ -436,7 +433,7 @@ const Game = (props) => {
 						context.clearRect(0, 0, width, height);
 						context.fillStyle = '#000000'
 						context.fillRect(0, 0, width, height);
-						context.font = "30px Verdana";
+						context.font = "30px Roboto";
 						context.fillStyle = "white";
 						context.fillText(loginL + ' ' + allPos.scoreL, width/4, height/10);
 						context.fillText(loginR + ' ' + allPos.scoreR, width/2 + width/4, height/10);
@@ -495,11 +492,13 @@ const Game = (props) => {
 	return (
 	<div style={divStyle}>
 		<canvas style={canvasStyle} ref={canvasRef} width={widthExt} height={heightExt}  {...rest}/>
-		{presentation ? <button style={playButton} onClick={() => joinGame(0)}>PLAY PONG</button> : null}
-		{presentation ? <button style={playButton} onClick={() => joinGame(1)}>PLAY PONG SMASH</button> : null}
-		{presentation ? <button style={playButton} onClick={watchMatch}>WATCH MATCH</button> : null}
+		<div style={displayButtons} className="smallPadding" >
+		{presentation ? <button className="smallMarginRight largeButton" onClick={() => joinGame(0)}>Play pong</button> : null}
+		{presentation ? <button className="smallMarginRight largeButton" onClick={() => joinGame(1)}>Play smash pong </button> : null}
+		{presentation ? <button className="smallMarginRight largeButton" onClick={watchMatch}>Watch match</button> : null}
+		{presentation  ? null : <button className="smallMargin largeButton" onClick={quitGame}>Quit</button> }
+		</div>
 		<WatchModale user={actualUser} revele={revele} toggle={toggle} game={games}/>
-		{presentation  ? null : <button style={playButton} onClick={quitGame}>QUIT</button> }
 	</div>
 	)
 }

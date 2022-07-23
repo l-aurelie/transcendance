@@ -1,6 +1,8 @@
 import { useState } from "react";
 import AddFriend from "./AddFriend";
 import AddChannel from "./AddChannel";
+import './css/globalStyle.css'
+
 
 /* Switch entre AddFriend ou AddChannels */
  const AddNav = (props) => {
@@ -16,10 +18,10 @@ import AddChannel from "./AddChannel";
 
      return (
          <div>
-            <br></br><br></br>
-            <div style={{display:'flex', justifyContent:'center', width:'100%', background:'rgba(204, 95, 117)'}}>
-               <button onClick={switchToFriend}>Friend</button>
-               <button onClick={switchToChannel}>Channel</button>
+            <ul><li className={`${!reveleFriend && "activeTab"}`}><a  onClick={switchToChannel}>Channels</a></li><li className={`${reveleFriend && "activeTab"}`} ><a onClick={switchToFriend}>Friends</a></li></ul>
+            {reveleFriend ? <h2>Add friend</h2> : <h2>Add channel</h2>}
+            <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
+               {/* {reveleFriend ? <button className="largeButton" onClick={switchToChannel}>View channels' list</button> : <button className="largeButton" onClick={switchToFriend}>View friends</button>} */}
             </div>
             {reveleFriend ? <AddFriend user={props.user} toggleAddNav={props.toggleAddNav}/> : <AddChannel user={props.user} />}
         </div>    

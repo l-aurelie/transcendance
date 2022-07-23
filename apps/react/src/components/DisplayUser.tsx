@@ -5,6 +5,12 @@ import { useState } from "react";
 import { socket } from "./Socket";
 import axios from "axios";
 
+const displayUserStyle = {
+	display: "flex",
+	alignItems:"center",
+	flexDirection: "row" as "row",
+}
+
 const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, togglePlay2}) => {
 		//---
 		const [reveleProfil, setReveleProfil] = useState(false);
@@ -167,20 +173,22 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
     if(isFriend)
     {
       return(
-        <div>
-          <div><svg width="48" height="40" viewBox='0 0 45 40'>
+
+        <div style={displayUserStyle}>
+			
+          <svg width="48" height="40" viewBox='0 0 45 40'>
           <foreignObject x="0" y="0" width="45" height="40" >
-            <div><img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/></div>
+			
+			<img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/>
           </foreignObject>
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={color}></rect></svg>
         
-          <p style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
-            | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-            | <MaterialIcon icon="videogame_asset" onClick={defeat} />
-            | {bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
-            | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
-          {/* |Spectate <br></br> */}
-          </div>
+		<button style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>
+          {userSelected.login}</button>
+            <button><MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
+            <button><MaterialIcon icon="videogame_asset" onClick={defeat} /></button>
+            <button>{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}</button>
+            {playing && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
@@ -190,21 +198,22 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
     else
     {
       return(
-        <div>
-          <div><svg width="48" height="40" viewBox='0 0 45 40'>
+        <div style={displayUserStyle}>
+			<h2>Friends' list</h2>
+          <svg width="48" height="40" viewBox='0 0 45 40'>
           <foreignObject x="0" y="0" width="45" height="40" >
-            <div><img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/></div>
+        	<img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/>
           </foreignObject>
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={userSelected.color}></rect></svg>
-        
+		
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
-            | <MaterialIcon icon="person_add" onClick={sendFriendRequest} /> 
-            | <MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /> 
-            | <MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}
-            |{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}
-            | {playing ? <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> : <></>}
+            <button><MaterialIcon icon="person_add" onClick={sendFriendRequest} /></button>
+            <button><MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
+            <button><MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>
+            <button>{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}</button>
+            { playing && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
            {/* | Spectate <br></br> */}
-           </div>
+          
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>

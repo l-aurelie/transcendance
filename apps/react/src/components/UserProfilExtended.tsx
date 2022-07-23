@@ -101,18 +101,18 @@ const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
 				<img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt='profilImage' src={user.avatar} />                  
 			</div >
 			<div style={{display:'flex', justifyContent: 'center'}}>
-				<h1 style={{display:'flex', marginBottom:'0'}}>{user.login}</h1>
-				<MaterialIcon size='large' icon="edit" onClick={toggleForm} />
+				<h1 style={{display:'flex', marginBottom:'0', paddingRight:'16px'}}>{user.login}</h1>
+				<button className="iconButton"><MaterialIcon size='medium' icon="edit" onClick={toggleForm} /></button>
 			</div>
 			<ModalWindow revele={reveleForm} setRevele={toggleForm}>
 				<div style={{display:'flex', justifyContent:'space-around'}}>
-				<div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'rgba(204, 95, 117)'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
+				<div style={{width:'50%', height:'auto', borderRight:'solid'}}><h2>Change your informations</h2><UserForm user={user} toggle={toggleForm}/></div>
 				<div><h2>Change your photo</h2><UserFormAvatar user={user} toggle={toggleForm}/></div>
 				</div>
 			</ModalWindow>
 
 			<br></br>
-			<div style={{display:'flex', justifyContent:'center', width:'100%', background:'rgba(204, 95, 117)'}}>
+			<div style={{display:'flex', justifyContent:'center', width:'100%'}}>
 				<div><Friends user={user} toggleProfil={toggleProfil} toggleProfil2={toggleProfil2}></Friends></div>
 				<div><FriendReqs reqnotif={reqnotif}></FriendReqs></div>
 				<div><Leaderboard></Leaderboard></div>

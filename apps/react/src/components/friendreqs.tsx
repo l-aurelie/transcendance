@@ -80,7 +80,7 @@ const FriendReqss = ({reqnotif}) => {
 		<div>
 		{
 			reqnotif ?
-			<button onClick={toggleModal} style={{backgroundColor:'pink'}}>Friend Reqs</button>
+			<button onClick={toggleModal} style={{backgroundColor:'#3CCF4E'}}>Friend Reqs</button>
 			:
 			<button onClick={toggleModal}>Friend Reqs</button>
 		}

@@ -7,7 +7,10 @@ import FriendUserProfilExtended from './FriendUserProfileExtended';
 import Defeat from './Defeat';
 
 const chatStyle = {
-	display: 'flex'
+	display: 'flex',
+	width: '40%',
+	maxWidth: '40%',
+	height: '80vh',
 }
 
 const mySalonStyle = {
@@ -16,8 +19,7 @@ const mySalonStyle = {
 	flexDirection: 'column' as 'column',
 	borderStyle: 'solid',
 	borderWidth: '1px',
-	borderColor: "rgba(230, 206, 200, 0.8)",
-	backgroundColor : "rgba(230, 206, 200, 0.5)",
+	borderColor: "lightgrey",
 	boxShadow: '-15px 0 15px -15px lightgrey'
 }
 
@@ -26,24 +28,24 @@ const messageStyle = {
 	flexDirection: 'column' as 'column',
 	borderStyle: 'solid',
 	borderWidth: '1px',
-	borderColor: "rgba(230, 206, 200, 0.8)",
+	borderColor: "lightgrey",
 	width: '60%',
-	backgroundColor : "rgba(230, 206, 200, 0.7)"
-
 }
+
 const chatBox = {
   marginTop: 'auto',
-  overflowY: 'auto' as 'auto',
   border: '2px',
+  
 }
 
 const chatTitle = {
 	display: "flex",
-	justifyContent: "center",
 	marginTop: "auto", 
-	outline: "ridge", "1px": "red",
-	borderRadius: "2rem",
+	padding: "8px",
+	fontWeight: "bold",
+	borderBottom: "solid 1px lightgrey"
 }
+
 const messageSent = {
 	textAlign: 'right' as 'right',
 }
@@ -55,6 +57,10 @@ const overLi = {
 	cursor: 'pointer',
 	padding: '0',
 	textAlign: 'left' as 'left',
+}
+
+const displayMessage = {
+	wordWrap: "break-word" as "break-word",
 }
 
 const Chat = (props) => {
@@ -148,14 +154,14 @@ const Chat = (props) => {
 					<FriendUserProfilExtended Value={userLogClick}/>
 				</ModalWindow>
 			<div style={messageStyle}>
-				<div><p style={chatTitle}>{currentSalon.display}</p></div>
+				<div><p style={chatTitle}>Channel: {currentSalon.display}</p></div>
 				<div style={chatBox} >
 					{/* Affichage de la variable message detenant tout l'historique des messages*/}
 					{message.map((data) => (
 						<div style={messageSent} key={data.id}>
 							{/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
 							{show ? (<div style={{
-								fontSize: '14px', backgroundColor:'#D7677E', width : '100px', height:'auto',
+								fontSize: '14px', width : '100px', height:'auto',
 								position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
 								<b  style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
 								<p  style={overLi} onClick={getUserProfil}>Profil</p>
@@ -163,7 +169,7 @@ const Chat = (props) => {
 								<p  style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
 							</div>): null }
 							{/*affiche les message sous forme nom: message */}
-							<p > { show ? <b  style={over} onClick={closeMenu} >{data.senderLog}</b>: <b  style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
+							<p style={displayMessage} > { show ? <b  style={over} onClick={closeMenu} >{data.senderLog}</b>: <b  style={over} onClick={event => actionUser(event, data)} >{data.senderLog}</b>} : {data.message}</p>
 						</div>
 					))}
 					{/*permet de scroll au dernier message*/}

@@ -3,16 +3,17 @@ import CSS from 'csstype';
 import MaterialIcon from 'material-icons-react';
 
 const modaleWindow: CSS.Properties = {
-    boxShadow: ' inset 0px 0px 10px 20px rgba(204, 95, 117)',
+    // boxShadow: ' inset 0px 0px 10px 20px rgba(204, 95, 117)',
     borderRadius: "1%",
     height: '500px',
     width: '700px',
-    background: 'rgba(214,105,127)',
+    background: 'white',
     position: 'absolute',
     top: '50%',
     left: '50%',
     zIndex: '9999',
     transform: 'translate(-50%, -50%)',
+    padding: '16px'
 }
 
 const modaleSide: CSS.Properties = {
@@ -51,7 +52,7 @@ export function ModalWindow({children, revele, setRevele}) {
             <div>
             <div style={background} />
             <div className="modal" style={modaleWindow}>
-                <div style={button}><MaterialIcon icon="close" onClick={setRevele} /></div>
+                <button className="closeButton"><div style={button}><MaterialIcon icon="close" onClick={setRevele} /></div></button>
                 {children}
             </div>
             </div>

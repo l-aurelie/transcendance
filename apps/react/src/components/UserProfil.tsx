@@ -7,6 +7,13 @@ import UserProfilExtended from './UserProfilExtended';
 import { socket } from "./Socket";
 import MaterialIcon from 'material-icons-react';
 import FirstConnect from './FirstConnect';
+import './css/globalStyle.css';
+
+const headerRight = {
+  display:"flex",
+  alignItems: "center",
+  flexDirection: "row" as "row"
+}
 
 const UserProfil = (props) => {
   const [user, setUser] = useState(props.dataFromParent);
@@ -142,10 +149,11 @@ const UserProfil = (props) => {
   // return conditionnel selon l'etat de connection de l'utilisateur
   if (connected && user !== 0) {
     return(
-      <div>
+      <div style={headerRight}>
         <FirstConnect revele={revele2} toggle={toggleModal2} user={user}></FirstConnect>
 
-        {/* Bonton pour display profilExtended */}
+        {/* Bouton pour display profilExtended */}
+       
         {
         friendNotif ?
           <svg width="45" height="45" viewBox='0 0 45 45'>
@@ -153,22 +161,23 @@ const UserProfil = (props) => {
             <div><img onClick={toggleModal} style={{maxWidth: "45px", maxHeight: "45px", borderRadius: '100%' }} alt="user-avatar" src={user.avatar}/></div>
           </foreignObject>
           <g>
-          <rect width="11" height="11" x="34" y="34" rx="5" ry="5" fill='pink'></rect>
+          <rect width="11" height="11" x="34" y="34" rx="5" ry="5" fill='#3CCF4E'></rect>
           </g></svg>
           :
-          <img style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/>
+          <button style={{backgroundColor: "white"}}>
+          <img  className="smallMarginRight mediumMarginBottom" style={{maxWidth: '45px', maxHeight: '45px', borderRadius: '100%' }} onClick={toggleModal} src={user.avatar} alt="description yes"/></button>
         }
         <ModalWindow revele={revele} setRevele={toggleModal}>
           <UserProfilExtended user={user} reqnotif={friendNotif} toggleProfil={toggleModal} toggleProfil2={toggleModalBis}/><br></br>
         </ModalWindow>
-        <div>{user.login}</div>
-        <MaterialIcon icon="power_settings_new" onClick={handleClick} />
+        <div  className="smallMargin mediumMarginBottom">{user.login}</div>
+        <button  className="smallMargin mediumMarginBottom" onClick={handleClick}><MaterialIcon icon="power_settings_new" /></button>
       </div>
     ); }
   else {
     return(
       <div>
-        <MaterialIcon icon="power_settings_new" onClick={handleClick} />
+        <button onClick={handleClick}><MaterialIcon icon="power_settings_new" /></button>
       </div>
     ); }
   }

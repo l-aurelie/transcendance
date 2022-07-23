@@ -713,7 +713,7 @@ export class UsersController {
 
    @Get('getColor/:userId')
    async getColor(@Param('userId') userId:string) {
-      let color = "rgba(0,0,0,1)";
+      let color = "rgba(0,0,0,5)";
       const userIdInt = parseInt(userId);
       if (!Number.isInteger(userIdInt))
          return ([]);

@@ -23,7 +23,7 @@ const background: CSS.Properties = {
 const modale: CSS.Properties = {
 	height: '500px',
 	width: '700px',
-	background: 'rgba(214,105,127)',
+	// background: 'rgba(214,105,127)',
 	position: 'absolute',
 	top: '50%',
 	left: '50%',
@@ -65,7 +65,7 @@ const FirstConnect = ({revele, toggle, user}) => {
                 </div>
                 <div style={{position:'relative', left:'42%', top:'3%', justifyContent:'center'}}><h1>Welcome!</h1></div>
                 <div style={{position:'relative', top:'2%', display:'flex', justifyContent:'space-around'}}>
-                <div style={{width:'50%', height:'auto', borderRight:'solid', borderColor:'rgba(204, 95, 117)'}}><h2>Change your informations</h2><UserForm2 user={user} toggle={toggleForm}/></div>
+                <div style={{width:'50%', height:'auto', borderRight:'solid'}}><h2>Change your informations</h2><UserForm2 user={user} toggle={toggleForm}/></div>
                 <div style={{}}><h2>Change your photo</h2><UserFormAvatar2 user={user} toggle={toggleForm}/></div>
                 </div>
                 

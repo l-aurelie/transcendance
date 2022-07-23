@@ -6,8 +6,8 @@ import CSS from 'csstype';
 import axios from 'axios';
 
 const log: CSS.Properties = {
-	position : 'relative',
-	top : '5%',
+	// position : 'relative',
+	// top : '5%',
 }
 
 const watchButton: CSS.Properties = {
@@ -29,11 +29,12 @@ const background: CSS.Properties = {
 const modale: CSS.Properties = {
 	height: '500px',
 	width: '700px',
-	background: 'rgba(214,105,127)',
+	background: 'white',
 	position: 'absolute',
 	top: '50%',
 	left: '50%',
 	zIndex: '9999',
+	padding:'16px',
 	transform: 'translate(-50%, -50%)'
 }
 
@@ -124,16 +125,16 @@ const OwnerLeave = ({idRoom, idUser, roomName, revele, toggle, toggle2, revele2}
 						<Logo/>
 					</div>
 					<div style={{display:'flex', justifyContent:'space-between', position:"relative",top:"20%"}}>
-						<div style={{width :'50%', top:"50%", borderRight:'solid', borderColor:'grey'}}>
+						<div style={{width :'50%', top:"50%", borderRight:'solid', borderColor:'grey', paddingRight:'16px'}}>
 							<h2>Choose a successor and leave room...</h2>
 							<div style={{position:"relative",top:"20%"}}>
 								<Select onChange={handleChange} options={members}/>
 							</div>
-							<div style={watchButton}><button  type='button' onClick={leave}>Leave</button></div>
+							<div style={watchButton}><button className='largeButton' type='button' onClick={leave}>Leave</button></div>
 						</div>
 						<div style={{width:'30%'}}>
 							<h2>or delete it</h2>
-							<div style={watchButton}><button  type='button' onClick={deleteRoom}>Delete</button></div>
+							<div style={watchButton}><button className='largeButton' type='button' onClick={deleteRoom}>Delete</button></div>
 						</div>
 					</div>
 				<button style={button} type='button' onClick={reset}>x</button>
