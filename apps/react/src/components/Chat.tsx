@@ -11,6 +11,8 @@ const chatStyle = {
 	width: '40%',
 	maxWidth: '40%',
 	height: '80vh',
+	
+
 }
 
 const mySalonStyle = {
@@ -20,7 +22,9 @@ const mySalonStyle = {
 	borderStyle: 'solid',
 	borderWidth: '1px',
 	borderColor: "lightgrey",
-	boxShadow: '-15px 0 15px -15px lightgrey'
+	boxShadow: '-15px 0 15px -15px lightgrey',
+	overflowY: "auto" as "auto"
+
 }
 
 const messageStyle = {
@@ -30,6 +34,7 @@ const messageStyle = {
 	borderWidth: '1px',
 	borderColor: "lightgrey",
 	width: '60%',
+	overflowY: "auto" as "auto"
 }
 
 const chatBox = {
