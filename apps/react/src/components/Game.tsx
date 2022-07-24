@@ -47,7 +47,6 @@ const Game = (props) => {
 	const [loginL, setLoginL] = useState('');
 	const [loginR, setLoginR] = useState('');
 	const [waitingFor, setWaitingFor] = useState(0);
-	const [waitCenter, setWaitCenter] = useState(false);
 
 	let widthExt = 800;
 	let heightExt = 600;
@@ -485,8 +484,7 @@ const Game = (props) => {
 		loginL,
 		loginR,
 		winner,
-		waitingFor,
-		waitCenter
+		waitingFor
 	])
 	
 	return (

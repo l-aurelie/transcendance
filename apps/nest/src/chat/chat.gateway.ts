@@ -525,9 +525,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
             var randomX = Math.floor(Math.random() * width - (width/8)) + width/8;
             var randomY = Math.floor(Math.random() * height - (height/8)) + height/8;
+            if (speed === 1)
+            {
+                speed = 3;
+                dx = dx * speed;
+                dy = dy * speed;
+            }
             speed = 3;
-            dx = dx * speed;
-            dy = dy * speed;
             smachX = randomX;
             smachY = randomY;
         }

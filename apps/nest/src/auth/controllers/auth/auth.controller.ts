@@ -53,16 +53,18 @@ export class verifyCode {
     @Header('Access-Control-Allow-Origin', 'http://localhost:4200')
     @Post()
     
-    async Verify(@Body() body, @Res() res) { // cette fonction servira quand on activera l'authentification avec le 2FA qui envoit des un code par mail pour verifier l'utilisateur, actuellement il est desactive pour eviter les spam demail et c'est mieux si c'est l' utilisateur qui choisi de l' activer ou non.
+    async Verify(@Req() request: RequestWithUser,@Body() body, @Res() res) { // cette fonction servira quand on activera l'authentification avec le 2FA qui envoit des un code par mail pour verifier l'utilisateur, actuellement il est desactive pour eviter les spam demail et c'est mieux si c'est l' utilisateur qui choisi de l' activer ou non.
     try{
-      console.log('enter verify');
+      console.log('enter verify', request.user.login);
         const user = await this.userRepo.findOne({ // le formulaire renvoie dans le body le code donne par l'utilisateur, grace a cela on cherche si le code inscrit correspond au code stocker dans la base de donne et associe a un utilisateur
-        where : { authConfirmToken: Number.parseInt(body.value), },
+        where : {id:request.user.id },
         });
-        if (!user) { // si il n' y a pas de correspondance, le code entre n' est pas bon
+
+        if (!user.authConfirmToken || user.authConfirmToken != Number.parseInt(body.value)) { // si il n' y a pas de correspondance, le code entre n' est pas bon
           console.log('fail verify');
           res.status(304);
           res.send('Unauthorized');
+          return ('wrong code') ;
         }
         await this.userRepo.update({ authConfirmToken: user.authConfirmToken }, { isVerified: true, authConfirmToken: undefined });// sinon on passe la mention isVerified de la db a true et le code a undefines puis en renvoie true
         console.log('sucess verify');
