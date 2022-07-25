@@ -5,7 +5,6 @@ import MySalons from "./MySalons";
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import FriendUserProfilExtended from './FriendUserProfileExtended';
 import Defeat from './Defeat';
-import axios from "axios";
 
 const chatStyle = {
 	display: 'flex',
@@ -82,7 +81,7 @@ const Chat = (props) => {
 	const [defeatUser, setDefeatUser] = useState();
 	const [version, setVersion] = useState(0);
 	const [same, setSame] = useState(false);
-	const [playing, setPlaying] = useState(false);
+	
 	const [revele, setRevele] = useState(false);
 	const [revele2, setRevele2] = useState(false);
 	const toggleModal = () => {setRevele(!revele);}
@@ -103,7 +102,7 @@ const Chat = (props) => {
 			event.target.value = "";
 		}
 	}
-
+	
 	socket.on("noMoreMatch", data => {
 		setRevele(false);
 	});
@@ -136,9 +135,6 @@ const Chat = (props) => {
 		else
 			setSame(false);
 		setShow(true);
-		axios.get("http://localhost:3000/users/getColor/" + actualUser.id, {withCredentials:true}).then((res) => {
-				setPlaying(res.data === 'rgba(255, 0, 255, 0.9)')
-		})
 	}
 
 	//close menu on 2nd click  on name on chat
@@ -181,7 +177,7 @@ const Chat = (props) => {
 								position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
 								<b  style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
 								<p  style={overLi} onClick={getUserProfil}>Profil</p>
-								{ !same && !playing && (<div  ><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
+								{ same ?  <></> : (<div  ><p style={overLi} onClick={() => defeat(0)}>Defeat pong</p>
 								<p  style={overLi} onClick={() => defeat(1)}>Defeat smash</p></div>) }
 							</div>): null }
 							{/*affiche les message sous forme nom: message */}
