@@ -226,7 +226,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
             <button><MaterialIcon title="Add friend" icon="person_add" onClick={sendFriendRequest} /></button>
             <button><MaterialIcon title="Direct message"  icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
-            <button><MaterialIcon  title="Defeat" icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>
+            {!playing2 && <button><MaterialIcon  title="Defeat" icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>}
             <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
             {playing && !playing2 && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
