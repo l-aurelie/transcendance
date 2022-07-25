@@ -62,6 +62,12 @@ export class UsersController {
     return (request.user.id);
    }
 
+   @UseGuards(AuthenticatedGuard)
+   @Get('getMyLogin')
+   getMyLogin(@Req() request: RequestWithUser) : string {//TODO: async ?
+    return (request.user.login);
+   }
+
    /* WIP: set le profil avec le formulaire envoye */
    @UseGuards(AuthenticatedGuard)
    @Post('set')

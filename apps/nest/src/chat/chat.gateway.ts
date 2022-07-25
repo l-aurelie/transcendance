@@ -356,14 +356,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       return ;
     }
-      const allGame = await this.gameRepo.find( { where: [{playerLeft:user.id, finish:false}, {playerRight:user.id, finish:false}]} );
+      const allGame = await this.gameRepo.findOne( { where: [{playerLeft:user, finish:false}, {playerRight:user, finish:false}]} );
     //  for (let entry of allGame) {
          // if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {
-         if (allGame.length > 0) {  
-         this.joinRoom(client, allGame[0].id+'-players');
-            const data = {roomname:allGame[0].id, sL:allGame[0].scoreLeft, sR:allGame[0].scoreRight, player1:allGame[0].playerLeft, player2:allGame[0].playerRight, smash :allGame[0].smash};
-            this.server.to(allGame[0].id+'-players').emit("game-start", data);
-            this.server.to(allGame[0].id+'-watch').emit("game-start", data);
+         if (allGame) {  
+         this.joinRoom(client, allGame.id+'-players');
+            const data = {roomname:allGame.id, sL:allGame.scoreLeft, sR:allGame.scoreRight, player1:allGame.playerLeft, player2:allGame.playerRight, smash :allGame.smash};
+            this.server.to(allGame.id+'-players').emit("game-start", data);
+            this.server.to(allGame.id+'-watch').emit("game-start", data);
             await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9)'});
             this.server.emit('changeColor');
             console.log('passe dans init');
@@ -522,42 +522,79 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var speed = infos[1].speed;
 
         if (by >= infos[1].smachY - (height/30)/2 && by <= infos[1].smachY + (height/30)/2
-            && bx >= infos[1].smachX - (height/30)/2 && bx <= infos[1].smachX + (height/30)/2)
+        && bx >= infos[1].smachX - (height/30)/2 && bx <= infos[1].smachX + (height/30)/2)
+    {
+        var randomX = Math.floor(Math.random() * width - (width/8)) + width/8;
+        var randomY = Math.floor(Math.random() * height - (height/8)) + height/8;
+        if (speed === 1)
         {
-            var randomX = Math.floor(Math.random() * width - (width/8)) + width/8;
-            var randomY = Math.floor(Math.random() * height - (height/8)) + height/8;
-            if (speed === 1)
-            {
-                speed = 3;
-                dx = dx * speed;
-                dy = dy * speed;
-            }
             speed = 3;
-            smachX = randomX;
-            smachY = randomY;
+            dx = dx * speed;
+            dy = dy * speed;
         }
-        /* si la balle est sur les bord haut et bas du board */
-        if((by + dy > height ) || (by + dy < 0)) {
-            dy = -dy;
-        } 
-        
-        /* si la balle touhce les bords du paddle */
-        if ((bx < paddleW && posL <= by && posL + paddleH >= by) 
-            || (bx > width - paddleW && posR <= by  &&  posR + paddleH >= by)) {
-                dy = -dy / speed;
-                dx = dx /speed;
-                speed = 1;
-            }
-        /* si la balle touhce la longueur du paddle */
-        else if ((bx === paddleW && posL <= by && posL + paddleH >= by) 
-            || ((bx === width - paddleW && posR <= by && posR + paddleH >= by))) {
-                dx = -dx / speed;
-                dy = dy/speed;
-                speed = 1;
-        }
-        bx = bx + dx;
-        by = by + dy;
+        speed = 3;
+        smachX = randomX;
+        smachY = randomY;
+    }
+    /* si la balle est sur les bord haut et bas du board */
+    if((by + dy > height ) || (by + dy < 0)) {
+        dy = -dy;
+    } 
+    
+    /* si la balle touhce les bords du paddle */
+    // if ((bx < paddleW && posL <= by && posL + paddleH >= by) 
+    //     || (bx > width - paddleW && posR <= by  &&  posR + paddleH >= by)) {
+    //         dy = -dy / speed;
+    //         dx = dx /speed;
+    //         speed = 1;
+          
+    //     }
+    // /* si la balle touhce la longueur du paddle */
+    // else if ((bx === paddleW && posL <= by && posL + paddleH >= by) 
+    //     || ((bx === width - paddleW && posR <= by && posR + paddleH >= by))) {
+    //         dx = -dx / speed;
+    //         dy = dy/speed;
+    //         speed = 1;
+            
+    // }
+    bx = bx + dx;
+    by = by + dy;
 
+    if(bx > width - paddleW && by >= posR && by <= posR + paddleH) {
+        if (dx > 0)
+        {
+            dx = -dx / speed;
+            dy = dy/speed;
+            speed = 1;
+        }
+    }
+    else if (bx < paddleW && by >= posL && by <= posL + paddleH) {
+        if (dx < 0) {
+            dx = -dx / speed;
+            dy = dy/speed;
+            speed = 1;
+        }
+    }
+    else if(bx > width) {
+        sL += 1;
+        bx = infos[1].width/2;
+        by = infos[1].height/2;
+        dx = dx / speed;
+        dy = dy / speed;
+        speed = 1;            
+        newSleep = true;
+        await this.gameRepo.update( {id : infos[0]}, {scoreLeft:sL});
+    }
+    else if (bx < 0) {
+        sR += 1;
+        bx = infos[1].width/2;
+        by = infos[1].height/2;
+        dx = dx / speed;
+        dy = dy/speed;
+        speed = 1;
+        newSleep = true;
+        await this.gameRepo.update( {id : infos[0]}, {scoreRight:sR});
+    }
         if(bx > width) {
             sL += 1;
             bx = infos[1].width/2;

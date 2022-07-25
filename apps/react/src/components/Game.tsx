@@ -67,7 +67,9 @@ const Game = (props) => {
 					if (error.response && error.response.status)
 					{
 							if (error.response.status === 403)
-									window.location.href = "http://localhost:4200/";
+							{
+								window.location.href = "http://localhost:4200/";
+						}
 							else
 									console.log("Error: ", error.response.code, " : ", error.response.message);
 					}
@@ -81,6 +83,26 @@ const Game = (props) => {
 
 //on click, emit to server to ask a matchMaking
  	const joinGame = (version) => {
+		axios.get("http://localhost:3000/users/getMyLogin", {withCredentials:true}).then((res) =>{
+				console.log(res.data, " joins game!");
+				})
+				.catch(error => {
+					if (error.response && error.response.status)
+					{
+							if (error.response.status === 403)
+							{
+									window.location.href = "http://localhost:4200/";
+									return;
+							}
+							else
+									console.log("Error: ", error.response.code, " : ", error.response.message);
+					}
+					else if (error.message)
+							console.log(error.message);
+					else
+							console.log("unknown error");
+			})
+		
 		setWait(true);
 		setPresentation(false); 
 		setInGame(false);
@@ -94,6 +116,25 @@ const Game = (props) => {
 
  // ask to quit game or queue
 	const quitGame = () => {
+		axios.get("http://localhost:3000/users/getMyLogin", {withCredentials:true}).then((res) =>{
+				console.log(res.data, " quits game!");
+				})
+				.catch(error => {
+					if (error.response && error.response.status)
+					{
+							if (error.response.status === 403)
+							{
+									window.location.href = "http://localhost:4200/";
+									return;
+							}
+							else
+									console.log("Error: ", error.response.code, " : ", error.response.message);
+					}
+					else if (error.message)
+							console.log(error.message);
+					else
+							console.log("unknown error");
+			})
 		if (waitingFor !== 0)
 			socket.emit('warnOpponent', waitingFor);
 		setWait(false);
