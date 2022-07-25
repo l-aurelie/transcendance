@@ -226,7 +226,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
           <foreignObject x="0" y="0" width="45" height="40" >
         	<img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/>
           </foreignObject>
-          <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={userSelected.color}></rect></svg>
+          <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={color}></rect></svg>
 		
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
             <button><MaterialIcon title="Add friend" icon="person_add" onClick={sendFriendRequest} /></button>
