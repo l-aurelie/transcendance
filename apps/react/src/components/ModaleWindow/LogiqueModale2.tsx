@@ -52,7 +52,7 @@ export function ModalWindow({children, revele, setRevele}) {
             <div>
             <div style={background} />
             <div className="modal" style={modaleWindow}>
-                <button className="closeButton"><div style={button}><MaterialIcon icon="close" onClick={setRevele} /></div></button>
+                <button className="closeButton"><div style={button}><MaterialIcon title="Close" icon="close" onClick={setRevele} /></div></button>
                 {children}
             </div>
             </div>

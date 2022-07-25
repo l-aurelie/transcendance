@@ -52,7 +52,6 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
 .iconButton {
@@ -69,7 +68,6 @@ button {
     background-color:white;
     color: var(--text);
     cursor:pointer;
-
 }
 
 .overflowY {

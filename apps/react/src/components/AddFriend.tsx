@@ -143,7 +143,7 @@ const togglePlay = () => {
     return(
       <div>
         <button onClick={toggleAdd}>
-        <MaterialIcon size="medium" icon="group_add" />
+        <MaterialIcon title="Add friend" size="medium" icon="group_add" />
         </button>
         <h2>Friends' list</h2>
         <div style={lists}>

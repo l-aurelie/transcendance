@@ -84,7 +84,7 @@ const WatchModale = ({user, revele, toggle, game}) => {
                     <button className="largeButton" style={button} type='button' onClick={watch}>watch</button>
                 </div>
 
-                <button className="closeButton"><div style={button}><MaterialIcon icon="close" onClick={reset} /></div></button>
+                <button className="closeButton"><div style={button}><MaterialIcon title="Close" icon="close" onClick={reset} /></div></button>
             </div>
         </div>
     )

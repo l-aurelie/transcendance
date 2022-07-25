@@ -185,10 +185,10 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
         
 		<button style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>
           {userSelected.login}</button>
-            <button><MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
-            <button><MaterialIcon icon="videogame_asset" onClick={defeat} /></button>
-            <button>{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}</button>
-            {playing && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
+            <button><MaterialIcon title="Direct message" icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
+            <button><MaterialIcon title="Defeat" icon="videogame_asset" onClick={defeat} /></button>
+            <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
+            {playing && <button> <i onClick={watch}><MaterialIcon title="Watch a match" icon="connected_tv"/></i> </button>}
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
@@ -207,10 +207,10 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={userSelected.color}></rect></svg>
 		
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
-            <button><MaterialIcon icon="person_add" onClick={sendFriendRequest} /></button>
-            <button><MaterialIcon icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
-            <button><MaterialIcon icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>
-            <button>{bloc ? <i onClick={unblock} ><MaterialIcon icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon icon="block"/>(Block)</i>}</button>
+            <button><MaterialIcon title="Add friend" icon="person_add" onClick={sendFriendRequest} /></button>
+            <button><MaterialIcon title="Direct message"  icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
+            <button><MaterialIcon  title="Defeat" icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>
+            <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
             { playing && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
            {/* | Spectate <br></br> */}
           

@@ -14,7 +14,7 @@ const SideBarChat = (props) => {
 
     return (
         <div>
-           <button className="smallMarginRight" onClick={toggleModal}><MaterialIcon icon="add_circle" /></button>
+           <button className="smallMarginRight" onClick={toggleModal}><MaterialIcon title="Friends - Channels" icon="add_circle" /></button>
             <ModalWindow revele={revele} setRevele={toggleModal}>
                 <AddNav user={props.user} toggleAddNav={setRevele}/>
             </ModalWindow>

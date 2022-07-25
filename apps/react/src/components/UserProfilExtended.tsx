@@ -102,7 +102,7 @@ const UserProfilExtended = ({user, reqnotif, toggleProfil, toggleProfil2}) => {
 			</div >
 			<div style={{display:'flex', justifyContent: 'center'}}>
 				<h1 style={{display:'flex', marginBottom:'0', paddingRight:'16px'}}>{user.login}</h1>
-				<button className="iconButton"><MaterialIcon size='medium' icon="edit" onClick={toggleForm} /></button>
+				<button className="iconButton"><MaterialIcon title="Edit" size='medium' icon="edit" onClick={toggleForm} /></button>
 			</div>
 			<ModalWindow revele={reveleForm} setRevele={toggleForm}>
 				<div style={{display:'flex', justifyContent:'space-around'}}>
