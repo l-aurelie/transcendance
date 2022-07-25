@@ -18,11 +18,10 @@ import './css/globalStyle.css'
 
      return (
          <div>
-            <ul><li className={`${!reveleFriend && "activeTab"}`}><a  onClick={switchToChannel}>Channels</a></li><li className={`${reveleFriend && "activeTab"}`} ><a onClick={switchToFriend}>Friends</a></li></ul>
+            <ul><li className={`${!reveleFriend && "activeTab"}`}><a onClick={switchToChannel}>Channels</a></li><li className={`${reveleFriend && "activeTab"}`} >
+               <a onClick={switchToFriend}>Friends</a></li></ul>
             {reveleFriend ? <h2>Add friend</h2> : <h2>Add channel</h2>}
-            <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-               {/* {reveleFriend ? <button className="largeButton" onClick={switchToChannel}>View channels' list</button> : <button className="largeButton" onClick={switchToFriend}>View friends</button>} */}
-            </div>
+            <div style={{display:'flex', justifyContent:'center', width:'100%'}}></div> 
             {reveleFriend ? <AddFriend user={props.user} toggleAddNav={props.toggleAddNav}/> : <AddChannel user={props.user} />}
         </div>    
      );  

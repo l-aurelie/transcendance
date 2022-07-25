@@ -72,6 +72,10 @@ button {
 
 }
 
+.overflowY {
+    overflow-y: "auto";
+}
+
 .largeButton {
    padding:16px 32px;
 }

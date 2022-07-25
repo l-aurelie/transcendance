@@ -23,7 +23,7 @@ const background: CSS.Properties = {
 const modale: CSS.Properties = {
 	height: '500px',
 	width: '700px',
-	// background: 'rgba(214,105,127)',
+	background: 'white',
 	position: 'absolute',
 	top: '50%',
 	left: '50%',

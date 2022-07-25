@@ -27,7 +27,7 @@ const channelNameNotif = {
 }
 
 const salons= {
-	// overflowY: "auto" as "auto",
+	marginRight: "8px",
 }
 
 const channel = {
