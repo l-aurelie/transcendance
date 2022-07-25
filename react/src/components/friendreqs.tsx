@@ -6,12 +6,8 @@ import AcceptButton from './AcceptButton';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import RejectButton from './RejectButton';
 import { socket } from './Socket';
+import './css/globalStyle.css'
 
-const lists = {
-	overflowY: "auto" as "auto",
-	height:'400px',
-  }
-  
 
 const FriendReqss = ({reqnotif}) => {
 
@@ -92,7 +88,7 @@ const FriendReqss = ({reqnotif}) => {
 		}
 			<ModalWindow revele={revele} setRevele={toggleModal}>
 				<h1>Friend Requests</h1>
-				<div style={lists}>  
+				<div className='lists'>  
 				{reqs.map(reqs => (
 					<div key={reqs.id}><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
 					{reqs.status} request from {reqs.sender.login}

@@ -21,15 +21,7 @@ const createChannelStyle ={
 	width: "50%"
 }
 
-const channelsListStyle = {
-	// justifyContent: "center",
-	// width:'50%',
-	// backgroundColor: "green",
-	// // overflowY: "scroll" as "scroll"
-	// maxHeight: "calc(100vh - 200px)",
-    // overflowYy: 'auto',
-}
-	
+
 /* Join des channels, create des channels */
 const AddChannel = ({user}) => {
   
@@ -133,10 +125,11 @@ const AddChannel = ({user}) => {
 		<div>	
 			<button onClick={toggleAdd} ><MaterialIcon title="Add channel"  size="medium" icon="maps_ugc" /></button>
 			<h2 className="mediumMarginBottom">Join existing channels</h2>    
+			<div className='lists'>
 			{salons.map((salon) => ( 
-			<div style={channelsListStyle}><button  key={salon.id} onClick={() => handleClick(salon)}>
+			<button  key={salon.id} onClick={() => handleClick(salon)}>
 				<div key={salon.id}>{salon.name}</div>
-			</button></div>))}
+			</button>))}</div>
 
 			<ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
 				<h2>Create a new Channel</h2>

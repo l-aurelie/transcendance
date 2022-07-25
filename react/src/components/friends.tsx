@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import DisplayUser from './DisplayUser';
 import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import { socket } from './Socket';
+import './css/globalStyle.css'
 
 const Friends = ({user, toggleProfil, toggleProfil2}) => {
 		const [friends, setFriends] = useState([]);
@@ -92,12 +93,14 @@ const Friends = ({user, toggleProfil, toggleProfil2}) => {
 				<button onClick={toggleModal}>Friends</button>
 				<ModalWindow revele={revele} setRevele={toggleModal}>
 						<h1>My friends</h1>
+						<div className='lists'>    
 						{friends.map(friends => (
 							<div key={friends.id}>
 								<DisplayUser userConnected={user} userSelected={friends} isFriend={true} togglePlay={togglePlay} togglePlay2={togglePlay2}/>
 							</div>
 							
-						))}
+							
+						))}</div>
 				</ModalWindow>
 		</div>
 	);
