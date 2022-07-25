@@ -562,8 +562,6 @@ export class UsersController {
    /* Retourne si il y a un password */
    @Get('pwd/:currentSalon')
    async getPwd(@Param('currentSalon') currentSalon: string) {
-      console.log('IN USERSINCHANNEL 2');
-      console.log('current SALON : ' + currentSalon);
       if (currentSalon === "undefined")
       {
          console.log('undef');
@@ -572,20 +570,12 @@ export class UsersController {
       var currentSal = parseInt(currentSalon);
       if (!Number.isInteger(currentSal))
          return (false);
-      console.log('current SAL: ' + currentSal);
       const room = await this.roomRepo.findOne({where: {id:currentSal}});
-      console.log("ROOM +++> ", room);
-      console.log("PWD +++> ", room.password);
-      const pwd = room.password;
-      console.log("password == ", pwd);
-      if (pwd == null)
-      {   
-         console.log("RETURN 0");
+      const pwd = room.password;  
+      if (pwd.length === 0) {   
          return(false);
       }
-      else
-      {   
-         console.log("RETURN 1");
+      else {   
          return(true);
       }
    }

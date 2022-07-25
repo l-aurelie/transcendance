@@ -424,30 +424,35 @@ const MySalons = (props) => {
 	}
 
 	const submitPassword = (event) => {
-	if (pwd !== "") {
-		setPwd(pwdRef.current.value);
-		event.preventDefault();
-		const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
-		axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
-		})
-		.catch(error => {
-			if (error.response && error.response.status)
-			{
-				if (error.response.status === 403)
-					window.location.href = "http://localhost:4200/";
-				else
-					console.log("Error: ", error.response.code, " : ", error.response.message);
-			}
-			else if (error.message)
-				console.log(error.message);
-			else
-				console.log("unknown error");
-		})
-		event.target.reset(); //clear all input values in the form withCredentials:true
-		alert("Password has been set");
-		return;
+		console.log("VALUE ", pwdRef.current.value)
+		if (pwdRef.current.value.length === 0) {
+			alert('Password name cant be empty');
+			event.preventDefault();
 		}
-	};
+		else {
+			setPwd(pwdRef.current.value);
+			event.preventDefault();
+			const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
+			axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
+			})
+			.catch(error => {
+				if (error.response && error.response.status)
+				{
+					if (error.response.status === 403)
+						window.location.href = "http://localhost:4200/";
+					else
+						console.log("Error: ", error.response.code, " : ", error.response.message);
+				}
+				else if (error.message)
+					console.log(error.message);
+				else
+					console.log("unknown error");
+			})
+			event.target.reset(); //clear all input values in the form withCredentials:true
+			alert("Password has been set");
+			return;
+			}
+		};
 	
 	const resetPassword = (event) => {
 		const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: ''};

@@ -87,6 +87,7 @@ const AddChannel = ({user}) => {
 	
 	const handleClick = (salon) => { 
 		axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
+			console.log("PWD ??? ", res.data)
 			if (res.data === true) {
 				setCurrentSal(salon.id);
 				setCurrentName(salon.name);
