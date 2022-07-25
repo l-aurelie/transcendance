@@ -166,7 +166,7 @@ const Chat = (props) => {
 						<div style={messageSent} key={data.id}>
 							{/*apparait seulement lorsqu' on clic surle nom d' un utilisateur */}
 							{show ? (<div style={{
-								fontSize: '14px', width : '100px', height:'auto',
+								fontSize: '14px', width : '100px', height:'auto', backgroundColor:'#FBCB0A',
 								position:'absolute' as 'absolute', top:anchorPoint.y+5, left:anchorPoint.x-90}}>
 								<b  style={{textAlign:'center', cursor:'pointer'}} onClick={closeMenu}>▲</b>
 								<p  style={overLi} onClick={getUserProfil}>Profil</p>

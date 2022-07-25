@@ -145,7 +145,7 @@ const togglePlay = () => {
         <button onClick={toggleAdd}>
         <MaterialIcon title="Add friend" size="medium" icon="group_add" />
         </button>
-        <h2>Friends' list</h2>
+        <h2 className="mediumMarginBottom">Friends' list</h2>
         <div style={lists}>
           {friends.map(friends => (
             <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav} togglePlay2={props.toggleAddNav}/></div>

@@ -121,12 +121,12 @@ const AddChannel = ({user}) => {
 		toggleAdd();     
 	};
 
-	const handleChange2 = (event) => {    setInf(event.target.value);  }
+	const handleChange2 = (event) => { setInf(event.target.value);  }
 	
 	return(
 		<div>	
 			<button onClick={toggleAdd} ><MaterialIcon title="Add channel"  size="medium" icon="maps_ugc" /></button>
-			<h2 style={{overflowY: 'initial'}} className="mediumMarginBottom">Join existing channels</h2>    
+			<h2 className="mediumMarginBottom">Join existing channels</h2>    
 			{salons.map((salon) => ( 
 			<div style={channelsListStyle}><button  key={salon.id} onClick={() => handleClick(salon)}>
 				<div key={salon.id}>{salon.name}</div>
@@ -144,7 +144,7 @@ const AddChannel = ({user}) => {
 			</ModalWindow>
 			<ModalWindow revele={revele} setRevele={toggle}>
 				<div style={pwdStyle}>    
-					<h2>please enter password</h2>
+					<h2>Please enter password</h2>
 					<input style={{marginBottom: '16px'}} type='password' onChange={(event) =>handleChange2(event)}></input>
 					<button onClick={check}>Send</button>
 					<b>{mes ? 'wrong password...' : ''}</b>

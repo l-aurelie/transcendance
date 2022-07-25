@@ -4,7 +4,6 @@ import MaterialIcon from 'material-icons-react';
 import { useState } from "react";
 import { socket } from "./Socket";
 import axios from "axios";
-import { runInThisContext } from "vm";
 
 const displayUserStyle = {
 	display: "flex",
@@ -17,7 +16,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 		const [reveleProfil, setReveleProfil] = useState(false);
 		const toggleProfil = () => {setReveleProfil(!reveleProfil);}
 		const [color, setColor] = useState(userSelected.color);
-		const [colorUser, setColorUser] = useState(userConnected.color);
+		const [/*colorUser,*/ setColorUser] = useState(userConnected.color);
 		const [playing, setPlaying] = useState(userSelected.color === 'rgba(255, 0, 255, 0.9)');
 		const [playing2, setPlaying2] = useState(userConnected.color === 'rgba(255, 0, 255, 0.9)');
 		//---
@@ -197,10 +196,9 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
       return(
 
         <div style={displayUserStyle}>
-			
           <svg width="48" height="40" viewBox='0 0 45 40'>
           <foreignObject x="0" y="0" width="45" height="40" >
-			
+
 			<img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/>
           </foreignObject>
           <rect width="11" height="11" x="30" y="29" rx="5" ry="5" fill={color}></rect></svg>
@@ -221,7 +219,6 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
     {
       return(
         <div style={displayUserStyle}>
-			<h2>Friends' list</h2>
           <svg width="48" height="40" viewBox='0 0 45 40'>
           <foreignObject x="0" y="0" width="45" height="40" >
         	<img  onClick={toggleProfil} style={{maxWidth: "40px", maxHeight: "40px", borderRadius: '100%' }} alt="user-avatar" src={userSelected.avatar}/>
