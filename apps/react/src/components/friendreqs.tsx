@@ -7,6 +7,12 @@ import { ModalWindow } from './ModaleWindow/LogiqueModale2';
 import RejectButton from './RejectButton';
 import { socket } from './Socket';
 
+const lists = {
+	overflowY: "auto" as "auto",
+	height:'400px',
+  }
+  
+
 const FriendReqss = ({reqnotif}) => {
 
 	const [reqs, setreqs] = useState([]);
@@ -86,12 +92,14 @@ const FriendReqss = ({reqnotif}) => {
 		}
 			<ModalWindow revele={revele} setRevele={toggleModal}>
 				<h1>Friend Requests</h1>
+				<div style={lists}>  
 				{reqs.map(reqs => (
 					<div key={reqs.id}><img style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '100%' }} alt="avatar" src={reqs.sender.avatar}/><br></br> 
 					{reqs.status} request from {reqs.sender.login}
 					<AcceptButton FriendReq = {reqs} setRefresh={setRefresh}></AcceptButton>
 					<RejectButton FriendReq = {reqs} setRefresh={setRefresh}></RejectButton></div>
 				))}
+				</div>
 			</ModalWindow>
 		</div>
 		);

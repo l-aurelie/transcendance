@@ -25,6 +25,10 @@ class UserForm2 extends React.Component<any, any, any> {
   
     //-* Gestion des champs controles/chgt des valeur 
     handleChange(e) {
+        if (e.target.value.length > 30) {
+				alert('Login too long. Size max: 30');
+				return;
+        }
         const name = e.target.name;
         const type = e.target.type;
         const value = type === 'checkbox' ? e.target.checked : e.target.value;

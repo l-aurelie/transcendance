@@ -10,7 +10,6 @@ import './css/globalStyle.css'
 
 
 const lists = {
-  // overflowY: 'scroll'
   overflowY: "auto" as "auto"
 }
 
