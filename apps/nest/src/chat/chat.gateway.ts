@@ -510,7 +510,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         var smachX = infos[1].smachX;
         var smachY = infos[1].smachY;
         var login;
-
+        var finished : boolean = false;
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }   
@@ -582,10 +582,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.gameRepo.update( {id : infos[0]}, {winner: idGame.playerLeft, looser:idGame.playerRight, finish:true, scoreLeft:sL, scoreRight:sR, date:the_date});
             const user = await this.userRepo.findOne({where:{id: idGame.playerLeft}});
             login = user.login;
+            if (finished == false) {
+                const win = (await this.gameRepo.find({where: {winner:idGame.playerLeft}})).length;
+                await this.userRepo.update({id: idGame.playerLeft}, {total_wins:win});
+                finished = true;
+            }
             this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
             this.server.to(infos[0]+'-players').emit("game-stop", user.login);
-            const win = (await this.gameRepo.find({where: {winner:idGame.playerLeft}})).length;
-            await this.userRepo.update({id: idGame.playerLeft}, {total_wins:win});
         }
         if (sR >= 11 && sL < sR - 1) {
 
@@ -594,10 +597,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const user = await this.userRepo.findOne({where:{id: idGame.playerRight}});
 
             login = user.login;
+            if (finished == false) {
+                const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
+               await this.userRepo.update({id: idGame.playerRight}, {total_wins:win});
+               finished = true;
+           }
             this.server.to(infos[0]+'-watch').emit("game-stop", user.login);
             this.server.to(infos[0]+'-players').emit("game-stop", user.login);
-            const win = (await this.gameRepo.find({where: {winner:idGame.playerRight}})).length;
-            await this.userRepo.update({id: idGame.playerRight}, {total_wins:win});
         }
         if (newSleep === true) {
             let ball = {x : infos[1].width/2, y: infos[1].height/2, scoreLeft: sL, scoreRight: sR, dx:dx, dy:dy, sleep: newSleep, speed: speed, smX : smachX, smY: smachY, login : login}
