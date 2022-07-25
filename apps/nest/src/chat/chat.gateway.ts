@@ -355,14 +355,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       return ;
     }
-      const allGame = await this.gameRepo.find( { where: [{playerLeft:user.id, finish:false}, {playerRight:user.id, finish:false}]} );
+      const allGame = await this.gameRepo.findOne( { where: [{playerLeft:user, finish:false}, {playerRight:user, finish:false}]} );
     //  for (let entry of allGame) {
          // if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {
-         if (allGame.length > 0) {  
-         this.joinRoom(client, allGame[0].id+'-players');
-            const data = {roomname:allGame[0].id, sL:allGame[0].scoreLeft, sR:allGame[0].scoreRight, player1:allGame[0].playerLeft, player2:allGame[0].playerRight, smash :allGame[0].smash};
-            this.server.to(allGame[0].id+'-players').emit("game-start", data);
-            this.server.to(allGame[0].id+'-watch').emit("game-start", data);
+         if (allGame) {  
+         this.joinRoom(client, allGame.id+'-players');
+            const data = {roomname:allGame.id, sL:allGame.scoreLeft, sR:allGame.scoreRight, player1:allGame.playerLeft, player2:allGame.playerRight, smash :allGame.smash};
+            this.server.to(allGame.id+'-players').emit("game-start", data);
+            this.server.to(allGame.id+'-watch').emit("game-start", data);
             await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9)'});
             this.server.emit('changeColor');
             console.log('passe dans init');
