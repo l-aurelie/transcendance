@@ -90,7 +90,14 @@ const Chat = (props) => {
 	//Emit le message rentre par l'utilisateur a tout le salon
 	const sendMessage = (event) => {
 		if(event.key === 'Enter') {
-			if (currentSalon.length !== 0)
+			if(event.target.value.length === 0)
+				return;
+			if(event.target.value.length >=2000)
+			{
+				alert("message too long");
+				return;
+			}
+			else if (currentSalon.length !== 0)
 				socket.emit('chat', {roomId: currentSalon.roomId, creator: currentSalon.creator, private:currentSalon.private, roomToEmit: currentSalon.name, message : event.target.value, whoAmI: actualUser, isDm: currentSalon.isDm});
 			event.target.value = "";
 		}

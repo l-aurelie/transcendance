@@ -4,7 +4,7 @@ import { RoomEntity } from 'src/typeorm/entities/Room';
 import { Repository } from 'typeorm';
 import { IRoom } from 'src/typeorm/entities/Room';
 import { IRoomUser } from 'src/typeorm/entities/RoomUser';
-
+import { validate } from 'class-validator';
 import IUser, { User } from 'src/typeorm/entities/User';
 import { UsersService } from 'src/users/users.service';
 import '../chat.module';
@@ -21,11 +21,14 @@ export class RoomService {
 
      async createRoom(idUser: number, isPrivate:boolean, isDm:boolean, nameRoom: string): Promise<IRoom> {
        // const newRoom = await this.addCreatorInRoom(room, creator);
-      let room;
+      try {
+       let room;
       if (isDm === true)
         room = {creatorId: -1, private: isPrivate, directMessage: isDm, name: nameRoom};
       else
         room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
+       if (nameRoom.length > 50 || nameRoom.includes("--") || nameRoom.includes(";"))
+        return (null);
       const does_exist = await this.roomRepo.findOne({where: {name: nameRoom} });
       if (does_exist && (room.directMessage === true)){
         return does_exist;
@@ -40,6 +43,9 @@ export class RoomService {
       // }
       console.log('does room exist ?', does_exist);
       return (await this.roomRepo.findOne({where:{id:newRoom.id}}));
+    } catch(e) {
+      return (null)
+    }
      }
     
 

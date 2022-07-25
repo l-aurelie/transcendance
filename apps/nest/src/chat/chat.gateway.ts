@@ -303,11 +303,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log('addSalon');
 
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
+        if (!newRoom)
+        {
+            client.emit("invalid");
+            return;
+        }
         const roomUser = await this.roomService.associateUserRoom(newRoom, infos[0], infos[1], infos[2], true);
-        console.log('addSalon4');
         if (infos[2] === false && roomUser.id)
             await this.roomUserRepo.update({id: roomUser.id}, {isAdmin:true});
-        console.log('addSalon5');
         let disp;
         if ((newRoom.name).length > 10)
             disp = (newRoom.name).substring(0,9) + "...";
@@ -315,7 +318,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             disp = (newRoom.name);
             this.server.emit('newsalon', (newRoom.name));
         this.server.to('sockets' + infos[0]).emit('joinedsalon', {salonName: (newRoom.name), dm: false, displayName: disp, roomId:newRoom.id, creator:infos[0], isAdmin:true, private:infos[1]}); // add owner = true;
-        console.log('addSalon');
         if (infos.length > 4)
             this.user_joins_room(client, {userId: infos[0], room: (newRoom.name), otherLogin: infos[4], roomId:newRoom.id})
         else 

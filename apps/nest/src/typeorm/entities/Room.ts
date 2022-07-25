@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateCol
 import { User } from "src/typeorm";
 import IUser from "src/typeorm/entities/User";
 import { RoomUser } from './RoomUser';
+import { IsNotEmpty, MaxLength, IsAlphanumeric } from 'class-validator';
 
 @Entity()
 export class RoomEntity implements IRoom {

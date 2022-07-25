@@ -6,6 +6,7 @@ import Select from 'react-select';
 import AddPrivateMember from './AddPrivateMember';
 import OwnerLeave from './OwnerLeave';
 import MaterialIcon from 'material-icons-react';
+import { setServers } from 'dns/promises';
 
 /* John aurelie */
 
@@ -73,7 +74,8 @@ const MySalons = (props) => {
 	const toggleModal = (salon) => {setRevele(!revele);} 
 	const toggleModal2 = (salon) => {setRevele2(!revele2);} 
 	const toggleModal3 = (data) => {setRevele3(!revele3);} 
-	const toggleModal4 = () => {setRevele4(!revele4);} 
+	const toggleModal4 = () => {setRevele4(!revele4);}
+	const [err, setErr] = useState("");
    
 	/*------*/
 	const pwdRef = useRef(null);
@@ -434,6 +436,19 @@ const MySalons = (props) => {
 			event.preventDefault();
 			const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
 			axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
+				console.log(res.data.message);
+				if (res.data.message != "")
+				{
+					event.target.reset(); //clear all input values in the form withCredentials:true
+					alert("Password too large")
+					event.preventDefault();
+				}
+				else
+				{
+					event.target.reset(); //clear all input values in the form withCredentials:true
+					alert("Password has been set");
+					event.preventDefault();
+				}
 			})
 			.catch(error => {
 				if (error.response && error.response.status)
@@ -448,9 +463,7 @@ const MySalons = (props) => {
 				else
 					console.log("unknown error");
 			})
-			event.target.reset(); //clear all input values in the form withCredentials:true
-			alert("Password has been set");
-			return;
+			
 			}
 		};
 	
@@ -693,7 +706,9 @@ const MySalons = (props) => {
 								id="pwd"
 								name="pwd"
 								type="password"
+								onChange={()=>setErr("")}
 							/>
+							<b>{err}</b>
 							<button type="submit">Submit</button>
 							</form>
 							<button onClick={resetPassword}>Reset password</button>

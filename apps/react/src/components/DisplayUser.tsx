@@ -16,7 +16,6 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 		const [reveleProfil, setReveleProfil] = useState(false);
 		const toggleProfil = () => {setReveleProfil(!reveleProfil);}
 		const [color, setColor] = useState(userSelected.color);
-		const [/*colorUser,*/ setColorUser] = useState(userConnected.color);
 		const [playing, setPlaying] = useState(userSelected.color === 'rgba(255, 0, 255, 0.9)');
 		const [playing2, setPlaying2] = useState(userConnected.color === 'rgba(255, 0, 255, 0.9)');
 		//---
@@ -41,7 +40,6 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 		})
 
 		axios.get("http://localhost:3000/users/getColor/" + userConnected.id, {withCredentials:true}).then((res) => {
-				setColorUser(res.data)
 				setPlaying2(res.data === 'rgba(255, 0, 255, 0.9)')
 		})
 		.catch(error => {

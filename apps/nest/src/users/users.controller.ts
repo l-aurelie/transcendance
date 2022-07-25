@@ -148,6 +148,13 @@ export class UsersController {
    @Post('changemdp')
    async changeMdp(@Body() body: setUserRoomDto) {
       const currentSal = parseInt(body.roomId);
+      console.log(body);
+      if (body.pwd)
+         console.log(body.pwd, body.pwd.length)
+      if (body.pwd.length > 30)
+      {
+         return({message:"Password too long"});
+      }
       const room_user = await this.roomUser.findOne(
          { relations: ["room"],
             where : {roomId: currentSal}
@@ -158,7 +165,7 @@ export class UsersController {
       console.log("HASH ===> " , hash);
       room_user.room.password = hash;
       const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: hash});
-      return({status:201})
+      return({message:""})
       /* To compare/check a password, use the compare function:
       const isMatch = await bcrypt.compare(password, hash); */
    }
@@ -572,7 +579,7 @@ export class UsersController {
          return (false);
       const room = await this.roomRepo.findOne({where: {id:currentSal}});
       const pwd = room.password;  
-      if (pwd.length === 0) {   
+      if (!pwd || pwd.length === 0) {   
          return(false);
       }
       else {   

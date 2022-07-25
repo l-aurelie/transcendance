@@ -44,6 +44,7 @@ const AddChannel = ({user}) => {
 	const toggleAdd = () => {setReveleAdd(!reveleAdd);}
 	const [revele, setRevele] = useState(false);
 	const toggle = () => {setRevele(!revele);}
+	const [err, setErr] = useState("");
 	
 	useEffect(() => {
 		setNewSalon(0); 
@@ -53,7 +54,9 @@ const AddChannel = ({user}) => {
 	  socket.emit('fetchsalon', user.id);
 	}, [newSalon, user.id])
 
+	
 	const handleChange = event => {
+		setErr("");
 		setMessage(event.target.value);
 	};
 
@@ -84,7 +87,13 @@ const AddChannel = ({user}) => {
 				console.log(error.message);
 		})
 	}
-	
+	socket.on("invalid", data => {
+		toggleAdd();
+	//	alert("Invalid name, make sure that length is < 50 and does not comport '--' or ';'");
+
+	//	return;
+	setErr("Invalid name, too large or invalid character")
+	});
 	const handleClick = (salon) => { 
 		axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
 			console.log("PWD ??? ", res.data)
@@ -139,8 +148,10 @@ const AddChannel = ({user}) => {
 				
 				<h3>Enter a channel' name</h3>
 				<input className="mediumMarginBottom" type='text' id="message" name="message" onChange={handleChange} value={message}/>
+				<b>{err}</b>
 				<button className="mediumMarginBottom" onClick={() => sendNewSalon(false, message)}>Create public channel</button>
 				<button className="mediumMarginBottom" onClick={() => sendNewSalon(true, message)}>Create private channel</button>
+				
 				</div>
 			</ModalWindow>
 			<ModalWindow revele={revele} setRevele={toggle}>
