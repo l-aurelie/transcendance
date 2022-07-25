@@ -9,17 +9,6 @@ import DisplayUser from './DisplayUser';
 import './css/globalStyle.css'
 
 
-const lists = {
-  overflowY: "auto" as "auto"
-}
-
-const createChannelStyle ={
-	display: "flex",
-	flexDirection: "column" as "column",
-	width: "50%"
-
-}
-
 const AddFriend = (props) => {
 const onChange = (event) => {
 		setValue(event.target.value);
@@ -144,14 +133,14 @@ const togglePlay = () => {
         <MaterialIcon title="Add friend" size="medium" icon="group_add" />
         </button>
         <h2 className="mediumMarginBottom">Friends' list</h2>
-        <div style={lists}>
+        <div className='lists'>
           {friends.map(friends => (
             <div key={friends.id}><DisplayUser userConnected={props.user} userSelected={friends} isFriend={true} togglePlay={props.toggleAddNav} togglePlay2={props.toggleAddNav}/></div>
           ))}   
         </div>
         <ModalWindow revele={reveleAdd} setRevele={toggleAdd}>
           <h2>Add new friend</h2>
-          <div  style={createChannelStyle} className="search bar">
+          <div  className="search bar">
             <input className="mediumMarginBottom" type = "text" value={value} onChange={onChange} />
             {/*When we click on button it opens the FriendUserProfil*/}
             <button className="mediumMarginBottom" onClick={searchFriend}> Find members </button>
@@ -161,7 +150,7 @@ const togglePlay = () => {
             </ModalWindow>
           </div>
 
-          <div style={lists}>            
+          <div className='lists'>            
           {allUsers.map(users => (
             <div key={users.id}>
             { !friends.find(element => users.login === element.login) && users.id !== props.user.id ? 

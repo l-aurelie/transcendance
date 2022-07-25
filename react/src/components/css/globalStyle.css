@@ -70,6 +70,12 @@ button {
     cursor:pointer;
 }
 
+.lists {
+    width:50%;
+    height:250px;
+    overflow-Y:auto;
+}
+
 .overflowY {
     overflow-y: "auto";
 }
