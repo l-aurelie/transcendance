@@ -40,7 +40,7 @@ function UserFormAvatar2({user, toggle}) {
 
 	
 	const close = () => {
-		socket.emit('changeInfos', user.id);
+		socket.emit('changeInfos', {id: user.id});
 		toggle();
 	}
 

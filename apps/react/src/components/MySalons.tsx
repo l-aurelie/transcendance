@@ -106,11 +106,39 @@ const MySalons = (props) => {
 	}, [props.actualUser.id])
 
 	useEffect(() => {
+        console.log(joinedSalons);
 	}, [joinedSalons])
+
+    useEffect(() => {
+        socket.off('someoneChangedLogin');
+        socket.off('new-owner');
+        socket.off('just-block');
+        socket.off('joinedsalon');
+        socket.off('leftsalon');
+    }, [joinedSalons])
+
+    useEffect(() => {
+        socket.off('chat');
+        socket.off('fetchmessage');
+        socket.off('someoneChangedLogin');
+    }, [currentSalon])
+
+    useEffect(() => {
+        socket.on('someoneChangedLogin', data => {
+            const hypoRoomName = data.otherId < props.actualUser.id ? data.otherId + '.' + props.actualUser.id : props.actualUser.id + '.' + data.otherId;
+            if (joinedSalons.has(hypoRoomName))
+                setJoinedSalons(map => new Map(map.set(hypoRoomName, {...map.get(hypoRoomName), avatar: data.newLogin})));
+            if (currentSalon.name == hypoRoomName) {
+                console.log(data.newLogin);
+                console.log(currentSalon);
+                setCurrentSalon({...currentSalon, 'display': data.newLogin});
+            }
+        });
+    }, [joinedSalons, currentSalon])
 		
 	//Ecoute chat pour afficher tout nouveaux messages
 	useEffect(() => {
-		socket.off('chat');
+		//socket.off('chat');
 		if (currentSalon.length !== 0) {
 			socket.on('fetchmessage', data => {
 				setMessage(data);
@@ -128,7 +156,7 @@ const MySalons = (props) => {
 			else if (data.dontNotif)
 				return (message);
 			else {
-				socket.off('leftsalon');
+				//socket.off('leftsalon');
 				setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
 				return (message);
 			}
@@ -139,6 +167,7 @@ const MySalons = (props) => {
 	//Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
 	useEffect(() => {
 		socket.on('new-owner', data => {
+            console.log("hello");
 			axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
 				for (let entry of res.data)
 					setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
@@ -165,7 +194,7 @@ const MySalons = (props) => {
 				setCurrentSalon([]);
 		})
 		socket.on('joinedsalon', data => {
-			socket.off('leftsalon');
+			//socket.off('leftsalon');
 			setJoinedSalons(map => new Map(map.set(data.salonName, {notif: false, dm: data.dm, avatar: data.displayName, roomId: data.roomId, owner: data.isAdmin, creator : data.creator, private: data.private})));
 		});
 	}, [joinedSalons, props.actualUser.id])
@@ -178,13 +207,13 @@ const MySalons = (props) => {
 			//On crée un nouvel objet map pour déclencher les hooks lors de l'activation du setter
 			joinedSalons.delete(salon);
 			const map2 = new Map(joinedSalons);
-			socket.off('leftsalon');
+			//socket.off('leftsalon');
 			setJoinedSalons(map2);
 			if (salon === currentSalon.name) {
 				setMessage([]);
 				setCurrentSalon([]);
-				socket.off('chat');
-				socket.off('fetchmessage');
+				//socket.off('chat');
+				//socket.off('fetchmessage');
 			}
 		});
 	}, [joinedSalons, currentSalon.name])
@@ -195,10 +224,10 @@ const MySalons = (props) => {
 		if ((revele|| revele2 ||revele3) && currentSalon.roomId !== 'undefined')
 			 return ;
 		if (salon[1].avatar !== currentSalon.display) {
-			socket.off('leftsalon');           
+			//socket.off('leftsalon');           
 			setJoinedSalons(map => new Map(map.set(salon[0], {...map.get(salon[0]), notif: false, roomId:salon[1].roomId, creator:salon[1].creator, private:salon[1].private})));
-			socket.off('chat');
-			socket.off('fetchmessage');
+			//socket.off('chat');
+			//socket.off('fetchmessage');
 			setCurrentSalon({name: salon[0], display: salon[1].avatar, isDm: salon[1].dm, owner: salon[1].owner, roomId: salon[1].roomId, creator:salon[1].creator, private:salon[1].private});
 		}
 

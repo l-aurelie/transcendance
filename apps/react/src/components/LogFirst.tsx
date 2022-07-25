@@ -55,7 +55,7 @@ class UserForm2 extends React.Component<any, any, any> {
         this.setState({ok:false, message:true, display: res.data.msg})
       }
       else{
-        socket.emit('changeInfos', this.state.id);
+        socket.emit('changeInfos', {id: this.state.id});
         this.state.toggle();
       }
     })
