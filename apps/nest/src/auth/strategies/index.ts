@@ -26,7 +26,6 @@ constructor(private httpService: HttpService, @Inject('AUTH_SERVICE') private re
 
 async validate(accessToken: string) {
     /*Access token issued by Intra login is recovered and can be used to access Intra profile info*/
-    console.log('accessToken');
     ///recover profile details from intra via get request with our access token
     // need to use lastValueFrom because it doesn't work if not, this converts an Observable to a Promise. For more info: https://rxjs.dev/api/index/function/lastValueFrom
     const { data } = await lastValueFrom(this.httpService.get('https://api.intra.42.fr/v2/me', {

@@ -21,15 +21,11 @@ export class UsersService {
     async findUserById(idnum: number){ //getter pour trouver user par id
         return await this.userRepo.findOne({where: {id: idnum}} );
     };
-    /*findUserById(idnum: number){ //getter pour trouver user par id
-        return this.userRepo.findOne( {id: idnum} );
-    };*/
+    
 
    /* Retourne l'utilisateur [login] */
     findUserByLogin(login: string): Promise<User> {
-        //console.log("USER SEARCHING", login);
         return this.userRepo.findOne({where:{login:login}});//TODO: findOne or fail
-        //return this.userRepo.findOne( {login} );
     };   
     /* Retourne tous les utilisateurs present dans la table users */
     findAll(): Promise<User[]> {

@@ -53,7 +53,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async handleDisconnect(client) {
         const the_date = new Date(Date.now()).toLocaleString();// moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
-        console.log('handleDisconnect');
         // A client has disconnected
         this.users--;
         await this.disconnectGame(client, the_date);
@@ -122,9 +121,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     continue;
                 tab.push({id: entry.id, sender: entry.sender.id, message: entry.content, senderLog: entry.sender.login})
             }
-        console.log(tab);
         tab = tab.sort((a,b) => a.id- b.id);
-        console.log(tab);
         client.emit('fetchmessage', tab);
     }
     
@@ -132,7 +129,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async justBlock(client, user)
     {
         this.server.to('sockets' + user.id).emit('just-block');
-        console.log("here just block back")
     }
       
 
@@ -140,11 +136,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     /* {userId: props.user.id, room: roomname, otherLogin: friend.login} */
     @SubscribeMessage('user_joins_room')
     async user_joins_room(client, infos) {
-        console.log('userJoinRoom');
 
         if(infos.roomId && !infos.otherLogin)
         {
-            console.log('user_joins, infos.roomId')
             const roomUser = await this.roomUserRepo.findOne({where: {userId:infos.userId, roomId:infos.roomId}});
             if (roomUser && roomUser.ban === true)
             {
@@ -190,7 +184,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     /* Un user quitte la room, on supprime une entre userRoom */
     @SubscribeMessage('user_leaves_room')
     async user_leaves_room(client, infos) {
-        console.log('passe here user leaves');
         await this.roomUserRepo.delete({ userId: infos.userId, roomId: infos.roomId})
         this.server.in('sockets' + infos.userId).socketsLeave('salonRoom' + infos.roomId);
         /* On emit le nom du salon quitté pour en informer tous les fronts */
@@ -199,7 +192,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('new-owner')
     async newOwner(client, info) {
-        console.log('in new owner');
       this.server.to('sockets' + info).emit('new-owner');
     }
 
@@ -244,7 +236,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         bannedMe.forEach(function(el, id, arr) {
             arr[id] = 'sockets' + arr[id].UserBlock_blockingUserId;
         });
-        console.log('client Blocked by ;', bannedMe);
         /* on emit seulement aux sockets des 2 users si c'est un dm, sinon à tout le salon */
         if (data.isDm) {
             let disp;
@@ -287,9 +278,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       /* on join la room avec tous les sockets du user, elle s'appelera par exemple sockets7 pour l'userId 7 */
       client.join('sockets' + user.id);
       /* on boucle sur les roomUser pour faire rejoindre à ce socket toutes les rooms du user, hors dm car pas besoin de les rejoindre (communication socket à socket) */
-      console.log('pbquery?');
       const rooms = await this.roomUserRepo.createQueryBuilder().where({ userId: user.id }).execute();
-      console.log('rooms = ', rooms);
       for (let room of rooms) {
           var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
           client.join('salonRoom' + room.RoomUser_roomId);
@@ -300,7 +289,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // /!\ Rien n'écoute l'event newsalon pour l'instant, le re-emit est donc inutile
     @SubscribeMessage('addsalon')
     async addsalon(client, infos) {
-        console.log('addSalon');
 
         const newRoom = await this.roomService.createRoom(infos[0], infos[1], infos[2], infos[3]);
         if (!newRoom)
@@ -333,7 +321,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('friendrequestnotif')
     async sendFriendRequest(client, data) {
-        console.log('inHere heyy', data.id);
         this.server.to('sockets' + data.id).emit('newfriendrequest', data.new);
     }
 
@@ -344,7 +331,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('initGame')
     async initGame( client, user)
     {
-        console.log('iniiiit game')
         for (let entry of gameQueue) {
         if (entry.user.id === user) {
           this.server.to(client.id).emit("already-ask");
@@ -369,7 +355,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(allGame.id+'-watch').emit("game-start", data);
             await this.userRepo.update({id:user.id}, {isConnected:true, color:'rgba(255, 0, 255, 0.9)'});
             this.server.emit('changeColor');
-            console.log('passe dans init');
             return;
           }
      // }
@@ -377,7 +362,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async launchMatch(userL, userR, v, client, userClient)
     {
-        console.log('launchmatch')
         let roomName;
         const details = {
             playerLeft: userL.id,
@@ -427,8 +411,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('rejectMatch')
     async rejectMatch(client, infos) {
-        console.log (infos);
-        console.log('arrive dans reject');
         this.server.to('sockets' + infos[0].id).emit("opponent-quit");
     }
 
@@ -668,7 +650,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('updateScore')
     async updateScore(client, infos)
     {
-        console.log('update score', infos);
         await this.gameRepo.update( {id : infos[0]}, {scoreLeft:infos[1], scoreRight:infos[2]});
     }
 
@@ -773,7 +754,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         this.server.to('sockets'+infos[0].id).emit('defeat', infos[1]);
         const data = {user:infos[0], version:infos[2] };
-        console.log('smash = ', infos[2])
         this.server.to('sockets'+infos[1]).emit('ask-defeat', data);
     }
 
@@ -827,7 +807,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             {
                 await this.userRepo.update({id:whichuser.idUser}, {isConnected:false, color:'rgba(255, 0, 0, 0.9)'});
                 this.server.emit('changeColor');
-                console.log('only one socket');
                 this.deleteQueue(gameQueue, whichuser.idUser);
                 this.deleteQueue(gameQueueSmach, whichuser.idUser);
        

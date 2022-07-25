@@ -121,14 +121,11 @@ export class UsersController {
    @UseInterceptors(FileInterceptor('file'/*, {dest: './upload'}*/))
    async setImg(@UploadedFile() file: Express.Multer.File, @Req() req: RequestWithUser,@Param('userId') userId: number) {
    //au lieu d'utiliser id: 1 il faut utiliser req.user.id mais useGuard ne fonctionne pas 
-      console.log('file', file);
       try {
-      console.log('passe in img');
       if (!file || !file.buffer)
          return;
       let buf64;
       let newUrl;
-      console.log ('trop grand');
       const image = await resizeImg(file.buffer, {width:150, height:150});
       buf64 = (image).toString('base64');
       if (file.mimetype === 'image/jpeg')
@@ -148,9 +145,7 @@ export class UsersController {
    @Post('changemdp')
    async changeMdp(@Body() body: setUserRoomDto) {
       const currentSal = parseInt(body.roomId);
-      console.log(body);
       if (body.pwd)
-         console.log(body.pwd, body.pwd.length)
       if (body.pwd.length > 30)
       {
          return({message:"Password too long"});
@@ -161,8 +156,6 @@ export class UsersController {
          });
       const saltOrRounds = 10;
       const hash =  await bcrypt.hash(body.pwd, saltOrRounds);
-      console.log("NEW PASSWORD" + body.pwd);
-      console.log("HASH ===> " , hash);
       room_user.room.password = hash;
       const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: hash});
       return({message:""})
@@ -178,10 +171,7 @@ export class UsersController {
         { relations: ["room"],
            where : {roomId: currentSal}
         });
-     console.log(room_user);
      room_user.room.password = "";
-     console.log(room_user);
-     console.log("NEW PASSWORD :" + "[" + room_user.room.password +  ']');
      const ret = await this.roomRepo.update( {id:room_user.room.id}, {password: room_user.room.password});
      return({status:201})
    }
@@ -198,7 +188,6 @@ export class UsersController {
          {
             where : {roomId: currentSal, userId: adm}
          });
-      console.log('room user id' ,room_user.id);
       this.roomUser.update({id:room_user.id}, {isAdmin:true});
       return({status:201})
    }
@@ -215,7 +204,6 @@ export class UsersController {
           {
              where : {roomId: currentSal, userId: adm}
           });
-       console.log('room user id' ,room_user.id);
        this.roomUser.update({id:room_user.id}, {isAdmin:false});
        return({status:201})
     }
@@ -224,8 +212,6 @@ export class UsersController {
    @Post('/mute')
    async mute(@Body() body: setUserRoomDto)
    {
-      console.log(body.roomId, body.userId)
-
       if (body.roomId === "undefined" || parseInt(body.userId) === 0)
          return ({status:404});
       const currentSal = parseInt(body.roomId);
@@ -237,7 +223,6 @@ export class UsersController {
             where : {roomId: currentSal, userId: id}
          });
       this.roomUser.update({id: room_user.id}, {mute:true, expiredMute: expired});
-      console.log("is mute = " + room_user.mute);
       return({status:201})
    }
 
@@ -279,13 +264,11 @@ export class UsersController {
       const id = parseInt(body.userId);
       const dateT = new Date().getTime() + 120000//86400000;
       const expired = new Date(dateT);
-      console.log('date.now', dateT, expired);
       const room_user = await this.roomUser.findOne(
          {
             where : {roomId: currentSal, userId: id}
          });
       this.roomUser.update({id:room_user.id}, {ban:true, expireBan: expired});
-      console.log("is ban = " + room_user.ban);
       return({status:201})
    }
 
@@ -337,10 +320,7 @@ export class UsersController {
       let tab = [];
       const id = parseInt(roomId);
       if (!Number.isInteger(id))
-      {
-         console.log("function expected number");
          return null;
-      }
       for (let entry of users)
       {
          let isMember = await this.roomUser.find({where: {roomId:id, userId:entry.id}});
@@ -362,13 +342,9 @@ export class UsersController {
    /* Retourne le user [id] */
    @Get(':id')
    async getUserByID(@Param() userStringId: string) {
-      console.log("---------------getBYID");
       const userId = parseInt(userStringId);
       if (!Number.isInteger(userId))
-      {
-         console.log("expected integer");
          return null;
-      }
       const user = await this.userServ.findUserById(userId);
       return ({id:user.id, avatar:user.avatar, login:user.login, color:user.color, twoFA:user.twoFA, isVerified:user.isVerified, email:user.email});
    }
@@ -426,7 +402,6 @@ export class UsersController {
    var roomName = await this.roomService.getRoomNameFromId(room.RoomUser_roomId);
    var roomCreator = await this.roomService.getRoomCreatorFromId(room.RoomUser_roomId);
    var roomPrivate = await this.roomService.getRoomPrivateFromId(room.RoomUser_roomId);
-   console.log('rooms5 = ', room.RoomUser_ban, room.RoomUser_mute, room.RoomUser_expiredMute, room.RoomUser_expireBan);
    if (room.RoomUser_ban === true) {
          const date = new Date().getTime();
          if (room.RoomUser_mute === true){
@@ -481,7 +456,6 @@ export class UsersController {
    async getUsersInChannel(
       @Param('currentSalon') currentSalon: string
       ) : Promise<RoomUser[]> {
-         console.log('IN USERSINCHANNEL');
          if (currentSalon === "undefined")
             return([]);
          const currentSalonInt = parseInt(currentSalon);
@@ -562,7 +536,6 @@ export class UsersController {
             show += " (ban)";
          tab.push({value:log.id, label:show});
       }
-      console.log('members in back', tab)
       return tab;
    }
 
@@ -570,10 +543,7 @@ export class UsersController {
    @Get('pwd/:currentSalon')
    async getPwd(@Param('currentSalon') currentSalon: string) {
       if (currentSalon === "undefined")
-      {
-         console.log('undef');
          return(false);
-      }
       var currentSal = parseInt(currentSalon);
       if (!Number.isInteger(currentSal))
          return (false);
@@ -591,20 +561,17 @@ export class UsersController {
    @UseGuards(AuthenticatedGuard)
    @Post('/checkpwd')
    async checkpwd(@Body() body: setUserRoomDto) {
-      console.log(body.pwd);
       if (!body.pwd)
          return(false);
       const currentSal = parseInt(body.roomId);
       const room = await this.roomRepo.findOne({where:{id:currentSal}});
       const pwdHashed = room.password;
       const isMatch = await bcrypt.compare(body.pwd, pwdHashed);
-      console.log("MATCH === ", isMatch);
       return (isMatch);
    }
 
    @Get('whichBan/:currentSalon')
    async whichBan(@Param('currentSalon') currentSalon: string) {
-      console.log('ban', currentSalon)
       if (currentSalon === "undefined")
       {
          return([]);
@@ -625,7 +592,6 @@ export class UsersController {
    
    @Get('whichMute/:currentSalon')
    async whichMute(@Param('currentSalon') currentSalon: string) {
-      console.log('mute', currentSalon)
       if (currentSalon === "undefined")
       {
          return([]);
@@ -646,7 +612,6 @@ export class UsersController {
 
    @Get('whichAdm/:currentSalon')
    async whichAdm(@Param('currentSalon') currentSalon: string) {
-      console.log('adm', currentSalon)
       if (currentSalon === "undefined")
       {
          return([]);
@@ -667,7 +632,6 @@ export class UsersController {
 
    @Get('whichNonAdm/:currentSalon')
    async whichNonAdm(@Param('currentSalon') currentSalon: string) {
-      console.log('nonadm', currentSalon)
       const id = parseInt(currentSalon);
       if (!Number.isInteger(id))
          return ([]);
@@ -681,7 +645,6 @@ export class UsersController {
       let tab = [];
       for (let entry of repo) {
          const user = await this.userRepo.findOne({where:{id:entry.userId}});
-         console.log("nonAdm",user.login, user.id)
          if (user.id != room.creatorId)
             tab.push(user);
       }
@@ -690,7 +653,6 @@ export class UsersController {
 
    @Get('whichNonMute/:currentSalon')
    async whichNonMute(@Param('currentSalon') currentSalon: string) {
-      console.log('nonmute', currentSalon)
       if (currentSalon === "undefined")
       {
          return([]);
@@ -702,12 +664,9 @@ export class UsersController {
       const repo = await this.roomUserRepo.find({where:{roomId:id, mute:false}});
       const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
       const adminIdsArray = admins.map((it) => it.userId);
-      console.log(adminIdsArray);
       let tab = [];
       for (let entry of repo) {
          const user = await this.userRepo.findOne({where:{id:entry.userId}});
-         console.log("nonmute",user.login, user.id)
-         console.log('hereers', user.id);
          if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
             tab.push(user);
       }
@@ -728,7 +687,6 @@ export class UsersController {
 
    @Get('whichNonBan/:currentSalon')
    async whichNonBan(@Param('currentSalon') currentSalon: string) {
-      console.log('nonban', currentSalon)
       if (currentSalon === "undefined")
       {
          return([]);
@@ -740,11 +698,9 @@ export class UsersController {
       const repo = await this.roomUserRepo.find({where:{roomId:id, ban:false}});
       const admins = await this.roomUserRepo.find({where:{roomId:id, isAdmin:true}});
       const adminIdsArray = admins.map((it) => it.userId);
-      console.log(adminIdsArray);
       let tab = [];
       for (let entry of repo) {
          const user = await this.userRepo.findOne({where:{id:entry.userId}});
-         console.log("nonban",user.login, user.id)
          if (user.id != room.creatorId && !adminIdsArray.includes(user.id))
             tab.push(user);
       }

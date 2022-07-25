@@ -21,12 +21,10 @@ class Verify extends React.Component<any, any, any> {
 						axios.post("http://localhost:3000/verify", this.state, {withCredentials : true })
 					.then((response) => {
 						if (response.status === 304) {
-							console.log('response is 304')
 							this.setState({ok: false, message: false});
 						}
 						else if (response.status === 200)
 						{
-							console.log('response is 200');
 							this.setState({ok:true});
 						}
 					})

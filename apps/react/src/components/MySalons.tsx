@@ -6,7 +6,6 @@ import Select from 'react-select';
 import AddPrivateMember from './AddPrivateMember';
 import OwnerLeave from './OwnerLeave';
 import MaterialIcon from 'material-icons-react';
-import { setServers } from 'dns/promises';
 
 /* John aurelie */
 
@@ -79,7 +78,6 @@ const MySalons = (props) => {
    
 	/*------*/
 	const pwdRef = useRef(null);
-	const [pwd, setPwd] = useState([''] as any); 
 	
 	useEffect(() => {
 		props.callBack({msg: message, curSal: currentSalon});
@@ -131,8 +129,6 @@ const MySalons = (props) => {
             if (joinedSalons.has(hypoRoomName))
                 setJoinedSalons(map => new Map(map.set(hypoRoomName, {...map.get(hypoRoomName), avatar: data.newLogin})));
             if (currentSalon.name == hypoRoomName) {
-                console.log(data.newLogin);
-                console.log(currentSalon);
                 setCurrentSalon({...currentSalon, 'display': data.newLogin});
             }
         });
@@ -169,7 +165,6 @@ const MySalons = (props) => {
 	//Ecoute sur le channel joinedsalon pour ajouter les salons rejoints par l'user, dans ce socket ou un autre
 	useEffect(() => {
 		socket.on('new-owner', data => {
-            console.log("hello");
 			axios.get("http://localhost:3000/users/userRooms/" + props.actualUser.id, {withCredentials:true}).then((res) =>{
 				for (let entry of res.data)
 					setJoinedSalons(map =>new Map(map.set(entry.salonName, {notif: false, dm: entry.dm, avatar: entry.displayName, roomId: entry.roomId, creator: entry.creator, owner: entry.isAdmin, private:entry.private })))
@@ -426,20 +421,17 @@ const MySalons = (props) => {
 	}
 
 	const submitPassword = (event) => {
-		console.log("VALUE ", pwdRef.current.value)
 		if (pwdRef.current.value.length === 0) {
 			alert('Password name cant be empty');
 			event.preventDefault();
 		}
 		else {
-			setPwd(pwdRef.current.value);
 			event.preventDefault();
 			const inf = { userId : event.value, roomId: currentSalon.roomId, pwd: pwdRef.current.value};
 			axios.post("http://localhost:3000/users/changemdp", inf, {withCredentials: true}).then((res) => {
-				console.log(res.data.message);
 				if (res.data.message != "")
 				{
-					event.target.reset(); //clear all input values in the form withCredentials:true
+					event.target.reset(); 
 					alert("Password too large")
 					event.preventDefault();
 				}

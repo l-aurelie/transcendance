@@ -48,27 +48,6 @@ const Home = () => {
 	const [profil, setProfil] = useState([] as any);
 	const [login, setLogin] = useState(false);
 	const [charging, setCharging] = useState(true);
-	//DECOMMENTER POUR AFFICHER L'AVATAR + deccomment ligne 114
-	/*
-	const [avatar, setAvatar] = useState([] as any);
-	useEffect(() => {        
-		axios.get("http://localhost:3000/users/getImg", { withCredentials:true, responseType: "blob" }).then((res) =>{ 
-			console.log('getImg()');
-			//console.log("type = ", typeof res.data);
-			//setAvatar(res.data);
-			const blob = res.data;
-			const image = URL.createObjectURL(blob);
-			setAvatar(image);
-			//const imageStream = res.data;
-			//const imageBlob =  res.blob();
-			//const reader = new FileReader();
-			//reader.readAsDataURL(imageBlob);
-			//reader.onloadend = () => {
-			//const base64data = reader.result;
-			//setAvatar(base64data);
-			//};
-		})
-	}, [])*/ 
 	
 	useEffect(() => {        
 	   axios.get("http://localhost:3000/users", { withCredentials:true })

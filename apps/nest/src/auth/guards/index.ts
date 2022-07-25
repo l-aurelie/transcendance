@@ -8,7 +8,6 @@ import { Response } from 'express';
 /*calls Intra strategy class*/
 export class IntraAuthGuard extends AuthGuard('intra-oauth') {
     async canActivate(context: ExecutionContext): Promise<any> {
-        console.log('AuthGuard');
         if (context.getArgByIndex(0).query.error=== 'access_denied')
         {
           const response = context.switchToHttp().getResponse<Response>();
@@ -16,11 +15,9 @@ export class IntraAuthGuard extends AuthGuard('intra-oauth') {
           return false;
         }
         const activate = (await super.canActivate(context)) as boolean;
-        console.log('activate  ', activate);
         /*get request object*/
         const request = context.switchToHttp().getRequest();
         /*print out request in console*/
-        console.log('request ' );
         /*call logIn function with request*/
         await super.logIn(request);
         return activate;
@@ -30,7 +27,6 @@ export class IntraAuthGuard extends AuthGuard('intra-oauth') {
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('authenticateGuard');
     const req = context.switchToHttp().getRequest();
     /*returns boolean if authenticated or not*/
     return req.isAuthenticated();

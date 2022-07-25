@@ -89,14 +89,10 @@ const AddChannel = ({user}) => {
 	}
 	socket.on("invalid", data => {
 		toggleAdd();
-	//	alert("Invalid name, make sure that length is < 50 and does not comport '--' or ';'");
-
-	//	return;
-	setErr("Invalid name, too large or invalid character")
+		setErr("Invalid name, too large or invalid character")
 	});
 	const handleClick = (salon) => { 
 		axios.get("http://localhost:3000/users/pwd/" + salon.id, {withCredentials: true}).then((res) => {
-			console.log("PWD ??? ", res.data)
 			if (res.data === true) {
 				setCurrentSal(salon.id);
 				setCurrentName(salon.name);

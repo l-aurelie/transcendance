@@ -154,7 +154,6 @@ const FriendUserProfilExtended = ({Value}) => {
 	socket.on("changeFriends", ({sender}, {receiver}, data) => {
 		if (sender === myId || receiver === myId)
 		{
-		  console.log("updating friends for users: ", sender, " and ", receiver);
 		  axios.get("http://localhost:3000/friends/friendRequest/me/friendlist", {withCredentials:true}).then((res) =>{
 		  setFriends(res.data);
 		   })

@@ -6,7 +6,6 @@ import { useState } from "react";
      const [revele, setRevele] = useState(false); //- etat d'affichage fenetre
      /* Appel a toggle change l'etat d'affichage */
      function toggle() {
-         console.log('ft toggle');
          setRevele(!revele);
      }
 

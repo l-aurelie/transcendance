@@ -126,10 +126,7 @@ export class FriendsController {
       const the_user = await this.userRepo.findOne({where: [{ login: user_login}],
       });
       if (!the_user)
-      {
-         console.log("invalid user");
          return null;
-      }
       return this.friendServ.hasSentMe(the_user, request.user);
    }
 

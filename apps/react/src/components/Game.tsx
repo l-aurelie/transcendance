@@ -84,7 +84,6 @@ const Game = (props) => {
 //on click, emit to server to ask a matchMaking
  	const joinGame = (version) => {
 		axios.get("http://localhost:3000/users/getMyLogin", {withCredentials:true}).then((res) =>{
-				console.log(res.data, " joins game!");
 				})
 				.catch(error => {
 					if (error.response && error.response.status)
@@ -117,7 +116,6 @@ const Game = (props) => {
  // ask to quit game or queue
 	const quitGame = () => {
 		axios.get("http://localhost:3000/users/getMyLogin", {withCredentials:true}).then((res) =>{
-				console.log(res.data, " quits game!");
 				})
 				.catch(error => {
 					if (error.response && error.response.status)

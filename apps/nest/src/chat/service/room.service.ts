@@ -3,13 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoomEntity } from 'src/typeorm/entities/Room';
 import { Repository } from 'typeorm';
 import { IRoom } from 'src/typeorm/entities/Room';
-import { IRoomUser } from 'src/typeorm/entities/RoomUser';
-import { validate } from 'class-validator';
-import IUser, { User } from 'src/typeorm/entities/User';
+import { User } from 'src/typeorm/entities/User';
 import { UsersService } from 'src/users/users.service';
 import '../chat.module';
 import { RoomUser } from 'src/typeorm/entities/RoomUser';
-//import {IPaginationOptions, paginate, Pagination} from 'nestjs-typeorm-paginate';
+
 @Injectable()
 export class RoomService {
     constructor (
@@ -20,14 +18,13 @@ export class RoomService {
      ) {}
 
      async createRoom(idUser: number, isPrivate:boolean, isDm:boolean, nameRoom: string): Promise<IRoom> {
-       // const newRoom = await this.addCreatorInRoom(room, creator);
       try {
        let room;
       if (isDm === true)
         room = {creatorId: -1, private: isPrivate, directMessage: isDm, name: nameRoom};
       else
         room = {creatorId: idUser, private: isPrivate, directMessage: isDm, name: nameRoom};
-       if (nameRoom.length > 50 || nameRoom.includes("--") || nameRoom.includes(";"))
+       if (nameRoom.length > 50 || nameRoom.includes("--") || nameRoom.includes(";") || nameRoom.includes(" "))
         return (null);
       const does_exist = await this.roomRepo.findOne({where: {name: nameRoom} });
       if (does_exist && (room.directMessage === true)){
@@ -35,13 +32,8 @@ export class RoomService {
       }
         const newRoom = await this.roomRepo.save(room);
       if (does_exist && (room.directMessage === false)){
-        console.log("ROOM ALREADY EXISTS")
         await this.roomRepo.update({id:newRoom.id}, {name:newRoom.name + "-" + (newRoom.id).toString()})
       }
-      // else if (does_exist && room.directMessage) {
-      //   console.log("DIRECT MESSAGE ROOM ALREADY EXISTS")
-      // }
-      console.log('does room exist ?', does_exist);
       return (await this.roomRepo.findOne({where:{id:newRoom.id}}));
     } catch(e) {
       return (null)
@@ -50,19 +42,15 @@ export class RoomService {
     
 
  async associateUserRoom(room:IRoom, idUser: number, isPrivate:boolean, isDm:boolean, isAdmin:boolean) {
-       // const newRoom = await this.addCreatorInRoom(room, creator);
-      // const newRoom = await this.addCreatorInRoom(room, creator);
       let newuserRoom;
       if (isPrivate === false)
       {
         const theUser = await this.userServ.findUserById(idUser);
         const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
         newuserRoom = await this.roomUserRepo.save(userRoom);
-     //   newuserRoom = await this.addAllUser(room, idUser);
       }
       else if (!isDm)
       {
-        console.log('entre dans add creator');
         const theUser = await this.userServ.findUserById(idUser);
         const userRoom = {userId: idUser, user: theUser, roomId: room.id, isAdmin: isAdmin};
         newuserRoom = await this.roomUserRepo.save(userRoom);
@@ -71,7 +59,6 @@ export class RoomService {
     }
 
     async addAllUser(room : IRoom, idCreator:number) {
-      console.log('entre dans addAllUser');
       const allUser = await this.userServ.findAll();
       let idRoomCreate = 0;
       for (let entry of allUser) {
@@ -86,44 +73,21 @@ export class RoomService {
     }
 
     async getRoomIdFromRoomName(name: string) {
-      console.log(name);
       const retRoom = await this.roomRepo.findOne( {where:{name: name} });
-      console.log(retRoom);
       return retRoom ? retRoom.id : null;
     }
 
     async getRoomNameFromId(idRoom: number) {
       const retRoom = await this.roomRepo.findOne( {where:{id: idRoom} });
-      console.log(retRoom);
       return retRoom ? retRoom.name : null;
     }
     async getRoomCreatorFromId(idRoom: number) {
       const retRoom = await this.roomRepo.findOne( {where:{id: idRoom}} );
-      console.log(retRoom);
       return retRoom ? retRoom.creatorId : null;
     }
     async getRoomPrivateFromId(idRoom: number) {
       const retRoom = await this.roomRepo.findOne( {where:{id: idRoom} });
-      console.log(retRoom);
       return retRoom ? retRoom.private : null;
     }
-     /*async getRoomsForUser(userId: number, options: IPaginationOptions) : Promise<Pagination<IRoom>> {
-        const query = this.roomRepo
-        .createQueryBuilder('room')
-        .leftJoin('room.users', 'user')
-        .where('user.id = :userId', {userId});
-
-        return paginate(query, options);
-     }
-
-     async addCreatorInRoom(room : IRoom, creator: IUser): Promise<IRoom> {
-      console.log('inaddCreator');
-      console.log(creator.login); 
-      const user : User = await this.userRepo.findOne({intraId:creator.intraId});
-      console.log(user.login); 
-      room.users = [];
-      room.users.push(creator);
-         return room;
-     }
-     */
+     
 }

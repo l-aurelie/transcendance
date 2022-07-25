@@ -34,7 +34,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleConnection(client) {
         // A client has connected
         this.users++;
-        console.log(this.users);
         // Notify connected clients of current users
         this.socket.emit('users', this.users);
         client.emit()
