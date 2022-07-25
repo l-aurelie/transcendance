@@ -4,6 +4,7 @@ import MaterialIcon from 'material-icons-react';
 import { useState } from "react";
 import { socket } from "./Socket";
 import axios from "axios";
+import { runInThisContext } from "vm";
 
 const displayUserStyle = {
 	display: "flex",
@@ -16,7 +17,9 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 		const [reveleProfil, setReveleProfil] = useState(false);
 		const toggleProfil = () => {setReveleProfil(!reveleProfil);}
 		const [color, setColor] = useState(userSelected.color);
-		const [playing, setPlaying] = useState(userConnected.color === 'rgba(255, 0, 255, 0.9)');
+		const [colorUser, setColorUser] = useState(userConnected.color);
+		const [playing, setPlaying] = useState(userSelected.color === 'rgba(255, 0, 255, 0.9)');
+		const [playing2, setPlaying2] = useState(userConnected.color === 'rgba(255, 0, 255, 0.9)');
 		//---
 		const [bloc, setBlock] = useState(false);
 
@@ -37,7 +40,25 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 			else
 					console.log(error.message);
 		})
-		
+
+		axios.get("http://localhost:3000/users/getColor/" + userConnected.id, {withCredentials:true}).then((res) => {
+				setColorUser(res.data)
+				setPlaying2(res.data === 'rgba(255, 0, 255, 0.9)')
+		})
+		.catch(error => {
+			if (error.response && error.response.status)
+			{
+					if (error.response.status === 403)
+							window.location.href = "http://localhost:4200/";
+					else
+							console.log("Error: ", error.response.code, " : ", error.response.message);
+			}
+			else if (error.request)
+					console.log("Unknown error");
+			else
+					console.log(error.message);
+		})
+
 		axios.get("http://localhost:3000/users/isBlock/" +  userConnected.id + "/"+ userSelected.id, {withCredentials:true}).then((res) => {
 			if (res.data === false) {
 				setBlock(false);
@@ -118,7 +139,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 			})
 		}
 
-	//set version of game whern defeat someone and send the request to other user
+	//set version of game when defeat someone and send the request to other user
 	const defeat = () => {
 		socket.emit('defeat', userConnected, userSelected.id, 0);
 		togglePlay();
@@ -142,7 +163,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 			else
 					console.log(error.message);
 		})
-	}
+	}	
 	
 	const watch = () => {
 			socket.emit("watch-friend", userSelected.id, userConnected);
@@ -169,6 +190,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 		})
 	}
 
+
     /* Affiche un user et toute les options associee. Regarder le profil, add(si pas amis), chat, etc... */
     if(isFriend)
     {
@@ -188,7 +210,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
             <button><MaterialIcon title="Direct message" icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
             <button><MaterialIcon title="Defeat" icon="videogame_asset" onClick={defeat} /></button>
             <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
-            {playing && <button> <i onClick={watch}><MaterialIcon title="Watch a match" icon="connected_tv"/></i> </button>}
+            {playing && !playing2 && <button> <i onClick={watch}><MaterialIcon title="Watch a match" icon="connected_tv"/></i> </button>}
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
@@ -211,9 +233,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
             <button><MaterialIcon title="Direct message"  icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
             <button><MaterialIcon  title="Defeat" icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>
             <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
-            { playing && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
-           {/* | Spectate <br></br> */}
-          
+            {playing && !playing2 && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
