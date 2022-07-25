@@ -399,13 +399,17 @@ const Game = (props) => {
 			if (roomName === 0)
 				return ;
 			else {
-				event.preventDefault();
-				key = event.keyCode;
+				if (event.keyCode === 38 || event.keyCode === 40) {
+					event.preventDefault();
+					key = event.keyCode;
+				}
 			}
 		};
 		const handleKeyUp = event => {
-			event.preventDefault();
-			key = 0;
+			if (event.keyCode === 38 || event.keyCode === 40) {
+				event.preventDefault();
+				key = 0;
+			}
 		}
 		if (!presentation) {
 			document.addEventListener('keydown', handleKeyDown);
