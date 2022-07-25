@@ -327,7 +327,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('changeInfos')
     async changeInfos(client, infos) {
         this.server.to('sockets'+ infos.id).emit('changeInfos');
-        this.server.except('sockets'+ infos.id).emit('someoneChangedLogin', {otherId: infos.id, newLogin: infos.new_login});
+        const display_login = (infos.new_login.length > 10) ? (infos.new_login).substring(0,9) + "..." : infos.new_login;
+        this.server.except('sockets'+ infos.id).emit('someoneChangedLogin', {otherId: infos.id, newLogin: display_login});
     }
 
     @SubscribeMessage('friendrequestnotif')
