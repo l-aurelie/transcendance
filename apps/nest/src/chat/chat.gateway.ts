@@ -535,6 +535,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             smachX = randomX;
             smachY = randomY;
         }
+        
         /* si la balle est sur les bord haut et bas du board */
         if((by + dy > height ) || (by + dy < 0)) {
             dy = -dy;

@@ -646,7 +646,7 @@ const MySalons = (props) => {
 				<AddPrivateMember idRoom={currentSalon.roomId} roomName={currentSalon.name} revele={revele3} toggle={toggleModal3} toggle2={toggleModal}></AddPrivateMember>
 				</div> : <></> }
 				<div style={{display:'flex', flexDirection:'column'}}>
-				<h2 >Leave Chanel</h2>
+				<h2 >Leave Channel</h2>
 				<button onClick={toggleModal4}><MaterialIcon title="Logout" size="large" icon="logout" /></button></div>
 				<OwnerLeave idRoom={currentSalon.roomId} idUser={props.actualUser.id} roomName={currentSalon.name} revele={revele4} toggle={toggleModal4} toggle2={toggleModal} revele2={revele}></OwnerLeave>
 				{currentSalon.private === false ?

@@ -110,7 +110,11 @@ const AddChannel = ({user}) => {
 		})
 	};
 
-	const sendNewSalon = (bool, text) => { 
+	const sendNewSalon = (bool, text) => {
+		if (message.trim().length === 0) {
+			alert('Channel name cant be empty');
+			return;
+		}
 		socket.emit('addsalon', user.id, bool, false, text);//, actualUser.id); 
 		setNewSalon(1);
 		setMessage('');
