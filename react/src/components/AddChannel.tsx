@@ -134,7 +134,7 @@ const AddChannel = ({user}) => {
 			<button onClick={toggleAdd} ><MaterialIcon title="Add channel"  size="medium" icon="maps_ugc" /></button>
 			<h2 className="mediumMarginBottom">Join existing channels</h2>    
 			{salons.map((salon) => ( 
-			<div style={channelsListStyle}><button  key={salon.id} onClick={() => handleClick(salon)}>
+			<div key={salon.id} style={channelsListStyle}><button  key={salon.id} onClick={() => handleClick(salon)}>
 				<div key={salon.id}>{salon.name}</div>
 			</button></div>))}
 

@@ -258,7 +258,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 disp = data.roomToEmit;
         //on coupe en deux avec un broadcast et un server.to(mysockets) pour différencier notifs et pas notifs
         //   this.server.to('sockets' + data.whoAmI.id).emit('chat', {emittingRoom: data.roomToEmit, sender: data.whoAmI.id, message: '[' + data.whoAmI.login + '] ' +  '[' + time + '] ' + data.message, displayName: data.roomToEmit, dontNotif: true});
-        this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: false,roomId:data.roomId, creator:data.creator});
+        this.server.to('salonRoom' + data.roomId).except(bannedMe).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: false,roomId:data.roomId, creator:data.creator,private:data.private});
         this.server.to('sockets' + data.whoAmI.id).emit('chat', {id:newMes.id,emittingRoom: data.roomToEmit, sender: data.whoAmI.id, senderLog:data.whoAmI.login, message: data.message, displayName: disp, dontNotif: true, roomId:data.roomId, creator:data.creator, private:data.private});
         }
     }
@@ -315,8 +315,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('changeInfos')
     async changeInfos(client, infos) {
         this.server.to('sockets'+ infos.id).emit('changeInfos');
+        if (infos.new_login)
+        {
         const display_login = (infos.new_login.length > 10) ? (infos.new_login).substring(0,9) + "..." : infos.new_login;
         this.server.except('sockets'+ infos.id).emit('someoneChangedLogin', {otherId: infos.id, newLogin: display_login});
+        }
     }
 
     @SubscribeMessage('friendrequestnotif')

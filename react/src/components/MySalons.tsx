@@ -106,7 +106,6 @@ const MySalons = (props) => {
 	}, [props.actualUser.id])
 
 	useEffect(() => {
-        console.log(joinedSalons);
 	}, [joinedSalons])
 
     useEffect(() => {
@@ -155,7 +154,7 @@ const MySalons = (props) => {
 				return (message);
 			else {
 				//socket.off('leftsalon');
-				setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.currentSalon, private: data.private})));
+				setJoinedSalons(map => new Map(map.set(data.emittingRoom, {...map.get(data.emittingRoom), dm: (data.emittingRoom !== data.displayName), notif: true, avatar: data.displayName, roomId:data.roomId, creator: data.creator, private: data.private})));
 				return (message);
 			}
 			});
