@@ -627,7 +627,7 @@ const MySalons = (props) => {
 	const unbanUser = () => {
 		const inf = { userId : unbanOption.value, roomId: currentSalon.roomId, banUser: true};
 		axios.post("http://localhost:3000/users/unban/" , inf, {withCredentials:true}).then((res) => {
-			socket.emit('user_joins_room', {userId: unbanOption.id, room: currentSalon.name, roomId:currentSalon.roomId});
+			socket.emit('user_joins_room', {userId: unbanOption.value, room: currentSalon.name, roomId:currentSalon.roomId});
 		})
 		.catch(error => {
 			if (error.response && error.response.status)
