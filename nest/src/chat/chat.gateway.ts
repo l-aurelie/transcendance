@@ -161,7 +161,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         else
             displayName = infos.otherLogin;
         }
-        const theRoom = await this.roomRepo.findOne({where :{ name : infos.room }});
+        const theRoom = await this.roomRepo.findOne({where :{ id : infos.roomId }});
         if (!dm) {
             if (infos.room.length > 10)
                 displayName = infos.room.substring(0,9) + "...";
@@ -334,20 +334,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('initGame')
     async initGame( client, user)
     {
-        for (let entry of gameQueue) {
-        if (entry.user.id === user) {
-          this.server.to(client.id).emit("already-ask");
-          break;
+        let res;
+        res = gameQueue.find(element => user === element.user.id);
+        if (res) {
+            this.server.to(client.id).emit("already-ask");
+            return ;
         }
-        return ;
-    }
-    for (let entry of gameQueueSmach) {
-      if (entry.user.id === user) {
-        this.server.to(client.id).emit("already-ask");
-        break;
-      }
-      return ;
-    }
+        res = gameQueueSmach.find(element => user === element.user.id);
+        if (res) {
+            this.server.to(client.id).emit("already-ask");
+            return ;
+        }
+
       const allGame = await this.gameRepo.findOne( { where: [{playerLeft:user, finish:false}, {playerRight:user, finish:false}]} );
     //  for (let entry of allGame) {
          // if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {

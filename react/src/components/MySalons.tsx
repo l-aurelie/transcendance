@@ -601,6 +601,7 @@ const MySalons = (props) => {
 	const banUser = () => {
 		const inf = { userId : banOption.value, roomId: currentSalon.roomId, banUser: true};
 		axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
+			socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
 		})
 		.catch(error => {
 			if (error.response && error.response.status)
@@ -616,7 +617,6 @@ const MySalons = (props) => {
 				console.log("unknown error");
 		})
 
-		socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
 		if (banOption.value !== 0)
 		   alert(banOption.label + " banned!");
 		setBan({value:0, label:'Select...'});
@@ -627,6 +627,7 @@ const MySalons = (props) => {
 	const unbanUser = () => {
 		const inf = { userId : unbanOption.value, roomId: currentSalon.roomId, banUser: true};
 		axios.post("http://localhost:3000/users/unban/" , inf, {withCredentials:true}).then((res) => {
+			socket.emit('user_joins_room', {userId: unbanOption.id, room: currentSalon.name, roomId:currentSalon.roomId});
 		})
 		.catch(error => {
 			if (error.response && error.response.status)
@@ -641,8 +642,6 @@ const MySalons = (props) => {
 			else
 				console.log("unknown error");
 		})
-
-		socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
 		if (unbanOption.value !== 0)
 			alert(unbanOption.label + " unbanned!");
 		setUnban({value:0, label:'Select...'});
