@@ -12,10 +12,11 @@ export class MessageService {
        private roomServ : RoomService
      ) {}
 
-     async addMessage(content: string, roomName: string, idUser: number) {
+     async addMessage(content: string, roomName: string, idUser: number, idRoom:number) {
        // const newRoom = await this.addCreatorInRoom(room, creator);
-       const roomId = await this.roomServ.getRoomIdFromRoomName(roomName);
-       const mess = {senderId: idUser, roomID: roomId, content: content};
+      // const roomId = await this.roomServ.getRoomIdFromRoomName(roomName);
+       
+      const mess = {senderId: idUser, roomID: idRoom, content: content};
        return (await this.messageRepo.save(mess));
      }
 }

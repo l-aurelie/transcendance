@@ -216,7 +216,7 @@ export class UsersController {
          return ({status:404});
       const currentSal = parseInt(body.roomId);
       const id = parseInt(body.userId);
-      const dateT = new Date().getTime() + 120000;//86400000;
+      const dateT = new Date().getTime() + 1800000; //actual -> 30min, set to 86400000 for one day;
       const expired = new Date(dateT);
       const room_user = await this.roomUser.findOne(
          {
@@ -262,7 +262,7 @@ export class UsersController {
          return ({status:404});
       const currentSal = parseInt(body.roomId);
       const id = parseInt(body.userId);
-      const dateT = new Date().getTime() + 120000//86400000;
+      const dateT = new Date().getTime() + 1800000 //actual -> 30min, set to 86400000 for one day;
       const expired = new Date(dateT);
       const room_user = await this.roomUser.findOne(
          {

@@ -112,6 +112,7 @@ const Game = (props) => {
 		setStop(false);
 		socket.emit('createGame', actualUser, version);
  	}
+	
 
  // ask to quit game or queue
 	const quitGame = () => {
@@ -162,6 +163,30 @@ const Game = (props) => {
 
 // if a socket of same player is open and is playing, show the same game
 	useEffect(() => {
+		socket.on("joinroomOnly", data => {
+			socket.emit('join', data)});
+		socket.on("logoutGame", data => {
+			if (waitingFor !== 0)
+			socket.emit('warnOpponent', waitingFor);
+		setWait(false);
+		setPresentation(false); 
+		setWaitingFor(0); 
+		setInGame(false);
+		setAbort(true);
+		setQuit(false);
+		setEndWatch(false);
+		setStop(false);
+		if (watch === true) {
+			setRoomName(0);  
+			setWatch(false);
+			socket.emit('leave', watchName);
+			setQuitSentence('end of visualisation...');
+		}
+		else {
+			setWatch(false);
+			socket.emit('abort-match', roomName, scoreL, scoreR, actualUser.id);
+		}
+		});
 		socket.on("joinroom", data => {
 		if (watch === true) {
 			setLoginL('');
@@ -173,7 +198,7 @@ const Game = (props) => {
 			socket.on("leaveroom", data => {
 				socket.emit('leave', data);
 			});
-	},[actualUser.id, watch, watchName])
+	},[actualUser.id, watch, watchName, roomName, scoreL, scoreR, waitingFor])
 
 //principal useEffect qui gere l' affichage dans le canvas
 	useEffect(() => {
@@ -475,7 +500,7 @@ const Game = (props) => {
 						context.clearRect(0, 0, width, height);
 						context.fillStyle = '#000000'
 						context.fillRect(0, 0, width, height);
-						context.font = "30px Roboto";
+						context.font = "20px Roboto";
 						context.fillStyle = "white";
 						context.fillText(loginL + ' ' + allPos.scoreL, width/4, height/10);
 						context.fillText(loginR + ' ' + allPos.scoreR, width/2 + width/4, height/10);

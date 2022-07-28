@@ -52,7 +52,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async handleDisconnect(client) {
-        const the_date = new Date(Date.now()).toLocaleString();// moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
+        const date1 = new Date(Date.now());
+        var hours = date1.getHours() + 2;
+        if (hours > 12)
+            hours = hours % 12;
+        hours = hours + 12;
+        date1.setHours(hours);
+        const the_date = date1.toLocaleString();// moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
         // A client has disconnected
         this.users--;
         await this.disconnectGame(client, the_date);
@@ -71,14 +77,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     @SubscribeMessage('logout')
     async logOut(client, infos) {
+       this.server.to('sockets' + infos.userId).emit('logoutGame');
        this.server.to('sockets' + infos.userId).emit('logout');
-
     }
+    
     @SubscribeMessage('disco')
     async disconnect(client) {
         client.disconnect();
-
     }
+
     //--------------------------------------------------------------------------------------------//
     //----------------------------------CHAT------------------------------------------------------//
     //--------------------------------------------------------------------------------------------//
@@ -98,7 +105,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             else
                displayName = entry.name;
             if (!userRoomIds.includes(entry.id))
-                tab.push({id:entry.id, name:displayName});
+                tab.push({id:entry.id, name: entry.name, display:displayName});
         }
         client.emit('fetchsalon', tab);
      }
@@ -231,7 +238,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         /* on récupère les infos de block */
         /* on fait un array constitué de tous les salons de sockets qui nous ont blouqués pour ne pas leur emit grâce à .except */
-        const newMes = await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id); 
+        const newMes = await this.messageService.addMessage(data.message, data.roomToEmit, data.whoAmI.id, data.roomId); 
         let bannedMe = await this.userBlockRepo.createQueryBuilder().where({ blockedUserId: data.whoAmI.id }).execute();
         bannedMe.forEach(function(el, id, arr) {
             arr[id] = 'sockets' + arr[id].UserBlock_blockingUserId;
@@ -314,6 +321,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('changeInfos')
     async changeInfos(client, infos) {
+       // const tab = await this.roomRepo.find({where: {}})
         this.server.to('sockets'+ infos.id).emit('changeInfos');
         if (infos.new_login)
         {
@@ -345,12 +353,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(client.id).emit("already-ask");
             return ;
         }
-
-      const allGame = await this.gameRepo.findOne( { where: [{playerLeft:user, finish:false}, {playerRight:user, finish:false}]} );
-    //  for (let entry of allGame) {
+  
+        const allGame = await this.gameRepo.findOne( { where: [{playerLeft:user, finish:false}, {playerRight:user, finish:false}]} );
+        //  for (let entry of allGame) {
          // if ((entry.playerLeft === user || entry.playerRight === user) && entry.finish === false) {
          if (allGame) {  
-         this.joinRoom(client, allGame.id+'-players');
+            this.joinRoom(client, allGame.id+'-players');
             const data = {roomname:allGame.id, sL:allGame.scoreLeft, sR:allGame.scoreRight, player1:allGame.playerLeft, player2:allGame.playerRight, smash :allGame.smash};
             this.server.to(allGame.id+'-players').emit("game-start", data);
             this.server.to(allGame.id+'-watch').emit("game-start", data);
@@ -376,16 +384,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.userRepo.update({id:userL.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9)'});
         await this.userRepo.update({id:userR.id}, {isPlaying:true, color:'rgba(255, 0, 255, 0.9)'});
         this.server.emit('changeColor');
-        roomName = newGame.id;
-        this.joinRoom(client, newGame.id+'-players');
+        roomName = newGame.id+'-players';
+        this.joinRoom(client, roomName);
         let other;
         if (userL.id === userClient.id)
             other = userR;
         else
             other = userL;
         this.server.to('sockets'+other.id).emit("joinroom",  roomName);
-  //   const data = {roomname: roomName, sL: 0, sR:0, player1: userL.id, player2: userR.id, smash: v}
-//     this.server.to('sockets'+userL.id).to('sockets'+userR.id).emit("game-start",  data);  
+        this.server.to('sockets'+userClient.id).emit("joinroomOnly",  roomName);
 
     }
 
@@ -422,7 +429,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if(!gameQueue.find(element => infos[0].id === element.user.id)
             && !gameQueueSmach.find(element => infos[0].id === element.user.id))
         {
-         //   this.server.to('sockets'+ infos[0].id).emit("joinroom");
             if (infos[1] === 1) {
                 gameQueueSmach.push(tab);
                 this.matchMake(gameQueueSmach, infos[1], infos[0], socket);
@@ -482,7 +488,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('ball')
     async  updateBallX(server, infos) { //infos[0] == roomName , infos[1] = allPos
         /*date for game table*/
-        const the_date= new Date(Date.now()).toLocaleString();//string = moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
+        const date1 = new Date(Date.now());
+        var hours = date1.getHours() + 2;
+        if (hours > 12)
+            hours = hours % 12;
+        hours = hours + 12;
+        date1.setHours(hours);
+        const the_date = date1.toLocaleString();// moment().tz("Europe/Paris").format('dddd Do MMM YY, hh:mm');
       
         let width = infos[1].width; 
         let height = infos[1].height; 
@@ -762,8 +774,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async twoPlayerDisconnect(the_date, entry, opponent)
     {
-        const user2 = await this.socketRepo.find({where: {idUser: opponent}});
-        if (user2.length === 0)
+
+        const clients = await this.server.in('sockets' + opponent).allSockets();
+        if (clients.size === 0)
         {
             let win = 0;
             let loose = 0;
@@ -805,8 +818,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const whichuser = await this.socketRepo.findOne({where: {name:client.id}});
         if(whichuser)
         {
-            const isUser = await this.socketRepo.find({where: {idUser: whichuser.idUser}});
-            if (isUser.length === 1)
+            const clients = await this.server.in('sockets' + whichuser.idUser).allSockets();
+            if (clients.size === 0)
             {
                 await this.userRepo.update({id:whichuser.idUser}, {isConnected:false, color:'rgba(255, 0, 0, 0.9)'});
                 this.server.emit('changeColor');

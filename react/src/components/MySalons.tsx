@@ -216,7 +216,6 @@ const MySalons = (props) => {
 
 	const handleClick = (salon) => {
 		//setRoomId(salon[1].roomId)
-
 		if ((revele|| revele2 ||revele3) && currentSalon.roomId !== 'undefined')
 			 return ;
 		if (salon[1].avatar !== currentSalon.display) {
@@ -602,6 +601,7 @@ const MySalons = (props) => {
 		const inf = { userId : banOption.value, roomId: currentSalon.roomId, banUser: true};
 		axios.post("http://localhost:3000/users/ban/" , inf, {withCredentials:true}).then((res) => {
 			socket.emit('user_isBan_room', {userId: banOption.value, room: currentSalon.name, roomId: currentSalon.roomId});
+		
 		})
 		.catch(error => {
 			if (error.response && error.response.status)
@@ -616,7 +616,6 @@ const MySalons = (props) => {
 			else
 				console.log("unknown error");
 		})
-
 		if (banOption.value !== 0)
 		   alert(banOption.label + " banned!");
 		setBan({value:0, label:'Select...'});
@@ -627,7 +626,9 @@ const MySalons = (props) => {
 	const unbanUser = () => {
 		const inf = { userId : unbanOption.value, roomId: currentSalon.roomId, banUser: true};
 		axios.post("http://localhost:3000/users/unban/" , inf, {withCredentials:true}).then((res) => {
-			socket.emit('user_joins_room', {userId: unbanOption.value, room: currentSalon.name, roomId:currentSalon.roomId});
+			if (unbanOption.value !== 0)
+				socket.emit('user_joins_room', {userId: unbanOption.value, room: currentSalon.name, roomId:currentSalon.roomId});
+			
 		})
 		.catch(error => {
 			if (error.response && error.response.status)
@@ -643,10 +644,10 @@ const MySalons = (props) => {
 				console.log("unknown error");
 		})
 		if (unbanOption.value !== 0)
-			alert(unbanOption.label + " unbanned!");
-		setUnban({value:0, label:'Select...'});
-		whichBan(currentSalon.roomId);
-		whichNonBan(currentSalon.roomId);
+				alert(unbanOption.label + " unbanned!");
+			setUnban({value:0, label:'Select...'});
+			whichBan(currentSalon.roomId);
+			whichNonBan(currentSalon.roomId);
 	}
 
 	return(

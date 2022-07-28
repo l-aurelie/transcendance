@@ -128,7 +128,7 @@ const AddChannel = ({user}) => {
 			<div className='lists'>
 			{salons.map((salon) => ( 
 			<button  key={salon.id} onClick={() => handleClick(salon)}>
-				<div key={salon.id}>{salon.name}</div>
+				<div key={salon.id}>{salon.display}</div>
 			</button>))}</div>
 
 			<ModalWindow revele={reveleAdd} setRevele={toggleAdd}>

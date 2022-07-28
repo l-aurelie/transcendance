@@ -204,7 +204,7 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
 		<button style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>
           {userSelected.login}</button>
             <button><MaterialIcon title="Direct message" icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
-            <button><MaterialIcon title="Defeat" icon="videogame_asset" onClick={defeat} /></button>
+            {!playing2 && <button><MaterialIcon title="Defeat" icon="videogame_asset" onClick={defeat} /></button>}
             <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
             {playing && !playing2 && <button> <i onClick={watch}><MaterialIcon title="Watch a match" icon="connected_tv"/></i> </button>}
           <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
@@ -226,10 +226,10 @@ const  DisplayUser = ({userConnected, userSelected, isFriend, togglePlay, toggle
           <p className="linkLog" style={{display: "inline", textDecoration: "underline"}} onClick={toggleProfil}>{userSelected.login}</p> 
             <button><MaterialIcon title="Add friend" icon="person_add" onClick={sendFriendRequest} /></button>
             <button><MaterialIcon title="Direct message"  icon="chat" onClick={() => {beginChat(userSelected)}} /></button> 
-            {!playing2 && <button><MaterialIcon  title="Defeat" icon="videogame_asset" onClick={defeat} /> {/*icon="star"*/}</button>}
+            {!playing2 && <button><MaterialIcon  title="Defeat" icon="videogame_asset" onClick={defeat} /></button>}
             <button>{bloc ? <i onClick={unblock} ><MaterialIcon title="Unblock" icon="block"/>(Unblock)</i> : <i onClick={block}><MaterialIcon title="Block" icon="block"/>(Block)</i>}</button>
             {playing && !playing2 && <button> <i onClick={watch}><MaterialIcon icon="connected_tv"/></i> </button>}
-          <ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
+          	<ModalWindow revele={reveleProfil} setRevele={toggleProfil}>
             <FriendUserProfilExtended Value={userSelected.login}/>
           </ModalWindow>
         </div>

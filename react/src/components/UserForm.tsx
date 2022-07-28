@@ -25,8 +25,8 @@ class UserForm extends React.Component<any, any, any> {
 	
 		//-* Gestion des champs controles/chgt des valeur 
 		handleChange(e) {
-			if (e.target.value.length > 30) {
-				alert('Login too long. Size max: 30');
+			if (e.target.id === "login"  && e.target.value.length > 15) {
+				alert('Login too long. Size max: 15');
 				return;
 			}
 			const name = e.target.name;
