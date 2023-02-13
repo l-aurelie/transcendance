@@ -1,41 +1,102 @@
-version: "3.4"
-
+version: "3.8"
 services:
-  nest:
-    build: 
-      dockerfile: Dockerfile
-      context: ./nest
-      target: production
-    env_file:
-      - .env
-    volumes:
-      - ./nest/src:/usr/src/app/src/
-      - /usr/src/app/node_modules
-    command: npm start
-    depends_on:
-      - postgres
-    ports:
-      - 3000:3000
-
   react:
-    build: 
-      dockerfile: Dockerfile
-      context: ./react
-      target: production
-    command: npm start
-    env_file:
-      - .env
-    volumes:
-     - ./react:/react/src/app
-     - /react/src/app/node_modules
+    build: ./react
+    image: react_img
+    container_name: react
+    #environment:
+    #  - PORT=4200
     ports:
       - 4200:4200
-    links: 
-      - nest
+    #command: ["tail", "-f", "/dev/null"]
+    #.PROD-MODE--
+    #command: sh -c "cd /usr/src/app && npm run preview"
+    #.DEV-MODE--
+    #command: sh -c "cd /usr/src/app && npm run dev"
+    volumes:
+      - ./react:/usr/src/app
+    #.-----
 
-  postgres:
-    image: postgres
+  nest:
+    build: ./nest
+    image: nest_img
+    container_name: nest
+    depends_on:
+      postgres:
+        condition: service_healthy
     env_file:
       - .env
     ports:
+      - 3000:3000
+    #command: ["tail", "-f", "/dev/null"]
+    #.PROD-MODE--
+    #command: sh -c "cd /usr/src/app && "
+    #.DEV-MODE--
+    #command: sh -c "cd /usr/src/app && "
+    volumes:
+      - ./nest:/usr/src/app
+    #.-----
+  
+  postgres:
+    #On utilise postgis pour pouvoir utiliser les fonctionalite liees a la geolocalisation
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    env_file:
+      - .env
+    #volumes:
+    #  - db_data:/var/lib/postgresql/data
+    ports: 
       - 3500:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d db"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
+
+#===========================================
+#Old version
+# version: "3.4"
+
+# services:
+#   nest:
+#     build: 
+#       dockerfile: Dockerfile
+#       context: ./nest
+#       target: production
+#     env_file:
+#       - .env
+#     volumes:
+#       - ./nest/src:/usr/src/app/src/
+#       - /usr/src/app/node_modules
+#     command: npm start
+#     depends_on:
+#       - postgres
+#     ports:
+#       - 3000:3000
+
+#   react:
+#     build: 
+#       dockerfile: Dockerfile
+#       context: ./react
+#       target: production
+#     command: npm start
+#     env_file:
+#       - .env
+#     volumes:
+#      - ./react:/react/src/app
+#      - /react/src/app/node_modules
+#     ports:
+#       - 4200:4200
+#     links: 
+#       - nest
+
+#   postgres:
+#     image: postgres
+#     env_file:
+#       - .env
+#     ports:
+#       - 3500:5432
